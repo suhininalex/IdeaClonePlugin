@@ -184,7 +184,13 @@ public class Node<T,S extends Iterable<T>> implements Iterable<Edge<T,S>> {
 		if (incomingEdge == null)
 			return "root";
 		else {
-			return "end of edge [" + incomingEdge.toString() + "]";
+            StringBuilder builder = new StringBuilder();
+            Edge<T,S> current = this.incomingEdge;
+            while (current!=null) {
+                builder.insert(0,current);
+                current = current.parentNode.incomingEdge;
+            }
+			return "end of edge [" + builder.toString() + "]";
 		}
 	}
 

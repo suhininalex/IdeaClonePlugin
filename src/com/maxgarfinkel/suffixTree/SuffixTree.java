@@ -19,7 +19,7 @@ public class SuffixTree<I,S extends Iterable<I>> {
 	private final Sequence<I,S> sequence;
 
 	private Suffix<I,S> suffix;
-	private final ActivePoint<I,S> activePoint;
+	final ActivePoint<I,S> activePoint;
 	private int currentEnd = 0;
 	private int insertsThisStep = 0;
 	private Node<I,S> lastNodeInserted = null;
@@ -163,7 +163,7 @@ public class SuffixTree<I,S extends Iterable<I>> {
 
     public String nodeToString(Node<I, S> node, String prefix){
         if (node==null) return "\r\n";
-        StringBuilder string = new StringBuilder().append(node.cloneClass).append("\r\n");
+        StringBuilder string = new StringBuilder().append(node.cloneClass).append(" | " + node.getSuffixLink()).append("\r\n");
         for (Edge<I,S> edge : node.getEdges()){
             string.append(prefix).append(edge.toString())
                     .append(nodeToString(edge.getTerminal(), prefix + "-----"));

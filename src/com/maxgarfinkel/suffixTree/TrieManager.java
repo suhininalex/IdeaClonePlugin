@@ -9,6 +9,16 @@ import java.util.*;
  */
 public class TrieManager {
 
+    public static <T,S extends Iterable<T>> List<Node<T,S>> followSuffixLink(Node<T,S> node){
+        List<Node<T,S>> nodes = new LinkedList<>();
+        Node<T,S> currentNode = node;
+        while (currentNode.getSuffixLink()!=null){
+            nodes.add(currentNode);
+            currentNode=currentNode.getSuffixLink();
+        }
+        return nodes;
+    }
+
     public static void filterSomeClones(@NotNull final List<CloneClass> clones){
         Collections.sort(clones,CloneClass.getPositionComparator());
         int i=0;

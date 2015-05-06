@@ -37,17 +37,13 @@ public class CloneManager {
     public void processAllProject(){
         final List<PsiFile> files = getAllPsiJavaFiles(project);
         final ProgressView progressView = new ProgressView(project, files.size());
-        Runnable task = new Runnable() {
-            @Override
-            public void run(){
+        Runnable task = () -> {
                 for (final PsiFile file : files) {
                     processPsiFile(file);
                     progressView.next(file.getName());
                     System.out.println(i++);
                 }
-                progressView.clickDefaultButton();
-            }
-        };
+            };
         executor.execute(new ReadTaskWrapper(task));
         progressView.show();
     }
@@ -60,7 +56,7 @@ public class CloneManager {
     }
 
     private  List<PsiFile> getAllPsiJavaFiles(Project project){
-        List<PsiFile> files = new LinkedList<PsiFile>();
+        List<PsiFile> files = new LinkedList<>();
         PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());
         getPsiJavaFiles(psiDirectory,files);
         return files;

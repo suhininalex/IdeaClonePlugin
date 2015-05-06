@@ -17,16 +17,34 @@ public class TreeTest {
     private boolean showFails = true;
 
 
-    @Test
-    public void testRandomTree(){
-        System.out.println("-----------------------");
-        System.out.println("TestRandomTree");
-        int[] tokens = {1,2,3,5,1,2,4,1,2,3,5,1,2,3,6,7,8,9};
+    private List<Token> getRandomSequence(){
+        int[] tokens = {1,2,3,5,1,2,4,1,2,3,5,8};
         List<Token> sequence = new LinkedList<Token>();
         int pos=0;
         for (int token : tokens){
             sequence.add(new Token(token, pos++));
         }
+        return sequence;
+    }
+
+    @Test
+    public void testCloneFilter(){
+        System.out.println("-----------------------");
+        System.out.println("CloneFilter");
+        List<Token> sequence = getRandomSequence();
+        SuffixTree<Token, Collection<Token>> tree = new SuffixTree<Token, Collection<Token>>();
+        tree.add(sequence);
+        System.out.println(sequence);
+        System.out.println(TrieManager.followSuffixLink(tree.activePoint.getNode()));
+        System.out.println(tree.activePoint.getNode());
+        System.out.println(tree);
+    }
+
+    @Test
+    public void testRandomTree(){
+        System.out.println("-----------------------");
+        System.out.println("TestRandomTree");
+        List<Token> sequence = getRandomSequence();
         SuffixTree<Token, Collection<Token>> tree = new SuffixTree<Token, Collection<Token>>();
         tree.add(sequence);
         System.out.println(sequence);
@@ -48,7 +66,6 @@ public class TreeTest {
         tree.add(sequence);
         List<Token> sequence2 = new LinkedList<Token>();
         sequence2.addAll(sequence);
-//        sequence2.add(sequence.get(0));
         tree.add(sequence2);
         System.out.println(sequence2);
         System.out.println(tree);
@@ -125,22 +142,6 @@ public class TreeTest {
 //        System.out.println("After " +clones);
 
     }
-
-    @Test
-    public void testClonesFilter() throws IOException{
-        System.out.println("---------------------");
-        System.out.println("Clone Filter");
-        List<Token> tokens = getTokensFromFile("problemsequence.txt");
-        SuffixTree<Token, Collection<Token>> tree = new SuffixTree<Token, Collection<Token>>();
-        tree.add(tokens);
-        List<CloneClass> clones = TrieManager.getClones(tree);
-        System.out.println(clones);
-        TrieManager.filterSomeClones(clones);
-        //TrieManager.filterClonesBrute(clones);
-        System.out.println(clones);
-    }
-
-
 
     public static class Token implements Comparable<Token> {
         public Integer value;

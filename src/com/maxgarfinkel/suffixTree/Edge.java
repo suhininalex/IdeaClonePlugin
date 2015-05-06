@@ -103,7 +103,7 @@ public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
          * adding clone info
          */
         if (oldEdge.isTerminating()) {
-            breakNode.cloneClass = oldEdge.getTerminal().cloneClass.getTrimmed(oldEdge.getLength());
+			breakNode.cloneClass = oldEdge.getTerminal().cloneClass.getTrimmed(oldEdge.getLength());
         }
         breakNode.addCloneRecursive(suffix.getStartPosition());
     }
