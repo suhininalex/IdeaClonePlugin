@@ -18,7 +18,7 @@ public class TreeTest {
 
 
     private List<Token> getRandomSequence(){
-        int[] tokens = {1,2,3,5,1,2,4,1,2,3,5,8};
+        int[] tokens = {1,2,3,5,1,2,4,1,2,3,5,8,1,2,3,5,1,3};
         List<Token> sequence = new LinkedList<Token>();
         int pos=0;
         for (int token : tokens){
@@ -35,9 +35,12 @@ public class TreeTest {
         SuffixTree<Token, Collection<Token>> tree = new SuffixTree<Token, Collection<Token>>();
         tree.add(sequence);
         System.out.println(sequence);
-        System.out.println(TrieManager.followSuffixLink(tree.activePoint.getNode()));
-        System.out.println(tree.activePoint.getNode());
-        System.out.println(tree);
+        TrieManager.markFiltered(tree.getRoot());
+        List<CloneClass> clones = TrieManager.getClones(tree);
+        System.out.println(clones);
+//        TrieManager.filterClonesBrute(clones);
+//        System.out.println(clones);
+//        System.out.println(tree);
     }
 
     @Test
@@ -97,8 +100,8 @@ public class TreeTest {
             int begin = randomizer.nextInt(tokens.size());
             int end = begin + randomizer.nextInt(tokens.size()-begin)+1;
             List<Token> subList =  tokens.subList(begin,end);
-            boolean result = TrieManager.treeContainsSequence(tree,subList);
-            if (!result) {
+            ;
+            if (TrieManager.findNodeForSequence(tree, subList)==null) {
                 if (showFails) {
                     System.out.println("----------------------------");
                     System.out.println("Sequence not found!");

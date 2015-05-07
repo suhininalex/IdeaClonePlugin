@@ -28,9 +28,8 @@ public class CloneManager {
     }
 
     public List<CloneClass> getClones(){
-        List<CloneClass> clonesList = TrieManager.getClones(suffixTree);
-        TrieManager.filterSomeClones(clonesList);
-        return clonesList;
+        TrieManager.markFiltered(suffixTree.getRoot());
+        return TrieManager.getClones(suffixTree);
     }
 
     static int i=0;

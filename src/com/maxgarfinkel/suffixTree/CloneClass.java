@@ -12,7 +12,9 @@ public class CloneClass {
     private final List sequence;
     private final int length;
 
-    static private final int minCloneLength=30;
+    static private final int minCloneLength=1;
+
+    public boolean filtered = false;
 
     CloneClass(@NotNull final List sequence, int length) {
         this.sequence = sequence;
@@ -63,7 +65,7 @@ public class CloneClass {
 
     @Override
     public String toString() {
-        return "{"+startOfClones+","+getLength()+"}";
+        return "{"+startOfClones+","+getLength() + "}";
     }
 
     public boolean canAbsorbe(final @NotNull CloneClass cloneClass){
@@ -80,6 +82,10 @@ public class CloneClass {
             } else return false;
         }
         return false;
+    }
+
+    public boolean canSimpleAbsorbe(final @NotNull CloneClass cloneClass){
+        return this.startOfClones.size()==cloneClass.startOfClones.size();
     }
 
     /* a < b

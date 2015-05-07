@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Node<T,S extends Iterable<T>> implements Iterable<Edge<T,S>> {
 	private final Map<T, Edge<T,S>> edges = new HashMap<T, Edge<T,S>>();
-	final Edge<T,S> incomingEdge;
+	Edge<T,S> incomingEdge;
 	private Set<SequenceTerminal<S>> sequenceTerminals = new HashSet<SequenceTerminal<S>>();
 	private final Sequence<T,S> sequence;
 	private final SuffixTree<T,S> tree;
@@ -186,11 +186,13 @@ public class Node<T,S extends Iterable<T>> implements Iterable<Edge<T,S>> {
 		else {
             StringBuilder builder = new StringBuilder();
             Edge<T,S> current = this.incomingEdge;
+            int k=0;
             while (current!=null) {
                 builder.insert(0,current);
                 current = current.parentNode.incomingEdge;
+                k++;
             }
-			return "end of edge [" + builder.toString() + "]";
+            return "path: {" + builder + "}";
 		}
 	}
 

@@ -93,6 +93,7 @@ public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
 				breakNode, sequence, tree);
         oldEdge.end = end;
 		oldEdge.terminal = this.terminal;
+        if (this.terminal!=null) this.terminal.incomingEdge = oldEdge;
 		breakNode.insert(oldEdge);
 		this.terminal = breakNode;
 		end = start + activePoint.getLength();
