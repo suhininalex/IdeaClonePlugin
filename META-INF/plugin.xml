@@ -39,11 +39,7 @@
     <!-- Add your actions here -->
       <action id="CopyLineUpAction" class="CopyLineUpAction" text="CopyLineUpAction" description="desc">
           <add-to-group group-id="EditorActions" anchor="first"/>
-          <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt UP"/>
+          <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
       </action>
   </actions>
-
-    <module-components>
-
-    </module-components>
 </idea-plugin>

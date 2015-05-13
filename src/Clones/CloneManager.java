@@ -7,6 +7,7 @@ import com.intellij.openapi.util.AsyncResult;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.util.concurrency.SwingWorker;
 import com.maxgarfinkel.suffixTree.CloneClass;
 import com.maxgarfinkel.suffixTree.SuffixTree;
 import com.maxgarfinkel.suffixTree.Token;
@@ -20,10 +21,10 @@ import java.util.concurrent.Executors;
 
 public class CloneManager {
     private final Project project;
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private final Executor executor = Executors.newSingleThreadExecutor();
     private final SuffixTree<Token,Iterable<Token>>  suffixTree= new SuffixTree<Token,Iterable<Token>>();
 
-    public CloneManager(Project project) {
+    public CloneManager(@NotNull final Project project) {
         this.project = project;
     }
 
@@ -32,20 +33,31 @@ public class CloneManager {
         return TrieManager.getClones(suffixTree);
     }
 
-    static int i=0;
-    public void processAllProject(){
+    public void showProjectClones(){
         final List<PsiFile> files = getAllPsiJavaFiles(project);
         final ProgressView progressView = new ProgressView(project, files.size());
         Runnable task = () -> {
-                for (final PsiFile file : files) {
-                    processPsiFile(file);
-                    progressView.next(file.getName());
-                    System.out.println(i++);
-                }
-            };
-        executor.execute(new ReadTaskWrapper(task));
-        progressView.show();
+            try {
+                processFiles(files, progressView);
+                progressView.setAsProcessing();
+                ClonesView.showClonesData(project, getClones());
+                progressView.done();
+            } catch (InterruptedException e) {
+                /* Canceled! */
+            }
+        };
+        executor.execute(Utils.wrapAsReadTask(task));
+        progressView.showAndGet();
     }
+
+    private void processFiles(@NotNull final List<PsiFile> files, @NotNull final ProgressView progressView) throws InterruptedException{
+        for (final PsiFile file : files) {
+            if (progressView.getStatus()== ProgressView.Status.Canceled) throw new InterruptedException("Task was canceled.");
+            processPsiFile(file);
+            progressView.next(file.getName());
+        }
+    }
+
 
     private void processPsiFile(@NotNull final PsiFile psiFile){
         TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
@@ -72,20 +84,6 @@ public class CloneManager {
         }
     }
 
-    private static class ReadTaskWrapper implements Runnable{
-        private final Runnable runnable;
-
-        @Override
-        public void run() {
-            ApplicationManager.getApplication().runReadAction(runnable);
-        }
-
-        public ReadTaskWrapper(Runnable runnable) {
-            this.runnable = runnable;
-
-
-        }
-    }
 
 
 }

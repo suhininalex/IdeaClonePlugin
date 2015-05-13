@@ -36,9 +36,8 @@ public class CopyLineUpAction extends EditorAction {
         protected void doExecute(Editor editor, Caret caret, DataContext dataContext) {
             Project project = editor.getProject();
             CloneManager cloneManager = new CloneManager(project);
-            cloneManager.processAllProject();
+            cloneManager.showProjectClones();
 
-            List<CloneClass> clonesList = cloneManager.getClones();
 
 //            StringBuilder string = new StringBuilder();
 //            for (CloneClass clones : clonesList){
@@ -49,8 +48,7 @@ public class CopyLineUpAction extends EditorAction {
 //            TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
 //            Utils.printToFile(Utils.makeTokenSequence(psiFile,filter),"tokens.txt");
 //            Utils.printStringToFile(string.toString(),"clones.txt");
-            Messages.showInfoMessage("Breaker", "I'm title!");
-            ClonesView.showClonesData(project, clonesList);
+//            Messages.showInfoMessage("Breaker", "I'm title!");
         }
 
     }

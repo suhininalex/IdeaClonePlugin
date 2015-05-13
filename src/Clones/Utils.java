@@ -1,5 +1,6 @@
 package Clones;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -102,5 +103,11 @@ public class Utils {
             sequence.addAll(Utils.makeTokenSequence(element,TokenSet.EMPTY));
         }
         return sequence;
+    }
+
+    public static Runnable wrapAsReadTask(Runnable task){
+        return () -> {
+            ApplicationManager.getApplication().runReadAction(task);
+        };
     }
 }

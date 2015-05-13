@@ -4,10 +4,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.util.ui.OptionsDialog;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created by llama on 24.04.15.
@@ -17,6 +21,7 @@ public class ProgressView extends DialogWrapper {
     private final JPanel panel = new JPanel(new GridBagLayout());
     private final JProgressBar progressBar = new JProgressBar();
     private final JLabel label = new JLabel();
+    private volatile Status status = Status.Initializing;
 
     private int value = -1;
     private final int size;
@@ -29,6 +34,7 @@ public class ProgressView extends DialogWrapper {
         init();
 
         setTitle("Обработка файлов");
+        setModal(true);
         setResizable(false);
 
         panel.setPreferredSize(new Dimension(250, 40));
@@ -48,6 +54,15 @@ public class ProgressView extends DialogWrapper {
         panel.add(label, constraints);
 
         next("Preparing files...");
+        status = Status.Processing;
+
+        DoNotAskOption option = new PropertyDoNotAskOption("cancel");
+
+        this.setDoNotAskOption(option);
+    }
+
+    public Status getStatus(){
+        return status;
     }
 
     @Nullable
@@ -56,11 +71,55 @@ public class ProgressView extends DialogWrapper {
         return panel;
     }
 
-    public static int maxSize=40;
-    public void next(String filename){
-        if (filename.length()>maxSize) filename = filename.substring(0,maxSize-4)+"...";
-        label.setText(filename);
-        progressBar.setValue(value++);
-        progressBar.setString(value+"/"+size);
+    public void done(){
+        EventQueue.invokeLater(() -> {
+            this.doOKAction();
+        });
+    }
+
+
+    @Override
+    public void doCancelAction() {
+        status = Status.Canceled;
+        super.doCancelAction();
+    }
+
+    @Override
+    protected void doOKAction() {
+        status = Status.Done;
+        super.doOKAction();
+    }
+
+    public void setAsProcessing(){
+        EventQueue.invokeLater(() -> {
+            label.setText("Preparing data...");
+        });
+    }
+
+    /**
+     * Updating progressView like file with @param filename is processed.
+     */
+    public static int maxSize=35;
+    public void next(@NotNull final String filename){
+        EventQueue.invokeLater(() -> {
+            /* Обрезание строки */
+            String string = (filename.length()>maxSize) ? filename.substring(0,maxSize)+"..." : filename;
+            label.setText(string);
+            progressBar.setValue(value++);
+            progressBar.setString(value + "/" + size);
+        });
+    }
+
+    @NotNull
+    @Override
+    protected Action[] createActions() {
+        return new Action[0];
+    }
+
+    public static enum Status {
+        Initializing,
+        Processing,
+        Canceled,
+        Done
     }
 }

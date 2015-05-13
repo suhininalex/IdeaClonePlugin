@@ -48,6 +48,7 @@ public class TrieManager {
         }
     }
 
+    @Deprecated
     public static void filterSomeClones(@NotNull final List<CloneClass> clones){
         Collections.sort(clones,CloneClass.getPositionComparator());
         int i=0;
@@ -62,6 +63,7 @@ public class TrieManager {
         }
     }
 
+    @Deprecated
     public static void filterClonesBrute(@NotNull final List<CloneClass> clones){
         for (int i=0; i<clones.size();i++){
             CloneClass first = clones.get(i);

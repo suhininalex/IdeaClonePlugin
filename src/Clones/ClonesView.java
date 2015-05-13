@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -61,13 +62,15 @@ public final class ClonesView extends Tree {
     }
 
     public static synchronized void showClonesData(Project project, List<CloneClass> clonesList){
-        ToolWindow toolWindow = getToolWindow(project);
-        toolWindow.hide(null);
-        JComponent window = toolWindow.getComponent();
-        window.removeAll();
-        ClonesView clonesView = new ClonesView(clonesList);
-        JBScrollPane pane = new JBScrollPane(clonesView);
-        window.add(pane);
-        toolWindow.show(null);
+        final ClonesView clonesView = new ClonesView(clonesList);
+        EventQueue.invokeLater(() -> {
+            ToolWindow toolWindow = getToolWindow(project);
+            toolWindow.hide(null);
+            JComponent window = toolWindow.getComponent();
+            window.removeAll();
+            JBScrollPane pane = new JBScrollPane(clonesView);
+            window.add(pane);
+            toolWindow.show(null);
+        });
     }
 }
