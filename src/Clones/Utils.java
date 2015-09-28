@@ -32,7 +32,7 @@ public class Utils {
     }
 
     public static List<Token> makeTokenSequence(@NotNull PsiElement root, @NotNull TokenSet filter) {
-        List<Token> tokens = new LinkedList<Token>();
+        List<Token> tokens = new LinkedList<>();
         makeTokenSequence(tokens, root, filter);
         return tokens;
     }
@@ -45,6 +45,7 @@ public class Utils {
         }
     }
 
+    @Deprecated
     public static void printToFile(List<Token> list, String filename){
         File file = new File("/home/llama/"+filename);
 
@@ -73,7 +74,7 @@ public class Utils {
 
     @Deprecated
     public static List<Token> makeTreeSequence(PsiFile psiFile){
-        LinkedList<Token> sequence = new LinkedList<Token>();
+        LinkedList<Token> sequence = new LinkedList<>();
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(JavaStubElementTypes.METHOD))){
             sequence.addAll(Utils.makeTokenSequence(element,TokenSet.EMPTY));
         }
@@ -81,8 +82,6 @@ public class Utils {
     }
 
     public static Runnable wrapAsReadTask(Runnable task){
-        return () -> {
-            ApplicationManager.getApplication().runReadAction(task);
-        };
+        return () -> ApplicationManager.getApplication().runReadAction(task);
     }
 }

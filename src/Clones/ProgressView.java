@@ -25,7 +25,7 @@ public class ProgressView extends DialogWrapper {
         this.maxProgressValue = files;
         init();
 
-        setTitle("Locate clones...");
+        setTitle("Locate Clones...");
         setModal(true);
         setResizable(false);
 
@@ -64,9 +64,7 @@ public class ProgressView extends DialogWrapper {
     }
 
     public void done(){
-        EventQueue.invokeLater(() -> {
-            this.doOKAction();
-        });
+        EventQueue.invokeLater(this::doOKAction);
     }
 
 
@@ -83,9 +81,7 @@ public class ProgressView extends DialogWrapper {
     }
 
     public void setAsProcessing(){
-        EventQueue.invokeLater(() -> {
-            label.setText("Preparing data...");
-        });
+        EventQueue.invokeLater(() -> label.setText("Preparing data..."));
     }
 
     /**
@@ -108,7 +104,7 @@ public class ProgressView extends DialogWrapper {
         return new Action[0];
     }
 
-    public static enum Status {
+    public enum Status {
         Initializing,
         Processing,
         Canceled,

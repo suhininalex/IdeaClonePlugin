@@ -22,15 +22,25 @@ import java.util.List;
 
 public final class ClonesView extends Tree {
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
-    private final DefaultTreeModel model = new DefaultTreeModel(root);
 
     private ClonesView(@NotNull final List<CloneClass> clones){
-        Collections.sort(clones, CloneClass.getLengthComparator());
+        Collections.sort(clones, CloneClass.getLengthComparator().reversed());
         for (CloneClass cloneClass : clones){
             this.add(cloneClass);
         }
+        DefaultTreeModel model = new DefaultTreeModel(root);
         this.setModel(model);
         this.setRootVisible(false);
+        MouseListener mouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    Object selectedNode = getSelectionModel().getSelectionPath().getLastPathComponent();
+                    if (selectedNode instanceof JTreeCloneNode)
+                        ((JTreeCloneNode) selectedNode).selectInEditor();
+                }
+            }
+        };
         this.addMouseListener(mouseListener);
     }
 
@@ -42,17 +52,6 @@ public final class ClonesView extends Tree {
             classNode.add(clone);
         }
     }
-
-    private final MouseListener mouseListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount()==2){
-                Object selectedNode = getSelectionModel().getSelectionPath().getLastPathComponent();
-                if (selectedNode instanceof JTreeCloneNode)
-                ((JTreeCloneNode) selectedNode).selectInEditor();
-            }
-        }
-    };
 
     @NotNull
     private static synchronized ToolWindow getToolWindow(Project project){

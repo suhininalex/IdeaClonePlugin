@@ -34,7 +34,7 @@ public class JTreeCloneNode extends DefaultMutableTreeNode {
     private static String getDescription(Clone clone){
         Document doc = clone.firstElement.source.getContainingFile().getViewProvider().getDocument();
         int from = doc.getLineNumber(clone.firstElement.source.getTextOffset())   +1;
-        int to = doc.getLineNumber(clone.lastElement.source.getTextOffset())       +1;;
+        int to = doc.getLineNumber(clone.lastElement.source.getTextOffset())       +1;
         String filename = clone.firstElement.source.getContainingFile().getVirtualFile().getPresentableName();
         return "Lines " + from + " to " + to + " from " + filename;
     }
