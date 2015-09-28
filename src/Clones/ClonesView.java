@@ -35,7 +35,7 @@ public final class ClonesView extends Tree {
     }
 
     private void add(CloneClass cloneClass) {
-        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.size() + " tokens and " + cloneClass.size() + " duplicates.");
+        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.getLength() + " tokens and " + cloneClass.size() + " duplicates.");
         root.add(classNode);
         for (Clone range : cloneClass.getClones()) {
             JTreeCloneNode clone = new JTreeCloneNode(range);

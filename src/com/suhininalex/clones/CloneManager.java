@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CloneManager {
 
-
+    final int minCloneLength = 30;
 
     public SuffixTree<Token> tree = new SuffixTree<>();
 
@@ -23,8 +23,8 @@ public class CloneManager {
         for (Edge edge : node.getEdges()){
             if (edge.getTerminal()!=null) {
                 CloneClass cloneClass = new CloneClass(edge.getTerminal());
-                if (cloneClass.getClones().iterator().hasNext())
-                accumulator.add(cloneClass);
+                if (!cloneClass.isEmpty() && cloneClass.getLength()>minCloneLength)
+                    accumulator.add(cloneClass);
                 getAllCloneClassesAUX(edge.getTerminal(), accumulator);
             }
         }

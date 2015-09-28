@@ -32,7 +32,7 @@ public class TreeTest {
     @Test
     public void testCloneFilter(){
         System.out.println("-----------------------");
-        System.out.println("CloneFilter");
+        System.out.println("CloneClassFilter");
         List<Token> sequence = getRandomSequence();
         SuffixTree<Token, Collection<Token>> tree = new SuffixTree<Token, Collection<Token>>();
         tree.add(sequence);

@@ -11,7 +11,6 @@ import java.util.Stack;
  * Pre-order traversal
  */
 class CloneIterator implements Iterator<Clone> {
-    int minimalCloneLength = 30;
 
     private final Stack<CallInfo> stack = new Stack<>();
     private final int cloneLength;
@@ -23,19 +22,15 @@ class CloneIterator implements Iterator<Clone> {
         }
     }
 
-    public CloneIterator(Node node){
+    public CloneIterator(Node node, int cloneLength){
         Node currentNode = node;
-        int cloneLength = 0;
-        while (currentNode.getParentEdge()!=null){
-            Edge edge = currentNode.getParentEdge();
-            int edgeLength = edge.getEnd() - edge.getBegin() + 1;
-            cloneLength+=edgeLength;
-            currentNode = edge.getParent();
-        }
+
         this.cloneLength = cloneLength;
 
-        if (cloneLength>minimalCloneLength)
-            addNodeToStack(node, 0);
+        if (cloneLength<=0)
+            throw new IllegalArgumentException("Clone length migth be greater tan 0!");
+
+        addNodeToStack(node, 0);
     }
 
     @Override

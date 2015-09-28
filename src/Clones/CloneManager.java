@@ -7,6 +7,8 @@ import com.intellij.psi.tree.TokenSet;
 import com.suhininalex.clones.Clone;
 import com.suhininalex.clones.CloneClass;
 import com.suhininalex.clones.Token;
+import com.suhininalex.clones.clonefilter.CloneClassFilter;
+import com.suhininalex.clones.clonefilter.SubclassFilter;
 import com.suhininalex.suffixtree.SuffixTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +36,16 @@ public class CloneManager {
 
         com.suhininalex.clones.CloneManager cm = new com.suhininalex.clones.CloneManager();
         cm.tree = suffixTree;
-        cm.getAllCloneClasses();
-        return Collections.EMPTY_LIST;
+        List<CloneClass> cls = cm.getAllCloneClasses();
+        CloneClassFilter filter = new SubclassFilter(cls);
+
+        List<CloneClass> cl = new LinkedList<>();
+        for (CloneClass cloneClass : cls) {
+            if (filter.isAllowed(cloneClass))
+                cl.add(cloneClass);
+        }
+        return cl;
+//        return Collections.EMPTY_LIST;
     }
 
     public void showProjectClones(){

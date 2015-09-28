@@ -50,8 +50,8 @@ public class CopyLineUpAction extends EditorAction {
 //            }
 //            Utils.printToFile(sequence, "problemsequence.txt");
 //            Utils.printTreeToFile(tree, "trie.txt");
-//            TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
-//            Utils.printToFile(Utils.makeTokenSequence(psiFile,filter),"tokens.txt");
+//            TokenSet isAllowed = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
+//            Utils.printToFile(Utils.makeTokenSequence(psiFile,isAllowed),"tokens.txt");
 //            Utils.printStringToFile(string.toString(),"clones.txt");
 //            Messages.showInfoMessage("Breaker", "I'm title!");
         }
