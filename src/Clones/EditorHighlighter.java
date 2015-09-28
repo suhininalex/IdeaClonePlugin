@@ -4,7 +4,7 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.maxgarfinkel.suffixTree.CloneClass;
-import com.maxgarfinkel.suffixTree.TokenRange;
+import com.suhininalex.clones.Clone;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -28,8 +28,8 @@ public class EditorHighlighter {
         markupModel.removeAllHighlighters();
         for (CloneClass cloneClass : clones){
             TextAttributes attributes = getRandomAttributes();
-            for (TokenRange range : cloneClass.getClones()) {
-                markupModel.addRangeHighlighter(range.begin.source.getTextOffset(), range.end.source.getTextOffset() + range.end.source.getTextLength(), 1, attributes, HighlighterTargetArea.EXACT_RANGE);
+            for (Clone range : cloneClass.getClones()) {
+                markupModel.addRangeHighlighter(range.firstElement.source.getTextOffset(), range.lastElement.source.getTextOffset() + range.lastElement.source.getTextLength(), 1, attributes, HighlighterTargetArea.EXACT_RANGE);
             }
         }
     }

@@ -1,20 +1,12 @@
 package Clones;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.JavaStubElementTypes;
-import com.intellij.psi.impl.source.tree.ElementType;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiUtil;
 import com.maxgarfinkel.suffixTree.SuffixTree;
 import com.maxgarfinkel.suffixTree.Method;
-import com.maxgarfinkel.suffixTree.Token;
-import groovy.io.FileType;
+import com.suhininalex.clones.Token;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

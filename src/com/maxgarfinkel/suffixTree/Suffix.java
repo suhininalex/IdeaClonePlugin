@@ -2,7 +2,7 @@ package com.maxgarfinkel.suffixTree;
 
 /**
  * Represents the remaining suffix to be inserted during suffix tree
- * construction. This is essentially a start and end pointer into the 
+ * construction. This is essentially a start and lastElement pointer into the
  * underlying sequence. This is like a kind of sliding window where the head
  * can never fall behind the tail, and the tail can never fall behind the head.
  * 
@@ -22,7 +22,7 @@ class Suffix<T,S extends Iterable<T>> {
 	 * sequence but only a suffix of the portion of the sequence we have so far
 	 * parsed.
 	 * @param start The start position of the suffix within the sequence
-	 * @param end The end position of the suffix within the sequence
+	 * @param end The lastElement position of the suffix within the sequence
 	 * @param sequence The main sequence
 	 */
 	public Suffix(int start, int end, Sequence<T,S> sequence) {
@@ -35,7 +35,7 @@ class Suffix<T,S extends Iterable<T>> {
 	
 	private void testStartEndAgainstSequenceLength(int start, int end, int sequenceLength){
 		if(start > sequenceLength || end > sequenceLength)
-			throw new IllegalArgumentException("Suffix start and end must be less than or equal to sequence length");
+			throw new IllegalArgumentException("Suffix start and lastElement must be less than or equal to sequence length");
 	}
 
 	@Override
@@ -52,8 +52,8 @@ class Suffix<T,S extends Iterable<T>> {
 
 	/**
 	 * 
-	 * @return The position in the master sequence of the end item in this
-	 *         suffix. This value is inclusive, thus and end of 0 implies the
+	 * @return The position in the master sequence of the lastElement item in this
+	 *         suffix. This value is inclusive, thus and lastElement of 0 implies the
 	 *         suffix contains only the item at <code>sequence[0]</code>
 	 */
 	int getEndPosition() {
@@ -69,9 +69,9 @@ class Suffix<T,S extends Iterable<T>> {
     int getStartPosition() { return start;}
 
 	/**
-	 * Get the end item of this suffix.
+	 * Get the lastElement item of this suffix.
 	 * 
-	 * @return The end item of sequence
+	 * @return The lastElement item of sequence
 	 */
 	Object getEndItem() {
 		if(isEmpty())
@@ -101,13 +101,13 @@ class Suffix<T,S extends Iterable<T>> {
 	}
 
 	/**
-	 * Increments the length of the suffix by incrementing the end position. The
+	 * Increments the length of the suffix by incrementing the lastElement position. The
 	 * effectivly moves the suffix forward, along the master sequence.
 	 */
 	void increment() {
 		end++;
 		if(end > sequence.getLength())
-			throw new IndexOutOfBoundsException("Incremented suffix beyond end of sequence");
+			throw new IndexOutOfBoundsException("Incremented suffix beyond lastElement of sequence");
 		
 	}
 
@@ -133,13 +133,13 @@ class Suffix<T,S extends Iterable<T>> {
 	}
 
 	/**
-	 * Retrieves the item the given distance from the end of the suffix.
+	 * Retrieves the item the given distance from the lastElement of the suffix.
 	 * 
 	 * @param distanceFromEnd
-	 *            The distance from the end.
-	 * @return The item the given distance from the end.
+	 *            The distance from the lastElement.
+	 * @return The item the given distance from the lastElement.
 	 * @throws IllegalArgumentException
-	 *             if the distance from end is greater than the length of the
+	 *             if the distance from lastElement is greater than the length of the
 	 *             suffix.
 	 */
 	public Object getItemXFromEnd(int distanceFromEnd) {
@@ -158,8 +158,8 @@ class Suffix<T,S extends Iterable<T>> {
 	
 	private void testStartAndEndValues(int start, int end){
 		if(start < 0 || end < 0)
-			throw new IllegalArgumentException("You cannot set a suffix start or end to less than zero.");
+			throw new IllegalArgumentException("You cannot set a suffix start or lastElement to less than zero.");
 		if(end < start)
-			throw new IllegalArgumentException("A suffix end position cannot be less than its start position.");
+			throw new IllegalArgumentException("A suffix lastElement position cannot be less than its start position.");
 	}
 }

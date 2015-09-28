@@ -93,7 +93,7 @@ public class SuffixTree<I,S extends Iterable<I>> {
 	 * Retrieves the point in the sequence for which all proceeding item have
 	 * been inserted into the tree.
 	 * 
-	 * @return The index of the current end point of tree.
+	 * @return The index of the current lastElement point of tree.
 	 */
 	int getCurrentEnd() {
 		return currentEnd;

@@ -1,10 +1,12 @@
 package com.maxgarfinkel.suffixTree;
 
+import com.suhininalex.clones.Clone;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import com.suhininalex.suffixtree.*;
 
 import static junit.framework.Assert.*;
 /**
@@ -146,6 +148,8 @@ public class TreeTest {
 
     }
 
+
+    
     public static class Token implements Comparable<Token> {
         public Integer value;
 

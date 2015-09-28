@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Represents a sequence of items. This plays the part of the string in a non
  * generic suffix tree implementation. This object automatically appends a
- * terminating item to the end of the instance which is included in all
+ * terminating item to the lastElement of the instance which is included in all
  * operations.
  * 
  * @author Max Garfinkel

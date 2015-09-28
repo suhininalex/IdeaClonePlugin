@@ -1,19 +1,17 @@
 package Clones;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.AsyncResult;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.util.concurrency.SwingWorker;
-import com.maxgarfinkel.suffixTree.CloneClass;
-import com.maxgarfinkel.suffixTree.SuffixTree;
-import com.maxgarfinkel.suffixTree.Token;
-import com.maxgarfinkel.suffixTree.TrieManager;
+import com.suhininalex.clones.Clone;
+import com.suhininalex.clones.CloneClass;
+import com.suhininalex.clones.Token;
+import com.suhininalex.suffixtree.SuffixTree;
 import org.jetbrains.annotations.NotNull;
 
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -22,15 +20,22 @@ import java.util.concurrent.Executors;
 public class CloneManager {
     private final Project project;
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private final SuffixTree<Token,Iterable<Token>>  suffixTree= new SuffixTree<Token,Iterable<Token>>();
+//    private final SuffixTree<Token,Iterable<Token>>  suffixTree= new SuffixTree<Token,Iterable<Token>>();
+
+    private final com.suhininalex.suffixtree.SuffixTree<Token> suffixTree = new SuffixTree();
 
     public CloneManager(@NotNull final Project project) {
         this.project = project;
     }
 
     public List<CloneClass> getClones(){
-        TrieManager.markFiltered(suffixTree.getRoot());
-        return TrieManager.getClones(suffixTree);
+//        TrieManager.markFiltered(suffixTree.getRoot());
+//        return TrieManager.getClones(suffixTree);
+
+        com.suhininalex.clones.CloneManager cm = new com.suhininalex.clones.CloneManager();
+        cm.tree = suffixTree;
+        cm.getAllCloneClasses();
+        return Collections.EMPTY_LIST;
     }
 
     public void showProjectClones(){
@@ -50,9 +55,11 @@ public class CloneManager {
         progressView.showAndGet();
     }
 
+
+
     private void processFiles(@NotNull final List<PsiFile> files, @NotNull final ProgressView progressView) throws InterruptedException{
         for (final PsiFile file : files) {
-            if (progressView.getStatus()== ProgressView.Status.Canceled) throw new InterruptedException("Task was canceled.");
+            if (progressView.getStatus()==ProgressView.Status.Canceled) throw new InterruptedException("Task was canceled.");
             processPsiFile(file);
             progressView.next(file.getName());
         }
@@ -62,14 +69,15 @@ public class CloneManager {
     private void processPsiFile(@NotNull final PsiFile psiFile){
         TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(ElementType.METHOD))){
-            suffixTree.add(Utils.makeTokenSequence(element, filter));
+            suffixTree.addSequence(Utils.makeTokenSequence(element, filter));
         }
     }
+
 
     private  List<PsiFile> getAllPsiJavaFiles(Project project){
         List<PsiFile> files = new LinkedList<>();
         PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());
-        getPsiJavaFiles(psiDirectory,files);
+        getPsiJavaFiles(psiDirectory, files);
         return files;
     }
 

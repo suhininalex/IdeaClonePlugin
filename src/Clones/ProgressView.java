@@ -2,20 +2,12 @@ package Clones;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.components.JBScrollPane;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.util.ui.OptionsDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 
-/**
- * Created by llama on 24.04.15.
- */
 public class ProgressView extends DialogWrapper {
 
     private final JPanel panel = new JPanel(new GridBagLayout());
@@ -23,14 +15,14 @@ public class ProgressView extends DialogWrapper {
     private final JLabel label = new JLabel();
     private volatile Status status = Status.Initializing;
 
-    private int value = -1;
-    private final int size;
+    private int progressValue = -1;
+    private final int maxProgressValue;
 
-    public ProgressView(@Nullable Project project, int size) {
+    public ProgressView(@Nullable Project project, int files) {
         super(project);
 
-        assert(size>=0);
-        this.size = size;
+        assert(files>=0);
+        this.maxProgressValue = files;
         init();
 
         setTitle("Обработка файлов");
@@ -39,7 +31,7 @@ public class ProgressView extends DialogWrapper {
 
         panel.setPreferredSize(new Dimension(250, 40));
 
-        progressBar.setMaximum(size);
+        progressBar.setMaximum(files);
         progressBar.setStringPainted(true);
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -99,14 +91,14 @@ public class ProgressView extends DialogWrapper {
     /**
      * Updating progressView like file with @param filename is processed.
      */
-    public static int maxSize=35;
+    public static int maxStringSize = 35;
     public void next(@NotNull final String filename){
         EventQueue.invokeLater(() -> {
             /* Обрезание строки */
-            String string = (filename.length()>maxSize) ? filename.substring(0,maxSize)+"..." : filename;
+            String string = (filename.length()> maxStringSize) ? filename.substring(0, maxStringSize)+"..." : filename;
             label.setText(string);
-            progressBar.setValue(value++);
-            progressBar.setString(value + "/" + size);
+            progressBar.setValue(progressValue++);
+            progressBar.setString(progressValue + "/" + maxProgressValue);
         });
     }
 

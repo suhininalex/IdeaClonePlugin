@@ -15,6 +15,10 @@ import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorAction;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+
+import com.suhininalex.suffixtree.*;
+import com.suhininalex.suffixtree.*;
+import com.suhininalex.suffixtree.SuffixTree;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.List;
@@ -35,6 +39,7 @@ public class CopyLineUpAction extends EditorAction {
         @Override
         protected void doExecute(Editor editor, Caret caret, DataContext dataContext) {
             Project project = editor.getProject();
+
             CloneManager cloneManager = new CloneManager(project);
             cloneManager.showProjectClones();
 

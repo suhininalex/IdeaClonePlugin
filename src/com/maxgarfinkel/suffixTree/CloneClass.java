@@ -1,5 +1,7 @@
 package com.maxgarfinkel.suffixTree;
 
+import com.suhininalex.clones.Clone;
+import com.suhininalex.clones.Token;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -50,11 +52,11 @@ public class CloneClass {
     }
 
     @NotNull
-    public List<TokenRange> getClones(){
-        List<TokenRange> clones = new LinkedList<TokenRange>();
+    public List<Clone> getClones(){
+        List<Clone> clones = new LinkedList<Clone>();
         for (int start : startOfClones) {
             clones.add(
-                    new TokenRange(
+                    new Clone(
                             (Token) sequence.get(start),
                             (Token) sequence.get(start+length-1)
                     )

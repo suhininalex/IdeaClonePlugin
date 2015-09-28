@@ -110,9 +110,9 @@ public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
     }
 
 	/**
-	 * Gets the index of the true end of the edge.
+	 * Gets the index of the true lastElement of the edge.
 	 * 
-	 * @return The index of the end item, of this edge, in the original
+	 * @return The index of the lastElement item, of this edge, in the original
 	 *         sequence.
 	 */
 	int getEnd() {
@@ -203,7 +203,7 @@ public class Edge<T, S extends Iterable<T>> implements Iterable<T> {
 	/**
 	 * Retrieves an iterator that steps over the items in this edge.
 	 * 
-	 * @return An iterator that walks this edge up to the end or terminating
+	 * @return An iterator that walks this edge up to the lastElement or terminating
 	 *         node.
 	 */
 	public Iterator<T> iterator() {

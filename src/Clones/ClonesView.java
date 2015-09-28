@@ -6,8 +6,8 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
-import com.maxgarfinkel.suffixTree.CloneClass;
-import com.maxgarfinkel.suffixTree.TokenRange;
+import com.suhininalex.clones.Clone;
+import com.suhininalex.clones.CloneClass;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -35,9 +35,9 @@ public final class ClonesView extends Tree {
     }
 
     private void add(CloneClass cloneClass) {
-        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.getLength() + " tokens and " + cloneClass.getClones().size() + " duplicates.");
+        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.size() + " tokens and " + cloneClass.size() + " duplicates.");
         root.add(classNode);
-        for (TokenRange range : cloneClass.getClones()) {
+        for (Clone range : cloneClass.getClones()) {
             JTreeCloneNode clone = new JTreeCloneNode(range);
             classNode.add(clone);
         }

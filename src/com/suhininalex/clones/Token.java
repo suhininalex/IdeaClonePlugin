@@ -1,24 +1,23 @@
-package com.maxgarfinkel.suffixTree;
+package com.suhininalex.clones;
 
 import com.intellij.psi.PsiElement;
+import com.maxgarfinkel.suffixTree.Method;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by llama on 25.02.15.
- */
 public class Token implements Comparable<Token> {
 
     /**
      * Position in code
      */
-    public final PsiElement source;
+    public PsiElement source;
 
     /**
      * Token id
      */
-    public final Short value;
-    private final Method method;
-    private final int position;
+    //TODO finals
+    public  Short value;
+    private  Method method;
+    private  int position;
 
     public int getPosition() {
         return position;
@@ -29,6 +28,12 @@ public class Token implements Comparable<Token> {
         this.position = position;
         this.method = method;
         value = source.getNode().getElementType().getIndex();
+    }
+
+    //TODO delete this
+    public Token(int position, short value){
+        this.position = position;
+        this.value = value;
     }
 
     @NotNull
