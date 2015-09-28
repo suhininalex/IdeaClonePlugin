@@ -25,7 +25,7 @@ public class ProgressView extends DialogWrapper {
         this.maxProgressValue = files;
         init();
 
-        setTitle("Обработка файлов");
+        setTitle("Locate clones...");
         setModal(true);
         setResizable(false);
 

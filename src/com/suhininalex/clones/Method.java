@@ -1,6 +1,4 @@
-package com.maxgarfinkel.suffixTree;
-
-import com.suhininalex.clones.Token;
+package com.suhininalex.clones;
 
 import java.util.Collections;
 import java.util.List;

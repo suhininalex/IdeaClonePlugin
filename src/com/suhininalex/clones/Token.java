@@ -1,7 +1,6 @@
 package com.suhininalex.clones;
 
 import com.intellij.psi.PsiElement;
-import com.maxgarfinkel.suffixTree.Method;
 import org.jetbrains.annotations.NotNull;
 
 public class Token implements Comparable<Token> {

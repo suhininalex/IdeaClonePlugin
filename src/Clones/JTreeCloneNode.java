@@ -7,9 +7,6 @@ import com.suhininalex.clones.Clone;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/**
- * Created by llama on 22.04.15.
- */
 public class JTreeCloneNode extends DefaultMutableTreeNode {
     private final Clone clone;
 

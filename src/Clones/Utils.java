@@ -4,8 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.JavaStubElementTypes;
 import com.intellij.psi.tree.TokenSet;
-import com.maxgarfinkel.suffixTree.SuffixTree;
-import com.maxgarfinkel.suffixTree.Method;
+import com.suhininalex.clones.Method;
 import com.suhininalex.clones.Token;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,17 +70,6 @@ public class Utils {
         try {
             PrintWriter pw = new PrintWriter(file);
             pw.println(string);
-            pw.close();
-        } catch (IOException e){
-            throw new RuntimeException("Cannot create file: "+filename);
-        }
-    }
-
-    public static void printTreeToFile(SuffixTree<Token, Iterable<Token>> trie, String filename){
-        File file = new File("/home/llama/"+filename);
-        try {
-            PrintWriter pw = new PrintWriter(file);
-            pw.println(trie);
             pw.close();
         } catch (IOException e){
             throw new RuntimeException("Cannot create file: "+filename);
