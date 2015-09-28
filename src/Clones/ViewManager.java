@@ -4,48 +4,20 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.suhininalex.clones.Clone;
-import com.suhininalex.clones.CloneClass;
-import com.suhininalex.clones.Token;
-import com.suhininalex.clones.clonefilter.CloneClassFilter;
-import com.suhininalex.clones.clonefilter.SubclassFilter;
-import com.suhininalex.suffixtree.SuffixTree;
-import org.jetbrains.annotations.NotNull;
+import com.suhininalex.clones.CloneManager;
 
-
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class CloneManager {
+public class ViewManager {
     private final Project project;
     private final Executor executor = Executors.newSingleThreadExecutor();
-//    private final SuffixTree<Token,Iterable<Token>>  suffixTree= new SuffixTree<Token,Iterable<Token>>();
+    private  CloneManager cloneManager = new CloneManager();
 
-    private final com.suhininalex.suffixtree.SuffixTree<Token> suffixTree = new SuffixTree();
-
-    public CloneManager(@NotNull final Project project) {
+    public ViewManager(final Project project) {
         this.project = project;
-    }
-
-    public List<CloneClass> getClones(){
-//        TrieManager.markFiltered(suffixTree.getRoot());
-//        return TrieManager.getClones(suffixTree);
-
-        com.suhininalex.clones.CloneManager cm = new com.suhininalex.clones.CloneManager();
-        cm.tree = suffixTree;
-        List<CloneClass> cls = cm.getAllCloneClasses();
-        CloneClassFilter filter = new SubclassFilter(cls);
-
-        List<CloneClass> cl = new LinkedList<>();
-        for (CloneClass cloneClass : cls) {
-            if (filter.isAllowed(cloneClass))
-                cl.add(cloneClass);
-        }
-        return cl;
-//        return Collections.EMPTY_LIST;
     }
 
     public void showProjectClones(){
@@ -55,7 +27,7 @@ public class CloneManager {
             try {
                 processFiles(files, progressView);
                 progressView.setAsProcessing();
-                ClonesView.showClonesData(project, getClones());
+                ClonesView.showClonesData(project, cloneManager.getFilteredClones());
                 progressView.done();
             } catch (InterruptedException e) {
                 /* Canceled! */
@@ -65,9 +37,7 @@ public class CloneManager {
         progressView.showAndGet();
     }
 
-
-
-    private void processFiles(@NotNull final List<PsiFile> files, @NotNull final ProgressView progressView) throws InterruptedException{
+    private void processFiles(List<PsiFile> files, ProgressView progressView) throws InterruptedException{
         for (final PsiFile file : files) {
             if (progressView.getStatus()==ProgressView.Status.Canceled) throw new InterruptedException("Task was canceled.");
             processPsiFile(file);
@@ -75,14 +45,12 @@ public class CloneManager {
         }
     }
 
-
-    private void processPsiFile(@NotNull final PsiFile psiFile){
+    private void processPsiFile(PsiFile psiFile){
         TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(ElementType.METHOD))){
-            suffixTree.addSequence(Utils.makeTokenSequence(element, filter));
+            cloneManager.addMethodToTree(Utils.makeTokenSequence(element, filter));
         }
     }
-
 
     private  List<PsiFile> getAllPsiJavaFiles(Project project){
         List<PsiFile> files = new LinkedList<>();
@@ -92,7 +60,7 @@ public class CloneManager {
     }
 
     /* Auxiliary for getAllJavaFiles */
-    private void getPsiJavaFiles(@NotNull PsiDirectory psiDirectory, List<PsiFile> accumulator){
+    private void getPsiJavaFiles(PsiDirectory psiDirectory, List<PsiFile> accumulator){
         for (PsiFile file : psiDirectory.getFiles()){
             if (file instanceof PsiJavaFile)
                 accumulator.add(file);
@@ -101,7 +69,5 @@ public class CloneManager {
             getPsiJavaFiles(dir, accumulator);
         }
     }
-
-
 
 }

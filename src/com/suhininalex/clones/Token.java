@@ -15,17 +15,15 @@ public class Token implements Comparable<Token> {
      */
     //TODO finals
     public  Short value;
-    private  Method method;
     private  int position;
 
     public int getPosition() {
         return position;
     }
 
-    public Token(@NotNull final PsiElement source,@NotNull final Method method, int position) {
+    public Token(PsiElement source, int position) {
         this.source = source;
         this.position = position;
-        this.method = method;
         value = source.getNode().getElementType().getIndex();
     }
 
@@ -33,11 +31,6 @@ public class Token implements Comparable<Token> {
     public Token(int position, short value){
         this.position = position;
         this.value = value;
-    }
-
-    @NotNull
-    public Method getMethod(){
-        return method;
     }
 
     @NotNull
