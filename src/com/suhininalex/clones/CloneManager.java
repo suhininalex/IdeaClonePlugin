@@ -14,8 +14,7 @@ import java.util.*;
 
 public class CloneManager {
 
-    private final SuffixTree<Token> suffixTree = new SuffixTree<>();
-    private final Map<String, Long> methodIds = new HashMap<>();
+    public final Map<String, Long> methodIds = new HashMap<>();
 
     final int minCloneLength = 70;
 
@@ -31,7 +30,7 @@ public class CloneManager {
         Long id = methodIds.get(Utils.getMethodId(method));
         if (id==null) return;
         methodIds.remove(method);
-        suffixTree.removeSequence(id);
+        tree.removeSequence(id);
     }
 
     public synchronized void updateMethod(PsiMethod method){
@@ -88,21 +87,28 @@ public class CloneManager {
             System.out.println("[SEVERE] " + methodIds.keySet());
             throw new IllegalStateException("There are no such method!");
         }
-        Node lastNode = tree.getLastSequenceNode(id);
+        List list = tree.getSequence(id);
+//        System.out.println("Method: " + Utils.getMethodId(method)+list.size());
+//        Node lastNode = tree.getLastSequenceNode(id);
+//        CloneClass last = new CloneClass(lastNode);
+//        System.out.println("Last node length: "+last.getLength());
+//        System.out.println("tree: "+lastNode.subTreeToString());
+//        System.out.println("id: "+id);
         List<CloneClass> clones = new LinkedList<>();
 
-        while (lastNode!=null) {
-            Node branchNode = lastNode;
+        for (Node branchNode : tree.getAllLastSequenceNodes(id)) {
             while (branchNode.getParentEdge() != null) {
                 if (visitedNodes.getOrDefault(branchNode,false))
                     break;
                 visitedNodes.put(branchNode, true);
                 CloneClass cloneClass = new CloneClass(branchNode);
-                if (!cloneClass.isEmpty() && cloneClass.getLength() > minCloneLength)
+//                System.out.println("trying to add: " + cloneClass.isEmpty() + " | " + cloneClass.getLength());
+                if (!cloneClass.isEmpty() && cloneClass.getLength() > minCloneLength) {
                     clones.add(cloneClass);
+//                    System.out.println("success!");
+                }
                 branchNode = branchNode.getParentEdge().getParent();
             }
-            lastNode = lastNode.getSuffixLink();
         }
         return clones;
     }

@@ -4,6 +4,7 @@ import com.intellij.codeInspection.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.suhininalex.clones.CloneClass;
+import com.suhininalex.clones.CloneManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +66,7 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
         public void visitMethod(PsiMethod method) {
 
 //            System.out.println("In method: " + Utils.getMethodId(method));
+            viewManager.cloneManager.updateMethod(method);
             List<CloneClass> clones = getViewManager(method.getProject()).cloneManager.getMethodFilteredClones(method);
             if (!clones.isEmpty())
                 holder.registerProblem(method, "Atatata problem!", new MyQuickFix());
@@ -82,7 +84,8 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
             PsiMethod method = (PsiMethod)descriptor.getPsiElement();
-            List<CloneClass> clones =  getViewManager(project).cloneManager.getMethodFilteredClones(method);
+            CloneManager cm = getViewManager(project).cloneManager;
+            List<CloneClass> clones =  cm.getMethodFilteredClones(method);
             EventQueue.invokeLater(() -> ClonesView.showClonesData(project, clones));
         }
 

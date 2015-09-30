@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/lib/SuffixTree.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../SuffixTree/src" />
+    </SOURCES>
   </library>
 </component>

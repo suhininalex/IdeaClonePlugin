@@ -19,7 +19,6 @@ public class ViewManager {
 
     public ViewManager(final Project project) {
         this.project = project;
-        System.out.println("[SEVERE] View created!");
     }
 
     public void showProjectClones(){
