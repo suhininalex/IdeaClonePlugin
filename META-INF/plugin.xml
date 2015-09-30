@@ -42,4 +42,10 @@
           <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
       </action>
   </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
+                         groupBundle="messages.InspectionsBundle" enabledByDefault="true"
+                         level="WARNING" implementationClass="Clones.InspectionProvider"/>
+    </extensions>
 </idea-plugin>

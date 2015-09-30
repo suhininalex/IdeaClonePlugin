@@ -14,6 +14,11 @@ import java.util.*;
 
 public class Utils {
 
+    //TODO обеспечить уникальность
+    public static String getMethodId(PsiMethod method){
+        return method.getContainingClass().getName() + "." + method.getName();
+    }
+
     public static List<PsiElement> findTokens(@NotNull PsiElement root, @NotNull TokenSet tokenSet){
         List<PsiElement> psiList = new LinkedList<PsiElement>();
         findTokens(psiList,root,tokenSet);

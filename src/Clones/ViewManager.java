@@ -12,12 +12,14 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ViewManager {
+
     private final Project project;
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private  CloneManager cloneManager = new CloneManager();
+    public  final CloneManager cloneManager = new CloneManager();
 
     public ViewManager(final Project project) {
         this.project = project;
+        System.out.println("[SEVERE] View created!");
     }
 
     public void showProjectClones(){
@@ -27,7 +29,8 @@ public class ViewManager {
             try {
                 processFiles(files, progressView);
                 progressView.setAsProcessing();
-                ClonesView.showClonesData(project, cloneManager.getFilteredClones());
+                ClonesView.showClonesData(project, cloneManager.getAllFilteredClones());
+                InspectionProvider.visited = true;
                 progressView.done();
             } catch (InterruptedException e) {
                 /* Canceled! */
@@ -36,6 +39,7 @@ public class ViewManager {
         executor.execute(Utils.wrapAsReadTask(task));
         progressView.showAndGet();
     }
+
 
     private void processFiles(List<PsiFile> files, ProgressView progressView) throws InterruptedException{
         for (final PsiFile file : files) {
@@ -46,9 +50,9 @@ public class ViewManager {
     }
 
     private void processPsiFile(PsiFile psiFile){
-        TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON);
+
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(ElementType.METHOD))){
-            cloneManager.addMethodToTree(Utils.makeTokenSequence(element, filter));
+            cloneManager.addMethod((PsiMethod)element);
         }
     }
 

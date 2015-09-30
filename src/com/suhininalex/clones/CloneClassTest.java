@@ -8,8 +8,6 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class CloneClassTest {
 
 
@@ -39,22 +37,5 @@ public class CloneClassTest {
         System.out.println(sequence);
         System.out.println(sequence2);
         System.out.println(tree.toString());
-
-        System.out.println("\n ---------------");
-
-        Node node = null;
-        for (Edge edge :tree.getRoot().getEdges()) {
-            if (edge.getEnd()>0 && edge.getTerminal()!=null)
-                node = edge.getTerminal();
-        }
-
-        CloneManager cm = new CloneManager();
-        cm.tree = tree;
-
-        for (CloneClass cloneClass : cm.getAllCloneClasses()){
-            for (Clone clone : cloneClass.getClones()) {
-                System.out.println(clone.firstElement.getPosition() + " | " + clone.lastElement.getPosition());
-            }
-        }
     }
 }
