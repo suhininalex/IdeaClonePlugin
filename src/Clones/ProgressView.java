@@ -23,34 +23,37 @@ public class ProgressView extends DialogWrapper {
 
         assert(files>=0);
         this.maxProgressValue = files;
-        init();
 
-        setTitle("Locate Clones...");
-        setModal(true);
-        setResizable(false);
+        EventQueue.invokeLater(() -> {
+            init();
 
-        panel.setPreferredSize(new Dimension(250, 40));
+            setTitle("Locate Clones...");
+            setModal(true);
+            setResizable(false);
 
-        progressBar.setMaximum(files);
-        progressBar.setStringPainted(true);
+            panel.setPreferredSize(new Dimension(250, 40));
 
-        GridBagConstraints constraints = new GridBagConstraints();
+            progressBar.setMaximum(files);
+            progressBar.setStringPainted(true);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        panel.add(progressBar, constraints);
+            GridBagConstraints constraints = new GridBagConstraints();
 
-        constraints.gridy = 1;
-        panel.add(label, constraints);
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1.0;
+            panel.add(progressBar, constraints);
 
-        next("Preparing files...");
-        status = Status.Processing;
+            constraints.gridy = 1;
+            panel.add(label, constraints);
 
-        DoNotAskOption option = new PropertyDoNotAskOption("cancel");
+            next("Preparing files...");
+            status = Status.Processing;
 
-        this.setDoNotAskOption(option);
+            DoNotAskOption option = new PropertyDoNotAskOption("cancel");
+
+            this.setDoNotAskOption(option);
+        });
     }
 
     public Status getStatus(){
@@ -66,7 +69,6 @@ public class ProgressView extends DialogWrapper {
     public void done(){
         EventQueue.invokeLater(this::doOKAction);
     }
-
 
     @Override
     public void doCancelAction() {

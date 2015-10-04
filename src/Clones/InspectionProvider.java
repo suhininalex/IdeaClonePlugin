@@ -14,13 +14,16 @@ import java.util.List;
 
 public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
-    static AllManager allManager;
+    static volatile AllManager allManager;
     static ProblemsHolder holder;
 
 
 
-    synchronized  static public AllManager getViewManager(Project project){
-        if (allManager ==null) allManager = new AllManager(project);
+    synchronized static public AllManager getViewManager(Project project){
+        if (allManager==null) {
+            allManager = new AllManager(project);
+            allManager.showProjectClones();
+        }
         return allManager;
     }
 
@@ -28,34 +31,30 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
     @NotNull
     @Override
     public String getGroupDisplayName() {
-        return "Clones!";
+        return "Analyze";
     }
 
     @NotNull
     public String getShortName() {
-        return "CloneDetection";
+        return "Clone detection";
     }
 
     @Nls
     @NotNull
     @Override
     public String getDisplayName() {
-        return "Suhinin clone detection tool!";
+        return "Clone detection";
     }
 
 
-    static volatile boolean visited = false;
 
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        if (!visited) {
             synchronized (InspectionProvider.class) {
-                if (!visited)
-                    EventQueue.invokeLater(() -> getViewManager(holder.getProject()).showProjectClones());
+//                    EventQueue.invokeLater(() -> getViewManager(holder.getProject()).showProjectClones());
             }
-        }
-        while (!visited);
+        getViewManager(holder.getProject());
         this.holder = holder;
         return new MyVisitor();
     }
@@ -79,7 +78,7 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
         @NotNull
         public String getName() {
-            return "Clone detected!";
+            return "Show all clone classes";
         }
 
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {

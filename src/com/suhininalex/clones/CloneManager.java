@@ -11,6 +11,9 @@ import com.suhininalex.suffixtree.Node;
 import com.suhininalex.suffixtree.SuffixTree;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class CloneManager {
@@ -18,27 +21,75 @@ public class CloneManager {
     final Map<String, Long> methodIds = new HashMap<>();
     final int minCloneLength;
     final SuffixTree<Token> tree = new SuffixTree<>();
+    final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     public CloneManager(int minCloneLength) {
         this.minCloneLength = minCloneLength;
     }
 
-    public synchronized void addMethod(PsiMethod method){
-        TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON, ElementType.PARAMETER_LIST);
+    //TODO wrapper?
+    public void addMethod(PsiMethod method){
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            addMethodUnlocked(method);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void removeMethod(PsiMethod method){
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            removeMethodUnlocked(method);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<CloneClass> getAllFilteredClones(){
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return getFilteredClones(getAllCloneClasses());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<CloneClass> getMethodFilteredClones(PsiMethod method){
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return getFilteredClones(getAllMethodClones(method));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void updateMethod(PsiMethod method){
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            removeMethodUnlocked(method);
+            addMethodUnlocked(method);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void addMethodUnlocked(PsiMethod method){
+        TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.PARAMETER_LIST);
         long id = tree.addSequence(Utils.makeTokenSequence(method, filter));
         methodIds.put(Utils.getMethodId(method), id);
     }
 
-    public synchronized void removeMethod(PsiMethod method){
+    private void removeMethodUnlocked(PsiMethod method){
         Long id = methodIds.get(Utils.getMethodId(method));
         if (id==null) throw new IllegalArgumentException("There are no such method!");
         methodIds.remove(method);
         tree.removeSequence(id);
-    }
-
-    public synchronized void updateMethod(PsiMethod method){
-        removeMethod(method);
-        addMethod(method);
     }
 
     private List<CloneClass> getAllCloneClasses(){
@@ -61,18 +112,6 @@ public class CloneManager {
 
     }
 
-    public synchronized List<CloneClass> getAllFilteredClones(){
-        return getFilteredClones(getAllCloneClasses());
-    }
-
-    public synchronized List<CloneClass> getMethodFilteredClones(PsiMethod method){
-        return getFilteredClones(getAllMethodClones(method));
-    }
-
-    /**
-     * @param cloneClasses will be corrupted!
-     * @return filtered cloneClasses
-     */
     private List<CloneClass> getFilteredClones(List<CloneClass> cloneClasses){
         CloneClassFilter subclassFilter = new SubclassFilter(cloneClasses);
         return cloneClasses.stream()

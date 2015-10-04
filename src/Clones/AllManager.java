@@ -5,11 +5,15 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.suhininalex.clones.CloneManager;
+import sun.awt.Mutex;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AllManager {
 
@@ -23,20 +27,31 @@ public class AllManager {
 
     public void showProjectClones(){
         final List<PsiFile> files = getAllPsiJavaFiles(project);
+        final Semaphore semaphore = new Semaphore(0);
         final ProgressView progressView = new ProgressView(project, files.size());
         Runnable task = () -> {
             try {
                 processFiles(files, progressView);
                 progressView.setAsProcessing();
                 ClonesView.showClonesData(project, cloneManager.getAllFilteredClones());
-                InspectionProvider.visited = true;
                 progressView.done();
             } catch (InterruptedException e) {
                 /* Canceled! */
+            } finally {
+                semaphore.release();
             }
         };
         executor.execute(Utils.wrapAsReadTask(task));
         progressView.showAndGet();
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+    public void initialize(){
+
     }
 
 
