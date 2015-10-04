@@ -1,4 +1,4 @@
-import Clones.ViewManager;
+import Clones.AllManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
@@ -20,8 +20,8 @@ public class CopyLineUpAction extends EditorAction {
         protected void doExecute(Editor editor, Caret caret, DataContext dataContext) {
             Project project = editor.getProject();
 
-            ViewManager viewManager = new ViewManager(project);
-            viewManager.showProjectClones();
+            AllManager allManager = new AllManager(project);
+            allManager.showProjectClones();
         }
 
     }

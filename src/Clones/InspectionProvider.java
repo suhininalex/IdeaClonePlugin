@@ -14,14 +14,14 @@ import java.util.List;
 
 public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
-    static ViewManager viewManager;
+    static AllManager allManager;
     static ProblemsHolder holder;
 
 
 
-    synchronized  static public ViewManager getViewManager(Project project){
-        if (viewManager==null) viewManager = new ViewManager(project);
-        return viewManager;
+    synchronized  static public AllManager getViewManager(Project project){
+        if (allManager ==null) allManager = new AllManager(project);
+        return allManager;
     }
 
     @Nls
@@ -66,7 +66,7 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
         public void visitMethod(PsiMethod method) {
 
 //            System.out.println("In method: " + Utils.getMethodId(method));
-            viewManager.cloneManager.updateMethod(method);
+            allManager.cloneManager.updateMethod(method);
             List<CloneClass> clones = getViewManager(method.getProject()).cloneManager.getMethodFilteredClones(method);
             if (!clones.isEmpty())
                 holder.registerProblem(method, "Atatata problem!", new MyQuickFix());

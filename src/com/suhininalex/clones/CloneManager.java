@@ -11,14 +11,17 @@ import com.suhininalex.suffixtree.Node;
 import com.suhininalex.suffixtree.SuffixTree;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CloneManager {
 
-    public final Map<String, Long> methodIds = new HashMap<>();
+    final Map<String, Long> methodIds = new HashMap<>();
+    final int minCloneLength;
+    final SuffixTree<Token> tree = new SuffixTree<>();
 
-    final int minCloneLength = 70;
-
-    public final SuffixTree<Token> tree = new SuffixTree<>();
+    public CloneManager(int minCloneLength) {
+        this.minCloneLength = minCloneLength;
+    }
 
     public synchronized void addMethod(PsiMethod method){
         TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE,ElementType.SEMICOLON, ElementType.PARAMETER_LIST);
@@ -28,7 +31,7 @@ public class CloneManager {
 
     public synchronized void removeMethod(PsiMethod method){
         Long id = methodIds.get(Utils.getMethodId(method));
-        if (id==null) return;
+        if (id==null) throw new IllegalArgumentException("There are no such method!");
         methodIds.remove(method);
         tree.removeSequence(id);
     }
@@ -38,74 +41,58 @@ public class CloneManager {
         addMethod(method);
     }
 
-    public synchronized List<CloneClass> getAllClones(){
-        List<CloneClass> list = new LinkedList<>();
-        getAllClonesAUX(tree.getRoot(), list);
-        return list;
-    }
+    private List<CloneClass> getAllCloneClasses(){
+        List<CloneClass> result = new LinkedList<>();
+        Stack<Node> stack = new Stack<>();
+        stack.push(tree.getRoot());
 
-    private synchronized void getAllClonesAUX(Node node, List<CloneClass> accumulator){
-        for (Edge edge : node.getEdges()){
-            if (edge.getTerminal()!=null) {
-                CloneClass cloneClass = new CloneClass(edge.getTerminal());
-                if (!cloneClass.isEmpty() && cloneClass.getLength()>minCloneLength)
-                    accumulator.add(cloneClass);
-                getAllClonesAUX(edge.getTerminal(), accumulator);
-            }
+        while (!stack.isEmpty()){
+            stack.pop().getEdges().stream()
+                .map(Edge::getTerminal)
+                .filter(terminal -> terminal != null)
+                .forEach(terminal -> {
+                    stack.push(terminal);
+                    CloneClass cloneClass = new CloneClass(terminal);
+                    if (!cloneClass.isEmpty() && cloneClass.getLength() > minCloneLength)
+                        result.add(cloneClass);
+                });
         }
+        return result;
+
     }
 
     public synchronized List<CloneClass> getAllFilteredClones(){
-        List<CloneClass> allClones = getAllClones();
-
-        CloneClassFilter subclassFilter = new SubclassFilter(allClones);
-        List<CloneClass> filteredClones = new LinkedList<>();
-        for (CloneClass cloneClass : allClones) {
-            if (subclassFilter.isAllowed(cloneClass))
-                filteredClones.add(cloneClass);
-        }
-        return filteredClones;
+        return getFilteredClones(getAllCloneClasses());
     }
 
     public synchronized List<CloneClass> getMethodFilteredClones(PsiMethod method){
-        List<CloneClass> allClones = getAllMethodClones(method);
-
-        CloneClassFilter subclassFilter = new SubclassFilter(allClones);
-        List<CloneClass> filteredClones = new LinkedList<>();
-        for (CloneClass cloneClass : allClones) {
-            if (subclassFilter.isAllowed(cloneClass))
-                filteredClones.add(cloneClass);
-        }
-        return filteredClones;
+        return getFilteredClones(getAllMethodClones(method));
     }
 
-    public synchronized List<CloneClass> getAllMethodClones(PsiMethod method){
-        Map<Node, Boolean> visitedNodes = new IdentityHashMap<>();
+    /**
+     * @param cloneClasses will be corrupted!
+     * @return filtered cloneClasses
+     */
+    private List<CloneClass> getFilteredClones(List<CloneClass> cloneClasses){
+        CloneClassFilter subclassFilter = new SubclassFilter(cloneClasses);
+        return cloneClasses.stream()
+                .filter(subclassFilter::isAllowed)
+                .collect(Collectors.toList());
+    }
 
+    private List<CloneClass> getAllMethodClones(PsiMethod method){
+        Map<Node, Boolean> visitedNodes = new IdentityHashMap<>();
         Long id = methodIds.get(Utils.getMethodId(method));
         if (id==null) {
-            System.out.println("[SEVERE] " + methodIds.keySet());
             throw new IllegalStateException("There are no such method!");
         }
-        List list = tree.getSequence(id);
-//        System.out.println("Method: " + Utils.getMethodId(method)+list.size());
-//        Node lastNode = tree.getLastSequenceNode(id);
-//        CloneClass last = new CloneClass(lastNode);
-//        System.out.println("Last node length: "+last.getLength());
-//        System.out.println("tree: "+lastNode.subTreeToString());
-//        System.out.println("id: "+id);
         List<CloneClass> clones = new LinkedList<>();
-
         for (Node branchNode : tree.getAllLastSequenceNodes(id)) {
-            while (branchNode.getParentEdge() != null) {
-                if (visitedNodes.getOrDefault(branchNode,false))
-                    break;
+            while (branchNode.getParentEdge()!=null && visitedNodes.get(branchNode)==null) {
                 visitedNodes.put(branchNode, true);
                 CloneClass cloneClass = new CloneClass(branchNode);
-//                System.out.println("trying to add: " + cloneClass.isEmpty() + " | " + cloneClass.getLength());
                 if (!cloneClass.isEmpty() && cloneClass.getLength() > minCloneLength) {
                     clones.add(cloneClass);
-//                    System.out.println("success!");
                 }
                 branchNode = branchNode.getParentEdge().getParent();
             }

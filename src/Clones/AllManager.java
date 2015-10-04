@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ViewManager {
+public class AllManager {
 
     private final Project project;
     private final Executor executor = Executors.newSingleThreadExecutor();
-    public  final CloneManager cloneManager = new CloneManager();
+    public  final CloneManager cloneManager = new CloneManager(70);
 
-    public ViewManager(final Project project) {
+    public AllManager(final Project project) {
         this.project = project;
     }
 
