@@ -5,35 +5,40 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.suhininalex.clones.CloneManager;
-import sun.awt.Mutex;
 
+import java.awt.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class AllManager {
+public class ProjectClonesInitializer {
 
-    private final Project project;
-    private final Executor executor = Executors.newSingleThreadExecutor();
-    public  final CloneManager cloneManager = new CloneManager(70);
+    private static final Map<Project, CloneManager> map = new HashMap<>();
 
-    public AllManager(final Project project) {
-        this.project = project;
+    //TODO check this!
+    public synchronized static CloneManager getInstance(Project project){
+        CloneManager cloneManager = map.get(project);
+        if (cloneManager!=null) return cloneManager;
+        cloneManager = initializeCloneManager(project);
+        map.put(project, cloneManager);
+        return cloneManager;
     }
 
-    public void showProjectClones(){
-        final List<PsiFile> files = getAllPsiJavaFiles(project);
-        final Semaphore semaphore = new Semaphore(0);
-        final ProgressView progressView = new ProgressView(project, files.size());
+    public static CloneManager initializeCloneManager(Project project){
+        CloneManager cloneManager = new CloneManager(70);
+        Executor executor = Executors.newSingleThreadExecutor();
+        Semaphore semaphore = new Semaphore(0);
+
+        List<PsiFile> files = getAllPsiJavaFiles(project);
+        ProgressView progressView = new ProgressView(project, files.size());
         Runnable task = () -> {
             try {
-                processFiles(files, progressView);
+                processFiles(cloneManager, files, progressView);
                 progressView.setAsProcessing();
-                ClonesView.showClonesData(project, cloneManager.getAllFilteredClones());
                 progressView.done();
             } catch (InterruptedException e) {
                 /* Canceled! */
@@ -42,35 +47,30 @@ public class AllManager {
             }
         };
         executor.execute(Utils.wrapAsReadTask(task));
-        progressView.showAndGet();
+        EventQueue.invokeLater(progressView::showAndGet);
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
-
+            throw new IllegalStateException("Illegal state of clones due interruption.");
         }
+        return cloneManager;
     }
 
-    public void initialize(){
-
-    }
-
-
-    private void processFiles(List<PsiFile> files, ProgressView progressView) throws InterruptedException{
+    private static void processFiles(CloneManager cloneManager, List<PsiFile> files, ProgressView progressView) throws InterruptedException{
         for (final PsiFile file : files) {
             if (progressView.getStatus()==ProgressView.Status.Canceled) throw new InterruptedException("Task was canceled.");
-            processPsiFile(file);
+            processPsiFile(cloneManager, file);
             progressView.next(file.getName());
         }
     }
 
-    private void processPsiFile(PsiFile psiFile){
-
+    private static void processPsiFile(CloneManager cloneManager, PsiFile psiFile){
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(ElementType.METHOD))){
             cloneManager.addMethod((PsiMethod)element);
         }
     }
 
-    private  List<PsiFile> getAllPsiJavaFiles(Project project){
+    private static  List<PsiFile> getAllPsiJavaFiles(Project project){
         List<PsiFile> files = new LinkedList<>();
         PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());
         getPsiJavaFiles(psiDirectory, files);
@@ -78,7 +78,7 @@ public class AllManager {
     }
 
     /* Auxiliary for getAllJavaFiles */
-    private void getPsiJavaFiles(PsiDirectory psiDirectory, List<PsiFile> accumulator){
+    private static void getPsiJavaFiles(PsiDirectory psiDirectory, List<PsiFile> accumulator){
         for (PsiFile file : psiDirectory.getFiles()){
             if (file instanceof PsiJavaFile)
                 accumulator.add(file);

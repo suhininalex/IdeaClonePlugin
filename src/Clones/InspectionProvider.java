@@ -2,6 +2,7 @@ package Clones;
 
 import com.intellij.codeInspection.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.suhininalex.clones.CloneClass;
 import com.suhininalex.clones.CloneManager;
@@ -14,18 +15,7 @@ import java.util.List;
 
 public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
-    static volatile AllManager allManager;
     static ProblemsHolder holder;
-
-
-
-    synchronized static public AllManager getViewManager(Project project){
-        if (allManager==null) {
-            allManager = new AllManager(project);
-            allManager.showProjectClones();
-        }
-        return allManager;
-    }
 
     @Nls
     @NotNull
@@ -36,7 +26,7 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
 
     @NotNull
     public String getShortName() {
-        return "Clone detection";
+        return "CloneDetection";
     }
 
     @Nls
@@ -46,51 +36,51 @@ public class InspectionProvider extends BaseJavaLocalInspectionTool {
         return "Clone detection";
     }
 
-
-
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-            synchronized (InspectionProvider.class) {
-//                    EventQueue.invokeLater(() -> getViewManager(holder.getProject()).showProjectClones());
-            }
-        getViewManager(holder.getProject());
         this.holder = holder;
-        return new MyVisitor();
+        return new CloneInspectionVisitor();
     }
 
-    private static class MyVisitor extends JavaElementVisitor {
+    private static class CloneInspectionVisitor extends JavaElementVisitor {
 
+        //TODO clones highlight & method removing!
         @Override
         public void visitMethod(PsiMethod method) {
-
-//            System.out.println("In method: " + Utils.getMethodId(method));
-            allManager.cloneManager.updateMethod(method);
-            List<CloneClass> clones = getViewManager(method.getProject()).cloneManager.getMethodFilteredClones(method);
-            if (!clones.isEmpty())
-                holder.registerProblem(method, "Atatata problem!", new MyQuickFix());
+            CloneManager cloneManager = ProjectClonesInitializer.getInstance(method.getProject());
+            cloneManager.updateMethod(method);
+            List<CloneClass> clones = cloneManager.getMethodFilteredClones(method);
+            if (!clones.isEmpty()) {
+                TextRange textRange =  new TextRange(method.getModifierList().getTextRange().getStartOffset() - method.getTextRange().getStartOffset(), method.getParameterList().getTextRange().getEndOffset() -  method.getTextRange().getStartOffset());
+                holder.registerProblem(method, textRange, "Method may have clones", CloneReport.getInstance());
+            }
         }
-
     }
 
 
-    private static class MyQuickFix implements LocalQuickFix {
+    private static class CloneReport implements LocalQuickFix {
+
+        static final CloneReport instance = new CloneReport();
+
+        public static CloneReport getInstance() {
+            return instance;
+        }
 
         @NotNull
         public String getName() {
-            return "Show all clone classes";
+            return "Show clones for this method";
         }
 
         public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
             PsiMethod method = (PsiMethod)descriptor.getPsiElement();
-            CloneManager cm = getViewManager(project).cloneManager;
-            List<CloneClass> clones =  cm.getMethodFilteredClones(method);
+            List<CloneClass> clones =  ProjectClonesInitializer.getInstance(project).getMethodFilteredClones(method);
             EventQueue.invokeLater(() -> ClonesView.showClonesData(project, clones));
         }
 
         @NotNull
         public String getFamilyName() {
-            return "myfix";
+            return "CloneReport";
         }
     }
 }

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class CloneManager {
 
+    //TODO String id! srsly?
     final Map<String, Long> methodIds = new HashMap<>();
     final int minCloneLength;
     final SuffixTree<Token> tree = new SuffixTree<>();
@@ -80,8 +81,9 @@ public class CloneManager {
     }
 
     private void addMethodUnlocked(PsiMethod method){
-        TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.PARAMETER_LIST);
-        long id = tree.addSequence(Utils.makeTokenSequence(method, filter));
+        TokenSet filter = TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT);
+        if (method.getBody()==null) return;
+        long id = tree.addSequence(Utils.makeTokenSequence(method.getBody(), filter));
         methodIds.put(Utils.getMethodId(method), id);
     }
 

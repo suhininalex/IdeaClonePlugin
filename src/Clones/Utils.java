@@ -14,9 +14,10 @@ import java.util.*;
 
 public class Utils {
 
-    //TODO обеспечить уникальность
+    //TODO обеспечить уникальность (все еще нет!)
     public static String getMethodId(PsiMethod method){
-        return method.getContainingFile().getContainingDirectory().getName() + "." +method.getContainingClass().getName() + "." + method.getName();
+        return method.getContainingFile().getContainingDirectory().getName() + "." +method.getContainingClass().getName() + "." + method.getName()+method.getParameterList().toString();
+
     }
 
     public static List<PsiElement> findTokens(@NotNull PsiElement root, @NotNull TokenSet tokenSet){
