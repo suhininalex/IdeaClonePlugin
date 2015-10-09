@@ -29,7 +29,7 @@ public class ProjectClonesInitializer {
     }
 
     public static CloneManager initializeCloneManager(Project project){
-        CloneManager cloneManager = new CloneManager(70);
+        CloneManager cloneManager = new CloneManager(50);
         Executor executor = Executors.newSingleThreadExecutor();
         Semaphore semaphore = new Semaphore(0);
 

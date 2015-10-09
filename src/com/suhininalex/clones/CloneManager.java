@@ -28,7 +28,7 @@ public class CloneManager {
         this.minCloneLength = minCloneLength;
     }
 
-    //TODO wrapper?
+    //TODO try-with-res?
     public void addMethod(PsiMethod method){
         Lock lock = rwLock.writeLock();
         try {
@@ -49,6 +49,17 @@ public class CloneManager {
         }
     }
 
+    public void updateMethod(PsiMethod method){
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            removeMethodUnlocked(method);
+            addMethodUnlocked(method);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public List<CloneClass> getAllFilteredClones(){
         Lock lock = rwLock.readLock();
         try {
@@ -64,17 +75,6 @@ public class CloneManager {
         try {
             lock.lock();
             return getFilteredClones(getAllMethodClones(method));
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void updateMethod(PsiMethod method){
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            removeMethodUnlocked(method);
-            addMethodUnlocked(method);
         } finally {
             lock.unlock();
         }
