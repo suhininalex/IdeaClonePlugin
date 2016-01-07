@@ -15,22 +15,16 @@ class CloneIterator implements Iterator<Clone> {
     private final Stack<CallInfo> stack = new Stack<>();
     private final int cloneLength;
 
-    private void addNodeToStack(Node node, int depthOfsset){
+    private void addNodeToStack(Node node, int depthOffset){
         for (Edge edge : node.getEdges()) {
             int edgeLength = edge.getEnd() - edge.getBegin() + 1;
-            stack.push(new CallInfo(edge, depthOfsset + edgeLength));
+            stack.push(new CallInfo(edge, depthOffset + edgeLength));
         }
     }
 
     public CloneIterator(Node node, int cloneLength){
-        Node currentNode = node;
-
         this.cloneLength = cloneLength;
-
-        if (cloneLength<=0)
-            throw new IllegalArgumentException("Clone length migth be greater tan 0!");
-
-        addNodeToStack(node, 0);
+        if (cloneLength>=0) addNodeToStack(node, 0);
     }
 
     @Override

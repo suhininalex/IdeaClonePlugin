@@ -21,7 +21,6 @@ class CloneManager(internal val minCloneLength: Int) {
     internal val tree = SuffixTree<Token>()
     internal val rwLock: ReadWriteLock = ReentrantReadWriteLock()
 
-
     private inline fun getWriteLock() = rwLock.writeLock()
 
     private inline fun getReadLock() = rwLock.readLock()
@@ -51,7 +50,7 @@ class CloneManager(internal val minCloneLength: Int) {
             TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val methodBody = method?.body ?: throw IllegalArgumentException("There are no body in the method!")
+        val methodBody = method?.body ?: return
         val id = tree.addSequence(Utils.makeTokenSequence(methodBody, getTokenFilter()))
         methodIds.put(method.getStringId(), id)
     }
