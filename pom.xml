@@ -26,12 +26,25 @@
             <artifactId>suffixtree</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>net.suhininalex</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>
         <repository>
             <id>suhininalex</id>
             <url>https://github.com/suhininalex/SuffixTree/raw/master/mvn-repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>utils</id>
+            <url>https://github.com/suhininalex/utils/raw/master/mvn-repo</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
