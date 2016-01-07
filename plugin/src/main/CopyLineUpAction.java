@@ -1,13 +1,11 @@
-import Clones.ProjectClonesInitializer;
-import Clones.ClonesView;
+import clones.ProjectClonesInitializer;
+import clones.ClonesView;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorAction;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
-import com.suhininalex.clones.CloneManager;
-
 
 public class CopyLineUpAction extends EditorAction {
 

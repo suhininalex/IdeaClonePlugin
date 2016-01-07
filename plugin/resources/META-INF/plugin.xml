@@ -1,0 +1,39 @@
+<idea-plugin version="2">
+  <id>com.suhininalex.cloneDetection.plugin.id</id>
+  <name>Clone detection plugin</name>
+  <version>1.0</version>
+  <vendor email="suhinin.alex@gmail.com">Suhinin Alex</vendor>
+
+  <description><![CDATA[
+      Detects clones on-the-fly.<br>
+      <em>...</em>
+    ]]></description>
+
+  <!--<change-notes><![CDATA[-->
+      <!--Add change notes here.<br>-->
+      <!--<em>most HTML tags may be used</em>-->
+    <!--]]>-->
+  <!--</change-notes>-->
+
+  <idea-version since-build="131"/>
+
+  <!--<application-components>-->
+  <!--</application-components>-->
+
+  <!--<project-components>-->
+  <!--</project-components>-->
+
+  <actions>
+    <!-- Add your actions here -->
+      <action id="CopyLineUpAction" class="CopyLineUpAction" text="CopyLineUpAction" description="desc">
+          <add-to-group group-id="EditorActions" anchor="first"/>
+          <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
+      </action>
+  </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
+                         groupBundle="messages.InspectionsBundle" enabledByDefault="true"
+                         level="WARNING" implementationClass="clones.InspectionProvider"/>
+    </extensions>
+</idea-plugin>

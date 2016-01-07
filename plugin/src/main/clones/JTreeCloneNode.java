@@ -1,4 +1,4 @@
-package Clones;
+package clones;
 
 import com.intellij.ide.SelectInEditorManager;
 import com.intellij.openapi.editor.Document;

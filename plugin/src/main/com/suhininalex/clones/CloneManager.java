@@ -1,6 +1,6 @@
 package com.suhininalex.clones;
 
-import Clones.Utils;
+import clones.Utils;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.TokenSet;

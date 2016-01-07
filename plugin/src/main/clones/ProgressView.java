@@ -1,4 +1,4 @@
-package Clones;
+package clones;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -27,7 +27,7 @@ public class ProgressView extends DialogWrapper {
         EventQueue.invokeLater(() -> {
             init();
 
-            setTitle("Locate Clones...");
+            setTitle("Locate clones...");
             setModal(true);
             setResizable(false);
 

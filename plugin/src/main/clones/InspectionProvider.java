@@ -1,4 +1,4 @@
-package Clones;
+package clones;
 
 import com.intellij.codeInspection.*;
 import com.intellij.openapi.project.Project;

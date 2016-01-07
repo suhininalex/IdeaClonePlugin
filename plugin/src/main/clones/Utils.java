@@ -1,4 +1,4 @@
-package Clones;
+package clones;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.*;
