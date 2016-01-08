@@ -28,10 +28,11 @@ infix inline fun <T> Lock.use(body:()->T):T =
     }
 
 fun Node.riseIterator() = object : Iterator<Node> {
-    var node = this@riseIterator
-    override fun hasNext() = node.parentEdge!=null
+    var node: Node? = this@riseIterator
+    override fun hasNext() = node!=null
     override fun next(): Node {
-        node=node.parentEdge.parent
-        return node
+        val result = node!!
+        node=node?.parentEdge?.parent
+        return result
     }
 }

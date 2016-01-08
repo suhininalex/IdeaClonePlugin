@@ -84,6 +84,7 @@ class CloneManager(internal val minCloneLength: Int) {
     }
 
     private fun getAllMethodClones(method: PsiMethod): List<CloneClass> {
+        println("method: ${method.getStringId()}")
         val visitedNodes = HashSet<Node>()
         val id = methodIds[method.getStringId()] ?: throw IllegalStateException("There are no such method!")
 
@@ -93,11 +94,13 @@ class CloneManager(internal val minCloneLength: Int) {
                     if (visitedNodes.contains(currentNode)) break;
                     visitedNodes.add(currentNode)
                     val cloneClass = CloneClass(currentNode)
-                    if (cloneClass.checkClone()) add(cloneClass)
+                    if (cloneClass.checkClone()) {
+                        add(cloneClass)
+                    }
                 }
             }
         }
     }
 
-    private fun CloneClass.checkClone() = !isEmpty && length > minCloneLength
+    private fun CloneClass.checkClone() = length > minCloneLength
 }
