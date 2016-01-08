@@ -4,26 +4,24 @@ import clones.Utils
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.clonefilter.LengthFilter
 import com.suhininalex.clones.clonefilter.SubclassFilter
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
 import stream
-import java.util.HashMap
-import java.util.HashSet
-import java.util.Stack
-import java.util.concurrent.locks.ReadWriteLock
+import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 class CloneManager(internal val minCloneLength: Int) {
 
-    //TODO String id! srsly?
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
-    internal val rwLock: ReadWriteLock = ReentrantReadWriteLock()
+    internal val rwLock = ReentrantReadWriteLock()
+    internal val lengthFilter = LengthFilter(minCloneLength)
 
-    private inline fun getWriteLock() = rwLock.writeLock()
+    private fun getWriteLock() = rwLock.writeLock()
 
-    private inline fun getReadLock() = rwLock.readLock()
+    private fun getReadLock() = rwLock.readLock()
 
     fun addMethod(method: PsiMethod) = getWriteLock() use {
         addMethodUnlocked(method)
@@ -50,8 +48,8 @@ class CloneManager(internal val minCloneLength: Int) {
             TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val methodBody = method?.body ?: return
-        val id = tree.addSequence(Utils.makeTokenSequence(methodBody, getTokenFilter()))
+        val methodBody = method.body ?: return
+        val id = tree.addSequence(Utils.makeTokenSequence(methodBody, getTokenFilter(), method))
         methodIds.put(method.getStringId(), id)
     }
 
@@ -72,8 +70,7 @@ class CloneManager(internal val minCloneLength: Int) {
                 .filter { it != null }
                 .forEach { terminal ->
                     stack.push(terminal)
-                    val cloneClass = CloneClass(terminal)
-                    if (cloneClass.checkClone()) add(cloneClass)
+                    addIf(CloneClass(terminal)) {lengthFilter.isAllowed(it)}
                 }
         }
     }
@@ -84,23 +81,19 @@ class CloneManager(internal val minCloneLength: Int) {
     }
 
     private fun getAllMethodClones(method: PsiMethod): List<CloneClass> {
-        println("method: ${method.getStringId()}")
         val visitedNodes = HashSet<Node>()
-        val id = methodIds[method.getStringId()] ?: throw IllegalStateException("There are no such method!")
+        val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
         return buildLinkedList {
             for (branchNode in tree.getAllLastSequenceNodes(id)) {
-                for (currentNode in branchNode.riseIterator()){
+                for (currentNode in branchNode.riseTraverser()){
                     if (visitedNodes.contains(currentNode)) break;
                     visitedNodes.add(currentNode)
-                    val cloneClass = CloneClass(currentNode)
-                    if (cloneClass.checkClone()) {
-                        add(cloneClass)
-                    }
+                    addIf(CloneClass(currentNode)) {lengthFilter.isAllowed(it)}
                 }
             }
         }
     }
 
-    private fun CloneClass.checkClone() = length > minCloneLength
+    fun PsiMethod.getId() = methodIds[getStringId()]
 }

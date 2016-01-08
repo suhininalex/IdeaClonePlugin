@@ -26,7 +26,7 @@ public class SubclassFilter implements CloneClassFilter {
     public boolean isAllowed(CloneClass cloneClass) {
         CloneClass greaterClass = reverseSuffixLink.get(cloneClass.getTreeNode());
         if (greaterClass==null) return true;
-        else if (greaterClass.size()==cloneClass.size())
+        else if (greaterClass.getSize()==cloneClass.getSize())
             return false;
         else return true;
     }

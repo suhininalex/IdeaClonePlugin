@@ -13,9 +13,6 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class Utils {
-
-
-
     public static List<PsiElement> findTokens(@NotNull PsiElement root, @NotNull TokenSet tokenSet){
         List<PsiElement> psiList = new LinkedList<PsiElement>();
         findTokens(psiList,root,tokenSet);
@@ -33,17 +30,17 @@ public class Utils {
         }
     }
 
-    public static List<Token> makeTokenSequence(@NotNull PsiElement root, @NotNull TokenSet filter) {
+    public static List<Token> makeTokenSequence(@NotNull PsiElement root, @NotNull TokenSet filter, PsiMethod method) {
         List<Token> tokens = new LinkedList<>();
-        makeTokenSequence(tokens, root, filter);
+        makeTokenSequence(tokens, root, filter, method);
         return tokens;
     }
 
-    private static void makeTokenSequence(@NotNull List<Token> accumulator, @NotNull PsiElement node, @NotNull TokenSet filter){
+    private static void makeTokenSequence(@NotNull List<Token> accumulator, @NotNull PsiElement node, @NotNull TokenSet filter, PsiMethod method){
         if (filter.contains(node.getNode().getElementType())) return;
-        accumulator.add(new Token(node, accumulator.size()));
+        accumulator.add(new Token(node, method));
         for (PsiElement child : node.getChildren()){
-            makeTokenSequence(accumulator, child, filter);
+            makeTokenSequence(accumulator, child, filter, method);
         }
     }
 
@@ -54,7 +51,7 @@ public class Utils {
         try {
             PrintWriter pw = new PrintWriter(file);
             for (Token token : list) {
-                pw.println(token.source.getNode().getElementType().getIndex() + "| "+token.source.getNode().getElementType() + " | "+token.source.getNode().getElementType().getClass());
+                pw.println(token.getSource().getNode().getElementType().getIndex() + "| "+token.getSource().getNode().getElementType() + " | "+token.getSource().getNode().getElementType().getClass());
             }
             pw.close();
         } catch (IOException e){
@@ -62,6 +59,7 @@ public class Utils {
         }
     }
 
+    @Deprecated
     public static void printStringToFile(String string, String filename){
         File file = new File("/home/llama/"+filename);
 
@@ -78,7 +76,7 @@ public class Utils {
     public static List<Token> makeTreeSequence(PsiFile psiFile){
         LinkedList<Token> sequence = new LinkedList<>();
         for (PsiElement element : Utils.findTokens(psiFile, TokenSet.create(JavaStubElementTypes.METHOD))){
-            sequence.addAll(Utils.makeTokenSequence(element,TokenSet.EMPTY));
+            sequence.addAll(Utils.makeTokenSequence(element,TokenSet.EMPTY, (PsiMethod) element));
         }
         return sequence;
     }

@@ -25,7 +25,7 @@ public final class ClonesView extends Tree {
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
 
     private ClonesView(@NotNull final List<CloneClass> clones){
-        Collections.sort(clones, CloneClass.getLengthComparator().reversed());
+        Collections.sort(clones, CloneClass.Companion.getLengthComparator().reversed());
         for (CloneClass cloneClass : clones){
             this.add(cloneClass);
         }
@@ -46,7 +46,7 @@ public final class ClonesView extends Tree {
     }
 
     private void add(CloneClass cloneClass) {
-        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.getLength() + " tokens and " + cloneClass.size() + " duplicates.");
+        DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.getLength() + " tokens and " + cloneClass.getSize() + " duplicates.");
         root.add(classNode);
         for (Clone range : cloneClass.getClones()) {
             JTreeCloneNode clone = new JTreeCloneNode(range);
