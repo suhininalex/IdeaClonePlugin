@@ -2,15 +2,11 @@ package clones
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
-import com.suhininalex.clones.Clone
-import com.suhininalex.clones.Token
-import com.suhininalex.clones.getStringId
+import com.suhininalex.clones.*
 import org.jetbrains.annotations.Nls
 
 import java.awt.*
-
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
@@ -41,7 +37,7 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
             cloneManager.getMethodFilteredClasses(method).forEach {
                 it.clones.forEach {
                     if (it.firstElement.method.getStringId()==method.getStringId())
-                        problemHolder!!.registerProblem(method, it.getTextRangeInMethod(), "Method may have clones", CloneReport.instance)
+                        problemHolder!!.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), CloneReport.instance)
                 }
             }
         }
@@ -64,13 +60,3 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
         }
     }
 }
-
-fun Clone.getTextRange(offset: Int = 0) =
-        TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
-
-
-fun Clone.getTextRangeInMethod() = getTextRange(firstElement.method.textRange.startOffset)
-
-fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
-
-fun Token.getTextRange() = source.textRange

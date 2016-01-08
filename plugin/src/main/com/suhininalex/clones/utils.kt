@@ -1,5 +1,8 @@
 package com.suhininalex.clones
 
+import clones.ProjectClonesInitializer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiMethod
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
@@ -46,3 +49,16 @@ fun Node.riseTraverser() = object : Iterable<Node> {
 }
 
 fun Edge.getLength() = end - begin + 1
+
+fun String.abbrevate(size: Int) =
+    if (length > size) substring(0,size)+"..." else this
+
+fun Clone.getTextRange(offset: Int = 0) =
+        TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
+
+
+fun Clone.getTextRangeInMethod() = getTextRange(firstElement.method.textRange.startOffset)
+
+fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
+
+fun Token.getTextRange() = source.textRange
