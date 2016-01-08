@@ -4,6 +4,9 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.suhininalex.clones.Clone
+import com.suhininalex.clones.Token
+import com.suhininalex.clones.getStringId
 import org.jetbrains.annotations.Nls
 
 import java.awt.*
@@ -30,14 +33,16 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
 
     private class CloneInspectionVisitor : JavaElementVisitor() {
 
-        //TODO clones highlight & method removing!
+        //TODO method removing!
         override fun visitMethod(method: PsiMethod) {
-            val cloneManager = ProjectClonesInitializer.getInstance(method.project)
+            val cloneManager = method.project.getCloneManager()
             cloneManager.updateMethod(method)
-            val clones = cloneManager.getMethodFilteredClones(method)
-            if (!clones.isEmpty()) {
-                val textRange = TextRange(method.modifierList.textRange.startOffset - method.textRange.startOffset, method.parameterList.textRange.endOffset - method.textRange.startOffset)
-                problemHolder!!.registerProblem(method, textRange, "Method may have clones", CloneReport.instance)
+
+            cloneManager.getMethodFilteredClasses(method).forEach {
+                it.clones.forEach {
+                    if (it.firstElement.method.getStringId()==method.getStringId())
+                        problemHolder!!.registerProblem(method, it.getTextRangeInMethod(), "Method may have clones", CloneReport.instance)
+                }
             }
         }
     }
@@ -48,7 +53,7 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val method = descriptor.psiElement as PsiMethod
-            val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClones(method)
+            val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClasses(method)
             EventQueue.invokeLater { ClonesView.showClonesData(project, clones) }
         }
 
@@ -59,3 +64,13 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
         }
     }
 }
+
+fun Clone.getTextRange(offset: Int = 0) =
+        TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
+
+
+fun Clone.getTextRangeInMethod() = getTextRange(firstElement.method.textRange.startOffset)
+
+fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
+
+fun Token.getTextRange() = source.textRange

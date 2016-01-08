@@ -40,7 +40,7 @@ class CloneManager(internal val minCloneLength: Int) {
         getFilteredClones(getAllCloneClasses())
     }
 
-    fun getMethodFilteredClones(method: PsiMethod): List<CloneClass> = getReadLock() use {
+    fun getMethodFilteredClasses(method: PsiMethod): List<CloneClass> = getReadLock() use {
         getFilteredClones(getAllMethodClones(method))
      }
 
