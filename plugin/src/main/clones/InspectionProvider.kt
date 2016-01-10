@@ -4,59 +4,47 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.*
-import org.jetbrains.annotations.Nls
-
 import java.awt.*
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
-    companion object {
-        internal var problemHolder: ProblemsHolder? = null
-    }
-
-    @Nls
     override fun getGroupDisplayName() = "Analyze"
 
     override fun getShortName() = "CloneDetection"
 
-    @Nls
     override fun getDisplayName() = "Clone detection"
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        problemHolder = holder
-        return CloneInspectionVisitor()
-    }
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
+        CloneInspectionVisitor(holder)
+}
 
-    private class CloneInspectionVisitor : JavaElementVisitor() {
+class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() {
 
-        //TODO method removing!
-        override fun visitMethod(method: PsiMethod) {
-            val cloneManager = method.project.getCloneManager()
-            cloneManager.updateMethod(method)
+    val cloneReport = CloneReport()
 
-            cloneManager.getMethodFilteredClasses(method).forEach {
-                it.clones.forEach {
-                    if (it.firstElement.method.getStringId()==method.getStringId())
-                        problemHolder!!.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), CloneReport.instance)
-                }
+    //TODO method removing!
+    override fun visitMethod(method: PsiMethod) {
+        val cloneManager = method.project.getCloneManager()
+        cloneManager.updateMethod(method)
+
+        cloneManager.getMethodFilteredClasses(method).forEach {
+            it.clones.forEach {
+                if (it.firstElement.method.getStringId()==method.getStringId())
+                    holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), cloneReport)
             }
         }
     }
+}
 
-    private class CloneReport : LocalQuickFix {
+class CloneReport : LocalQuickFix {
 
-        override fun getName() = "Show clones for this method"
+    override fun getName() = "Show clones for this method"
 
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val method = descriptor.psiElement as PsiMethod
-            val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClasses(method)
-            EventQueue.invokeLater { ClonesView.showClonesData(project, clones) }
-        }
+    override fun getFamilyName() = "CloneReport"
 
-        override fun getFamilyName() = "CloneReport"
-
-        companion object {
-            val instance = CloneReport()
-        }
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        val method = descriptor.psiElement as PsiMethod
+        val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClasses(method)
+        EventQueue.invokeLater { ClonesView.showClonesData(project, clones) }
     }
 }

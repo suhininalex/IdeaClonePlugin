@@ -18,7 +18,7 @@ public class CopyLineUpAction extends EditorAction {
         protected void doExecute(Editor editor, Caret caret, DataContext dataContext) {
             Project project = editor.getProject();
 
-            ClonesView.showClonesData(project, ProjectClonesInitializer.getInstance(project).getAllFilteredClones());
+            ClonesView.showClonesData(project, ProjectClonesInitializer.INSTANCE.getInstance(project).getAllFilteredClones());
         }
 
     }

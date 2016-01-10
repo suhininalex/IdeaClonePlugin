@@ -7,16 +7,13 @@ class CloneClass(val treeNode: Node) {
         clones.sumBy { 1 }
     }
 
-    val length = computeLengthToRoot(treeNode)
+    val length = treeNode.lengthToRoot()
 
     val clones = object: Iterable<Clone> {
         override fun iterator() = CloneIterator(treeNode, length).iterator()
     }
 
     val isEmpty = !clones.iterator().hasNext()
-
-    private fun computeLengthToRoot(node: Node) =
-        node.riseTraverser().sumBy { it.parentEdge?.getLength() ?: 0  }
 
     companion object {
         val lengthComparator = comparator { first: CloneClass, second: CloneClass -> first.length - second.length }

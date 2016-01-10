@@ -17,31 +17,28 @@ class CloneManager(internal val minCloneLength: Int) {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthFilter = LengthFilter(minCloneLength)
+    internal val lengthClassFilter = LengthFilter(minCloneLength)
 
-    private fun getWriteLock() = rwLock.writeLock()
 
-    private fun getReadLock() = rwLock.readLock()
-
-    fun addMethod(method: PsiMethod) = getWriteLock() use {
+    fun addMethod(method: PsiMethod) = rwLock.writeLock() use {
         addMethodUnlocked(method)
     }
 
-    fun removeMethod(method: PsiMethod) = getWriteLock() use {
+    fun removeMethod(method: PsiMethod) = rwLock.writeLock() use {
         removeMethodUnlocked(method)
     }
 
-    fun updateMethod(method: PsiMethod) = getWriteLock() use {
+    fun updateMethod(method: PsiMethod) = rwLock.writeLock() use {
         removeMethodUnlocked(method)
         addMethodUnlocked(method)
     }
 
-    fun getAllFilteredClones(): List<CloneClass> = getReadLock() use {
-        getFilteredClones(getAllCloneClasses())
+    fun getAllFilteredClones(): List<CloneClass> = rwLock.readLock() use {
+        getFilteredClasses(getAllCloneClasses())
     }
 
-    fun getMethodFilteredClasses(method: PsiMethod): List<CloneClass> = getReadLock() use {
-        getFilteredClones(getAllMethodClones(method))
+    fun getMethodFilteredClasses(method: PsiMethod) = rwLock.readLock() use {
+        getFilteredClasses(getAllMethodClasses(method))
      }
 
     private fun getTokenFilter() =
@@ -70,17 +67,17 @@ class CloneManager(internal val minCloneLength: Int) {
                 .filter { it != null }
                 .forEach { terminal ->
                     stack.push(terminal)
-                    addIf(CloneClass(terminal)) {lengthFilter.isAllowed(it)}
+                    addIf(CloneClass(terminal)) {lengthClassFilter.isAllowed(it)}
                 }
         }
     }
 
-    fun getFilteredClones(cloneClasses: List<CloneClass>): List<CloneClass> {
+    fun getFilteredClasses(cloneClasses: List<CloneClass>): List<CloneClass> {
         val subClassFilter = SubclassFilter(cloneClasses)
         return cloneClasses.filter { subClassFilter.isAllowed(it) }
     }
 
-    private fun getAllMethodClones(method: PsiMethod): List<CloneClass> {
+    private fun getAllMethodClasses(method: PsiMethod): List<CloneClass> {
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
@@ -89,7 +86,7 @@ class CloneManager(internal val minCloneLength: Int) {
                 for (currentNode in branchNode.riseTraverser()){
                     if (visitedNodes.contains(currentNode)) break;
                     visitedNodes.add(currentNode)
-                    addIf(CloneClass(currentNode)) {lengthFilter.isAllowed(it)}
+                    addIf(CloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
                 }
             }
         }

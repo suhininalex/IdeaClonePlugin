@@ -26,11 +26,7 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
 
             createContent()
 
-            status = Status.Processing
-
-            val option = DialogWrapper.PropertyDoNotAskOption("cancel")
-
-            this.setDoNotAskOption(option)
+            setDoNotAskOption(DialogWrapper.PropertyDoNotAskOption("cancel"))
         }
     }
 
@@ -79,9 +75,6 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
     }
 
     enum class Status {
-        Initializing,
-        Processing,
-        Canceled,
-        Done
+        Initializing, Processing, Canceled, Done
     }
 }
