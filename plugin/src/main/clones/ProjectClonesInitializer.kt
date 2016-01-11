@@ -1,12 +1,11 @@
 package clones
 
+import com.intellij.openapi.application.Application
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.CloneManager
-import com.suhininalex.clones.stream
-import com.suhininalex.clones.wrapAsReadTask
+import com.suhininalex.clones.*
 import java.awt.*
 import java.util.*
 import java.util.concurrent.Executors
@@ -26,40 +25,27 @@ object ProjectClonesInitializer {
 
     fun initializeCloneManager(project: Project): CloneManager {
         val cloneManager = CloneManager(50)
-        val executor = Executors.newSingleThreadExecutor()
-        val semaphore = Semaphore(0)
 
         val files = getAllPsiJavaFiles(project)
         val progressView = ProgressView(project, files.size)
-        val task = {
-            try {
-                processFiles(cloneManager, files, progressView)
-                progressView.setAsProcessing()
-                progressView.done()
-            } catch (e: InterruptedException) {
-                /* Canceled! */
-            } finally {
-                semaphore.release()
-            }
+        val task = files.interruptableForeach {
+            println("foreach!")
+            it.processPsiFile(cloneManager)
+            progressView.next(it.name)
         }
-        executor.execute(wrapAsReadTask(task))
-        EventQueue.invokeLater { progressView.showAndGet() }
-        try {
-            semaphore.acquire()
-        } catch (e: InterruptedException) {
-            throw IllegalStateException("Illegal state of clones due interruption.")
+
+        invokeLater(wrapAsReadTask {
+            task.call()
+            progressView.done()
+        })
+
+        EventQueue.invokeLater {
+            val r = progressView.showAndGet()
+            if (!r) task.interrupt()
         }
 
         return cloneManager
     }
-
-    @Throws(InterruptedException::class)
-    private fun processFiles(cloneManager: CloneManager, files: List<PsiFile>, progressView: ProgressView) =
-        files.forEach {
-            if (progressView.status === ProgressView.Status.Canceled) throw InterruptedException("Task was canceled.")
-            it.processPsiFile(cloneManager)
-            progressView.next(it.name)
-        }
 
     private fun PsiFile.processPsiFile(cloneManager: CloneManager) =
             findTokens(TokenSet.create(ElementType.METHOD)).forEach {

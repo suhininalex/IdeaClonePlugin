@@ -95,7 +95,18 @@ enum class Status{
 fun wrapAsReadTask(runnable: ()->Unit) =
      Runnable { ApplicationManager.getApplication().runReadAction(runnable) }
 
-fun atat(){
+fun <V> invokeLater(callable: Callable<V>) =
+        ApplicationManager.getApplication().executeOnPooledThread { callable }
+
+fun invokeLater(runnable: Runnable) =
+        ApplicationManager.getApplication().executeOnPooledThread { runnable }
 
 
+fun <T> Iterable<T>.interruptableForeach(body: (T)->Unit) =
+    InterruptableCallable{ interrupted ->
+        this.forEach {
+            body(it)
+            if (interrupted) return@forEach
+        }
+        if (interrupted) Status.Interrupted else Status.Done
 }

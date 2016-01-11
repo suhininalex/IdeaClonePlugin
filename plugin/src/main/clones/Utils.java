@@ -26,6 +26,4 @@ public class Utils {
             makeTokenSequence(accumulator, child, filter, method);
         }
     }
-
-
 }
