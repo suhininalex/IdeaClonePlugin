@@ -56,20 +56,19 @@ class CloneManager(internal val minCloneLength: Int) {
         tree.removeSequence(id)
     }
 
-    private fun getAllCloneClasses() = buildLinkedList<CloneClass> {
-        val stack = Stack<Node>()
-        stack.push(tree.root)
-
-        while (!stack.isEmpty()) {
-            stack.pop()
-                .edges.stream()
+    private fun getAllCloneClasses(): LinkedList<CloneClass> {
+        val list = LinkedList<CloneClass>()
+        val stack = stack(tree.root)
+        stack.popEach {
+            it.edges.stream()
                 .map { it.terminal }
                 .filter { it != null }
                 .forEach { terminal ->
                     stack.push(terminal)
-                    addIf(CloneClass(terminal)) {lengthClassFilter.isAllowed(it)}
+                    list.addIf(CloneClass(terminal)) {lengthClassFilter.isAllowed(it)}
                 }
         }
+        return list
     }
 
     fun getFilteredClasses(cloneClasses: List<CloneClass>): List<CloneClass> {
@@ -78,18 +77,18 @@ class CloneManager(internal val minCloneLength: Int) {
     }
 
     private fun getAllMethodClasses(method: PsiMethod): List<CloneClass> {
+        val classes = LinkedList<CloneClass>()
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
-        return buildLinkedList {
-            for (branchNode in tree.getAllLastSequenceNodes(id)) {
-                for (currentNode in branchNode.riseTraverser()){
-                    if (visitedNodes.contains(currentNode)) break;
-                    visitedNodes.add(currentNode)
-                    addIf(CloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
-                }
+        for (branchNode in tree.getAllLastSequenceNodes(id)) {
+            for (currentNode in branchNode.riseTraverser()){
+                if (visitedNodes.contains(currentNode)) break;
+                visitedNodes.add(currentNode)
+                classes.addIf(CloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
             }
         }
+        return classes
     }
 
     fun PsiMethod.getId() = methodIds[getStringId()]

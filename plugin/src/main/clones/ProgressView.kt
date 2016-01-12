@@ -21,7 +21,7 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
             init()
 
             title = "Locate clones..."
-            isModal = true
+            isModal = false
             setResizable(false)
 
             createContent()
@@ -30,7 +30,7 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
         }
     }
 
-    fun createContent(){
+    private fun createContent(){
         panel.preferredSize = Dimension(250, 40)
 
         progressBar.maximum = maxProgressValue

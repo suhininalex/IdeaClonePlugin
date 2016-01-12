@@ -1,15 +1,18 @@
 package com.suhininalex.clones
 
 import clones.ProjectClonesInitializer
+import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiMethod
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
+import java.awt.EventQueue
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.locks.Lock
+import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
 fun PsiMethod.getStringId() =
@@ -17,12 +20,6 @@ fun PsiMethod.getStringId() =
         containingClass!!.name + "." +
         name + "."+
         parameterList;
-
-fun <E> buildLinkedList(init: LinkedList<E>.() -> Unit): List<E> {
-    val list = LinkedList<E>()
-    list.init()
-    return list
-}
 
 infix inline fun <T> Lock.use(body:()->T):T =
     try {
@@ -71,18 +68,18 @@ fun <T> Array<T>.stream() = Arrays.stream(this)
 fun Node.lengthToRoot() =
         riseTraverser().sumBy { it.parentEdge?.getLength() ?: 0  }
 
-inline fun <T> T.returnAndDo(body: () -> Unit): T {
+inline fun <T> T.returnAndDo(body: T.() -> Unit): T {
     val result = this
     body()
     return result
 }
 
-class InterruptableCallable(val callable:(Boolean)->Unit) : Callable<Status>{
-    private var interrupt = false
+class InterruptableCallable(val callable:(Boolean)->Unit) {
+    @Volatile private  var interrupt = false
     fun interrupt() {
         interrupt = true
     }
-    override fun call(): Status {
+    operator fun invoke(): Status {
         callable(interrupt)
         return if (interrupt) Status.Interrupted else Status.Done
     }
@@ -92,16 +89,6 @@ enum class Status{
     Done, Interrupted
 }
 
-fun wrapAsReadTask(runnable: ()->Unit) =
-     Runnable { ApplicationManager.getApplication().runReadAction(runnable) }
-
-fun <V> invokeLater(callable: Callable<V>) =
-        ApplicationManager.getApplication().executeOnPooledThread { callable }
-
-fun invokeLater(runnable: Runnable) =
-        ApplicationManager.getApplication().executeOnPooledThread { runnable }
-
-
 fun <T> Iterable<T>.interruptableForeach(body: (T)->Unit) =
     InterruptableCallable{ interrupted ->
         this.forEach {
@@ -110,3 +97,20 @@ fun <T> Iterable<T>.interruptableForeach(body: (T)->Unit) =
         }
         if (interrupted) Status.Interrupted else Status.Done
 }
+
+fun <T> callInEventQueue(body: ()->T): T {
+    var result: T? = null
+    EventQueue.invokeAndWait { result = body() }
+    return result!!
+}
+
+val Application: Application
+    get() = ApplicationManager.getApplication()
+
+fun <E> Stack<E>.popEach(body: Stack<E>.(E) -> Unit){
+    while(!empty()) body(pop())
+}
+
+fun <E> stack(initial: E) = Stack<E>().returnAndDo { push(initial) }
+
+
