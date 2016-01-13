@@ -11,6 +11,8 @@ import com.suhininalex.suffixtree.SuffixTree
 import stream
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 class CloneManager(internal val minCloneLength: Int) {
 
@@ -20,24 +22,24 @@ class CloneManager(internal val minCloneLength: Int) {
     internal val lengthClassFilter = LengthFilter(minCloneLength)
 
 
-    fun addMethod(method: PsiMethod) = rwLock.writeLock() use {
+    fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
     }
 
-    fun removeMethod(method: PsiMethod) = rwLock.writeLock() use {
+    fun removeMethod(method: PsiMethod) = rwLock.write {
         removeMethodUnlocked(method)
     }
 
-    fun updateMethod(method: PsiMethod) = rwLock.writeLock() use {
+    fun updateMethod(method: PsiMethod) = rwLock.write {
         removeMethodUnlocked(method)
         addMethodUnlocked(method)
     }
 
-    fun getAllFilteredClones(): List<CloneClass> = rwLock.readLock() use {
+    fun getAllFilteredClones(): List<CloneClass> = rwLock.read {
         getFilteredClasses(getAllCloneClasses())
     }
 
-    fun getMethodFilteredClasses(method: PsiMethod) = rwLock.readLock() use {
+    fun getMethodFilteredClasses(method: PsiMethod) = rwLock.read {
         getFilteredClasses(getAllMethodClasses(method))
      }
 
@@ -81,6 +83,7 @@ class CloneManager(internal val minCloneLength: Int) {
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
+        tree.getAllLastSequenceNodes(id).flatMap { it.riseTraverser() }
         for (branchNode in tree.getAllLastSequenceNodes(id)) {
             for (currentNode in branchNode.riseTraverser()){
                 if (visitedNodes.contains(currentNode)) break;

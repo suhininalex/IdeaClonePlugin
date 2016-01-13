@@ -34,7 +34,7 @@
     </dependencies>
 
     <repositories>
-        <repository>
+          <repository>
             <id>suhininalex</id>
             <url>https://github.com/suhininalex/SuffixTree/raw/master/mvn-repo</url>
             <snapshots>
@@ -51,6 +51,5 @@
             </snapshots>
         </repository>
     </repositories>
-
 
 </project>

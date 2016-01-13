@@ -12,6 +12,7 @@
     </content>
     <orderEntry type="jdk" jdkName="IntelliJ IDEA Community Edition IC-143.1184.17" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="ideacloneplugin" />
+    <orderEntry type="library" name="Maven: com.suhininalex:suffixtree:0.1" level="project" />
+    <orderEntry type="library" name="Maven: net.suhininalex:utils:0.0" level="project" />
   </component>
 </module>

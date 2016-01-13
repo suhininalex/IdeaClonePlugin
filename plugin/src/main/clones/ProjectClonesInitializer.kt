@@ -11,13 +11,11 @@ object ProjectClonesInitializer {
 
     private val map = HashMap<Project, CloneManager>()
 
-    @Synchronized fun getInstance(project: Project): CloneManager {
-        var cloneManager: CloneManager? = map[project]
-        if (cloneManager != null) return cloneManager
-        cloneManager = initializeCloneManager(project)
-        map.put(project, cloneManager)
-        return cloneManager
-    }
+    @Synchronized fun getInstance(project: Project) =
+        map[project] ?:
+            ret (initializeCloneManager(project)) thenDo {
+                map.put(project, this)
+            }
 
     @Synchronized fun initializeCloneManager(project: Project): CloneManager {
         val cloneManager = CloneManager(50)

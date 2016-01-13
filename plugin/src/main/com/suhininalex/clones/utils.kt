@@ -10,9 +10,6 @@ import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 import java.awt.EventQueue
 import java.util.*
-import java.util.concurrent.Callable
-import java.util.concurrent.locks.Lock
-import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
 fun PsiMethod.getStringId() =
@@ -21,30 +18,6 @@ fun PsiMethod.getStringId() =
         name + "."+
         parameterList;
 
-infix inline fun <T> Lock.use(body:()->T):T =
-    try {
-        this.lock()
-        body()
-    } finally {
-        this.unlock()
-    }
-
-inline fun <E> MutableList<E>.addIf(element: E, condition:(element: E)->Boolean){
-    if (condition(element)) add(element)
-}
-
-fun Node.riseTraverser() = object : Iterable<Node> {
-    override fun iterator() = object : Iterator<Node> {
-
-        var node: Node? = this@riseTraverser
-
-        override fun hasNext() = node!=null
-
-        override fun next() =
-            node.returnAndDo { node = node?.parentEdge?.parent } ?: throw NoSuchElementException()
-    }
-}
-
 fun Edge.getLength() = end - begin + 1
 
 fun String.abbrevate(size: Int) =
@@ -52,7 +25,6 @@ fun String.abbrevate(size: Int) =
 
 fun Clone.getTextRange(offset: Int = 0) =
         TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
-
 
 fun Clone.getTextRangeInMethod() = getTextRange(firstElement.method.textRange.startOffset)
 
@@ -68,10 +40,11 @@ fun <T> Array<T>.stream() = Arrays.stream(this)
 fun Node.lengthToRoot() =
         riseTraverser().sumBy { it.parentEdge?.getLength() ?: 0  }
 
-inline fun <T> T.returnAndDo(body: T.() -> Unit): T {
-    val result = this
-    body()
-    return result
+class ret<T>(val result:T) {
+    inline infix public fun thenDo(body: T.()->Unit): T{
+        result.body()
+        return result
+    }
 }
 
 class InterruptableCallable(val callable:(Boolean)->Unit) {
@@ -111,6 +84,23 @@ fun <E> Stack<E>.popEach(body: Stack<E>.(E) -> Unit){
     while(!empty()) body(pop())
 }
 
-fun <E> stack(initial: E) = Stack<E>().returnAndDo { push(initial) }
+fun <E> stack(initial: E) = ret(Stack<E>()) thenDo { push(initial) }
 
+fun <T> iterate(f:()->T?) = object : Iterator<T>{
+    var next :T? = f()
+    override fun hasNext() = next!=null
+    override fun next():T {
+        val result = next ?: throw NoSuchElementException()
+        next = f()
+        return result
+    }
+}
 
+fun Node.riseTraverser() = object: Iterable<Node> {
+    var node: Node? = this@riseTraverser
+    override fun iterator() = iterate { ret(node) thenDo { node=node?.parentEdge?.parent } }
+}
+
+inline fun <E> MutableList<E>.addIf(element: E, condition:(element: E)->Boolean){
+    if (condition(element)) add(element)
+}
