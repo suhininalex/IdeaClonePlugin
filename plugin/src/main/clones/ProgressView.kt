@@ -2,7 +2,7 @@ package clones
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.suhininalex.clones.abbrevate
+import net.suhininalex.kotlin.utils.abbrevate
 
 import javax.swing.*
 import java.awt.*
@@ -12,7 +12,6 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
     private val panel = JPanel(GridBagLayout())
     private val progressBar = JProgressBar()
     private val label = JLabel("Preparing files...")
-    @Volatile var status = Status.Initializing
 
     private var progressValue = 0
 
@@ -50,16 +49,6 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
 
     fun done() = EventQueue.invokeLater { this.doOKAction() }
 
-    override fun doCancelAction() {
-        status = Status.Canceled
-        super.doCancelAction()
-    }
-
-    override fun doOKAction() {
-        status = Status.Done
-        super.doOKAction()
-    }
-
     fun setAsProcessing() =
         EventQueue.invokeLater { label.text = "Preparing data..." }
 
@@ -70,11 +59,6 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
             progressBar.string = "$progressValue/$maxProgressValue"
         }
 
-    override fun createActions(): Array<Action?> {
-        return arrayOfNulls(0)
-    }
+    override fun createActions(): Array<Action?> = arrayOfNulls(0)
 
-    enum class Status {
-        Initializing, Processing, Canceled, Done
-    }
 }

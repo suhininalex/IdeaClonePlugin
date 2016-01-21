@@ -1,16 +1,22 @@
 package com.suhininalex.clones
 
+import addIf
 import clones.Utils
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.clonefilter.LengthFilter
+import com.suhininalex.clones.clonefilter.SubSequenceFilter
 import com.suhininalex.clones.clonefilter.SubclassFilter
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
+import popEach
+import stack
 import stream
+import java.awt.EventQueue
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import java.util.stream.Collectors
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
@@ -20,7 +26,6 @@ class CloneManager(internal val minCloneLength: Int) {
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
     internal val lengthClassFilter = LengthFilter(minCloneLength)
-
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -35,13 +40,13 @@ class CloneManager(internal val minCloneLength: Int) {
         addMethodUnlocked(method)
     }
 
-    fun getAllFilteredClones(): List<CloneClass> = rwLock.read {
+    fun getAllFilteredClones() = rwLock.read {
         getFilteredClasses(getAllCloneClasses())
     }
 
     fun getMethodFilteredClasses(method: PsiMethod) = rwLock.read {
         getFilteredClasses(getAllMethodClasses(method))
-     }
+    }
 
     private fun getTokenFilter() =
             TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
@@ -75,7 +80,7 @@ class CloneManager(internal val minCloneLength: Int) {
 
     fun getFilteredClasses(cloneClasses: List<CloneClass>): List<CloneClass> {
         val subClassFilter = SubclassFilter(cloneClasses)
-        return cloneClasses.filter { subClassFilter.isAllowed(it) }
+        return cloneClasses.stream().filter { subClassFilter.isAllowed(it) }.filter { SubSequenceFilter.isAllowed(it) }.toList()
     }
 
     private fun getAllMethodClasses(method: PsiMethod): List<CloneClass> {
@@ -83,7 +88,6 @@ class CloneManager(internal val minCloneLength: Int) {
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
-        tree.getAllLastSequenceNodes(id).flatMap { it.riseTraverser() }
         for (branchNode in tree.getAllLastSequenceNodes(id)) {
             for (currentNode in branchNode.riseTraverser()){
                 if (visitedNodes.contains(currentNode)) break;

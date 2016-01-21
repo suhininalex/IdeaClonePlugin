@@ -30,4 +30,5 @@ public class SubclassFilter implements CloneClassFilter {
             return false;
         else return true;
     }
+
 }

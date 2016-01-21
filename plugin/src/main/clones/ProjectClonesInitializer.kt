@@ -5,6 +5,8 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.*
+import net.suhininalex.kotlin.concurrent.interruptableForeach
+import stream
 import java.util.*
 
 object ProjectClonesInitializer {
@@ -13,7 +15,7 @@ object ProjectClonesInitializer {
 
     @Synchronized fun getInstance(project: Project) =
         map[project] ?:
-            ret (initializeCloneManager(project)) thenDo {
+            (initializeCloneManager(project)).apply {
                 map.put(project, this)
             }
 
@@ -32,7 +34,7 @@ object ProjectClonesInitializer {
         }
 
         Application.runReadAction {
-            if (task() == Status.Done) progressView.done()
+            if (task()) progressView.done()
         }
 
         if (!windowResult.resultSync) task.interrupt()
