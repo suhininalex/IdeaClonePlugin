@@ -5,8 +5,11 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.*
-import net.suhininalex.kotlin.concurrent.interruptableForeach
+import nl.komponents.kovenant.CancelablePromise
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.then
 import stream
+import java.awt.EventQueue
 import java.util.*
 
 object ProjectClonesInitializer {
@@ -24,22 +27,24 @@ object ProjectClonesInitializer {
         val files = getAllPsiJavaFiles(project)
         val progressView = ProgressView(project, files.size)
 
-        val task = files.interruptableForeach {
-            it.processPsiFile(cloneManager)
-            progressView.next(it.name)
+        val initialize = task {
+            files.forEach {
+                Application.runReadAction {
+                    it.processPsiFile(cloneManager)
+                    progressView.next(it.name)
+                }
+            }
+        } success {
+            progressView.done()
         }
 
-        val windowResult = callInEventQueue {
-            progressView.showAndGetOk()
+        EventQueue.invokeAndWait {
+            if (! progressView.showAndGet())
+                (initialize as CancelablePromise).cancel(InterruptedException("cancel"))
         }
 
-        Application.runReadAction {
-            if (task()) progressView.done()
-        }
-
-        if (!windowResult.resultSync) task.interrupt()
-
-        return cloneManager
+        if (initialize.isSuccess()) return cloneManager
+        else throw initialize.getError()
     }
 
     private fun PsiFile.processPsiFile(cloneManager: CloneManager) =

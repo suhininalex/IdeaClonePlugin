@@ -20,7 +20,7 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
             init()
 
             title = "Locate clones..."
-            isModal = false
+            isModal = true
             setResizable(false)
 
             createContent()
@@ -49,8 +49,7 @@ class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrap
 
     fun done() = EventQueue.invokeLater { this.doOKAction() }
 
-    fun setAsProcessing() =
-        EventQueue.invokeLater { label.text = "Preparing data..." }
+    fun cancel() = EventQueue.invokeLater { this.doCancelAction() }
 
     fun next(filename: String) =
         EventQueue.invokeLater {
