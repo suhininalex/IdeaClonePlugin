@@ -5,7 +5,8 @@ import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
+import com.intellij.psi.tree.TokenSet
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 import iterate
@@ -53,14 +54,6 @@ fun Node.riseTraverser() = object: Iterable<Node> {
     }
 }
 
-infix fun <T> Collection<T>.equal(other: Collection<T>): Boolean {
-    if (this.size!=other.size) return false
-    val otherIterator = other.iterator()
-    forEach {
-        if (it != otherIterator.next()) return false
-    }
-    return true
-}
 fun Node.descTraverser() = riseTraverser().reversed()
 
 fun <T> Iterator<T>?.hasNext() = if (this!=null) hasNext() else false
@@ -72,3 +65,22 @@ fun <T> Stream<T>.isEmpty() = iterator().hasNext()
 fun <T> Stream<T>.toList(): List<T> = collect(Collectors.toList()!!)
 
 fun <T> Iterator<T>.nextOrNull() = if (hasNext()) next() else null
+
+fun <T> Stream<out T>.concat(stream: Stream<out T>) = Stream.concat(this, stream)
+
+fun <T> T.depthFirstTraverse(children: (T) -> Stream<T>): Stream<T> =
+    Stream.of(this).concat( children(this).flatMap { it.depthFirstTraverse(children) } )
+
+fun Project.getAllPsiJavaFiles() =
+    PsiManager.getInstance(this).findDirectory(baseDir)!!.getPsiJavaFiles()
+
+fun PsiDirectory.getPsiJavaFiles(): Stream<PsiJavaFile> =
+    this.depthFirstTraverse { it.subdirectories.stream() }.flatMap { it.files.stream() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
+
+fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
+    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty() }.filter { it in filter }
+
+operator fun TokenSet.contains(element: PsiElement?) = this.contains(element?.node?.elementType)
+
+fun PsiElement.asSequence(filter: TokenSet) =
+    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty()  }

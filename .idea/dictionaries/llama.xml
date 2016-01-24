@@ -2,6 +2,7 @@
   <dictionary name="llama">
     <words>
       <w>iterable</w>
+      <w>preorder</w>
     </words>
   </dictionary>
 </component>

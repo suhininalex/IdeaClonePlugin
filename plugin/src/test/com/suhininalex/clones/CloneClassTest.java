@@ -1,19 +1,22 @@
-package com.suhininalex.clones;
-
-import com.suhininalex.clones.Token;
-import com.suhininalex.suffixtree.Edge;
-import com.suhininalex.suffixtree.Node;
-import com.suhininalex.suffixtree.SuffixTree;
-import org.junit.Test;
-
-import java.util.LinkedList;
-import java.util.List;
-
-public class CloneClassTest {
-
-
+//package com.suhininalex.clones;
+//
+//import com.suhininalex.clones.Token;
+//import com.suhininalex.suffixtree.Edge;
+//import com.suhininalex.suffixtree.Node;
+//import com.suhininalex.suffixtree.SuffixTree;
+//import org.junit.Test;
+//
+//import java.nio.file.Files;
+//import java.util.LinkedList;
+//import java.util.List;
+//
+//public class CloneClassTest {
+//
+//
 //    @Test
 //    public void testGetClones(){
+//        Files.list("")
+//
 //        System.out.println("-----------------------");
 //        System.out.println("testGetClones");
 //        SuffixTree<Token> tree = new SuffixTree<>();
@@ -39,4 +42,4 @@ public class CloneClassTest {
 //        System.out.println(sequence2);
 //        System.out.println(tree.toString());
 //    }
-}
+//}

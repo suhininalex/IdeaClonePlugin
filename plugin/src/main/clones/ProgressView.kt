@@ -3,9 +3,14 @@ package clones
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import net.suhininalex.kotlin.utils.abbrevate
-
-import javax.swing.*
-import java.awt.*
+import java.awt.Dimension
+import java.awt.EventQueue
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import javax.swing.Action
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JProgressBar
 
 class ProgressView(val project: Project, val maxProgressValue: Int) : DialogWrapper(project) {
 

@@ -1,16 +1,13 @@
 package clones;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.psi.*;
-import com.intellij.psi.impl.java.stubs.JavaStubElementTypes;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.tree.TokenSet;
 import com.suhininalex.clones.Token;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Utils {
     public static List<Token> makeTokenSequence(@NotNull PsiElement root, @NotNull TokenSet filter, PsiMethod method) {

@@ -1,7 +1,6 @@
 package com.suhininalex.clones
 
 import addIf
-import clones.Utils
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
@@ -13,10 +12,8 @@ import com.suhininalex.suffixtree.SuffixTree
 import popEach
 import stack
 import stream
-import java.awt.EventQueue
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import java.util.stream.Collectors
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
@@ -52,8 +49,8 @@ class CloneManager(internal val minCloneLength: Int) {
             TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val methodBody = method.body ?: return
-        val id = tree.addSequence(Utils.makeTokenSequence(methodBody, getTokenFilter(), method))
+        val sequence = method.body?.asSequence(getTokenFilter())?.map { node -> Token(node,method) }?.toList() ?: return
+        val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }
 

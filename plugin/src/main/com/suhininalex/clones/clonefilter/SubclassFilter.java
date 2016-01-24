@@ -4,7 +4,6 @@ import com.suhininalex.clones.CloneClass;
 import com.suhininalex.suffixtree.Node;
 
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SubclassFilter implements CloneClassFilter {

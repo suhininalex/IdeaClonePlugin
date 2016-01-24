@@ -2,9 +2,13 @@ package clones
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
-import com.intellij.psi.*
-import com.suhininalex.clones.*
-import java.awt.*
+import com.intellij.psi.JavaElementVisitor
+import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiMethod
+import com.suhininalex.clones.getCloneManager
+import com.suhininalex.clones.getStringId
+import com.suhininalex.clones.getTextRangeInMethod
+import java.awt.EventQueue
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 

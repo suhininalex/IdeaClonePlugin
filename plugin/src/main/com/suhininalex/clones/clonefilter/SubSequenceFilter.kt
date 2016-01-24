@@ -1,6 +1,9 @@
 package com.suhininalex.clones.clonefilter
 
-import com.suhininalex.clones.*
+import com.suhininalex.clones.CloneClass
+import com.suhininalex.clones.descTraverser
+import com.suhininalex.clones.isEmpty
+import com.suhininalex.clones.riseTraverser
 import com.suhininalex.suffixtree.Node
 import stream
 import java.util.stream.Stream
