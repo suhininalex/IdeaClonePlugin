@@ -47,7 +47,7 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
 }
 
 object ClonesViewProvider {
-    fun  Project.getToolWindow() =
+    private fun Project.getToolWindow() =
             with (getToolWindowManager()) {
                 getToolWindow("CloneFinder") ?: registerToolWindow("CloneFinder", true, ToolWindowAnchor.BOTTOM)
             }
