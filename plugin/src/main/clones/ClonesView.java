@@ -8,6 +8,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.suhininalex.clones.Clone;
 import com.suhininalex.clones.CloneClass;
+import com.suhininalex.clones.ViewTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -36,8 +37,8 @@ public final class ClonesView extends Tree {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     Object selectedNode = getSelectionModel().getSelectionPath().getLastPathComponent();
-                    if (selectedNode instanceof JTreeCloneNode)
-                        ((JTreeCloneNode) selectedNode).selectInEditor();
+                    if (selectedNode instanceof ViewTreeNode)
+                        ((ViewTreeNode) selectedNode).selectInEditor();
                 }
             }
         };
@@ -48,7 +49,7 @@ public final class ClonesView extends Tree {
         DefaultMutableTreeNode classNode = new DefaultMutableTreeNode("Clone class with " + cloneClass.getLength() + " tokens and " + cloneClass.getSize() + " duplicates.");
         root.add(classNode);
         for (Clone range : cloneClass.getClones()) {
-            JTreeCloneNode clone = new JTreeCloneNode(range);
+            ViewTreeNode clone = new ViewTreeNode(range);
             classNode.add(clone);
         }
     }

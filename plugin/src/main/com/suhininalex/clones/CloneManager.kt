@@ -60,7 +60,7 @@ class CloneManager(internal val minCloneLength: Int) {
         tree.removeSequence(id)
     }
 
-    private fun getAllCloneClasses(): LinkedList<CloneClass> {
+    private fun getAllCloneClasses(): List<CloneClass> {
         val list = LinkedList<CloneClass>()
         val stack = stack(tree.root)
         stack.popEach {
