@@ -1,4 +1,5 @@
 import clones.ClonesView;
+import clones.ClonesViewProvider;
 import clones.ProjectClonesInitializer;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
@@ -21,7 +22,7 @@ public class CopyLineUpAction extends EditorAction {
         @Override
         protected void doExecute(Editor editor, Caret caret, DataContext dataContext) {
             Project project = editor.getProject();
-            ClonesView.showClonesData(project, ProjectClonesInitializer.INSTANCE.getInstance(project).getAllFilteredClones());
+            ClonesViewProvider.INSTANCE.showClonesData(project, ProjectClonesInitializer.INSTANCE.getInstance(project).getAllFilteredClones());
         }
     }
 

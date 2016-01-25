@@ -80,7 +80,7 @@ fun PsiDirectory.getPsiJavaFiles(): Stream<PsiJavaFile> =
 fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
     this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty() }.filter { it in filter }
 
-operator fun TokenSet.contains(element: PsiElement?) = this.contains(element?.node?.elementType)
+operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
-fun PsiElement.asSequence(filter: TokenSet) =
+fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
     this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty()  }

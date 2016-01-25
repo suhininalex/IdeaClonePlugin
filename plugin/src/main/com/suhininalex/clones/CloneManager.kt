@@ -49,7 +49,7 @@ class CloneManager(internal val minCloneLength: Int) {
             TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asSequence(getTokenFilter())?.map { node -> Token(node,method) }?.toList() ?: return
+        val sequence = method.body?.asStream(getTokenFilter())?.map { node -> Token(node,method) }?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }

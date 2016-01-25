@@ -14,7 +14,7 @@ object SubSequenceFilter : CloneClassFilter {
         val fullStream = nodesToCheck.tokenStream()
         return nodesToCheck.stream()
                 .map{CloneClass(it)}
-                .filter { println(it.length); it.length > 1 && cloneClass!!.length % it.length == 0 }
+                .filter { it.length > 1 && cloneClass!!.length % it.length == 0 }
                 .noneMatch { fullStream.isRepeatableBy{it.treeNode.descTraverser().tokenStream()} }
     }
 
