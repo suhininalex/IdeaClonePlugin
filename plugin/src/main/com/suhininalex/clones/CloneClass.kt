@@ -10,7 +10,7 @@ class CloneClass(val treeNode: Node) {
     val length = treeNode.lengthToRoot()
 
     val clones = object: Iterable<Clone> {
-        override fun iterator() = CloneIterator(treeNode, length).iterator()
+        override fun iterator() = CloneIterator(this@CloneClass).iterator()
     }
 
     val isEmpty = !clones.iterator().hasNext()

@@ -12,8 +12,10 @@ import com.suhininalex.suffixtree.Node
 import iterate
 import stream
 import java.awt.EventQueue
+import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
+import java.util.stream.StreamSupport
 
 fun PsiMethod.getStringId() =
         containingFile.containingDirectory.name + "." +
@@ -83,4 +85,24 @@ fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty()  }
+    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty()  }.filter { it !in filter }
+
+fun <T> times(times: Int, provider: ()->Stream<T>) =
+    (1..times).stream().flatMap { provider() }
+
+fun <T1,T2> zip(first: Iterator<T1>, second: Iterator<T2>) = iterate {
+    if (first.hasNext() && second.hasNext()) Pair(first.next(), second.next()) else null
+}
+
+fun <T1, T2> zip(first: Stream<T1>, second: Stream<T2>) =
+    zip(first.iterator(), second.iterator()).stream()
+
+fun <T> Iterator<T>.stream() = StreamSupport.stream(Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED), false)
+
+infix fun <T> Stream<T>.equalContent(another: Stream<T>) =
+    zip(this, another).allMatch { it.first == it.second }
+
+fun CloneClass.tokenStream() =
+    treeNode.descTraverser().stream().map { it.parentEdge }.filter { it != null }.flatMap { it.asSequence().stream() }
+
+fun Edge.asSequence() = sequence.subList(begin, end + 1) as List<Token>

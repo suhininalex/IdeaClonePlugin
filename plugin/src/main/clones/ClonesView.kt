@@ -20,7 +20,9 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
         override fun mouseClicked(e: MouseEvent) {
             if (e.clickCount == 2)
                 getSelectionModel().selectionPath.lastPathComponent.let {
-                    if (it is clones.ViewTreeNode) it.selectInEditor()
+                    if (it is clones.ViewTreeNode) {
+                        it.selectInEditor()
+                    }
                 }
         }
     }

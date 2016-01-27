@@ -13,7 +13,7 @@ class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescripti
     fun selectInEditor() = with (clone) {
         SelectInEditorManager.getInstance(project).selectInEditor(
             file,
-            firstPsi.textOffset,
+            firstPsi.textRange.startOffset,
             lastPsi.textRange.endOffset,
             false,
             false
@@ -21,7 +21,7 @@ class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescripti
     }
 }
 
-fun Clone.getDescription() = "Lines ${firstPsi.lineNumber} to ${lastPsi.lineNumber} from ${file.presentableName}"
+fun Clone.getDescription() = "Lines ${firstPsi.lineNumber} to ${lastPsi.lineNumber} from ${file.presentableName} "
 
 val Clone.firstPsi: PsiElement get() = firstElement.source
 

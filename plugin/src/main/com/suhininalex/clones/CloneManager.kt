@@ -42,20 +42,24 @@ class CloneManager(internal val minCloneLength: Int) {
     }
 
     fun getMethodFilteredClasses(method: PsiMethod) = rwLock.read {
-        getFilteredClasses(getAllMethodClasses(method))
+        val r = getFilteredClasses(getAllMethodClasses(method))
+        r.forEach {
+            it.tokenStream().forEach { print("${it.source.node.elementType} ") }
+            println() }
+        r
     }
 
-    private fun getTokenFilter() =
-            TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT)
+    val tokenFilter =
+        TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT) //, ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asStream(getTokenFilter())?.map { node -> Token(node,method) }?.toList() ?: return
+        val sequence = method.body?.asStream(tokenFilter)?.map { node -> Token(node,method) }?.skip(1)?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }
 
     private fun removeMethodUnlocked(method: PsiMethod) {
-        val id = methodIds[method.getStringId()] ?: throw IllegalArgumentException("There are no such method!")
+        val id = methodIds[method.getStringId()] ?: return
         methodIds.remove(method.getStringId())
         tree.removeSequence(id)
     }

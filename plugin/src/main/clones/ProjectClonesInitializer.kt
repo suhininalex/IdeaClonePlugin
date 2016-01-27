@@ -10,18 +10,16 @@ import nl.komponents.kovenant.CancelablePromise
 import nl.komponents.kovenant.task
 import java.awt.EventQueue
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object ProjectClonesInitializer {
 
-    private val map = HashMap<Project, CloneManager>()
+    private val map = ConcurrentHashMap<Project, CloneManager>()
 
-    @Synchronized fun getInstance(project: Project) =
-        map[project] ?:
-            (initializeCloneManager(project)).apply {
-                map.put(project, this)
-            }
+    fun getInstance(project: Project) =
+        map.computeIfAbsent(project) {initializeCloneManager(project)}
 
-    @Synchronized fun initializeCloneManager(project: Project): CloneManager {
+    fun initializeCloneManager(project: Project): CloneManager {
         val cloneManager = CloneManager(50)
         val files = project.getAllPsiJavaFiles().toList()
         val progressView = ProgressView(project, files.size)
@@ -37,13 +35,13 @@ object ProjectClonesInitializer {
             progressView.done()
         }
 
-        EventQueue.invokeAndWait {
+        EventQueue.invokeLater {
             if (! progressView.showAndGet())
                 (initialize as CancelablePromise).cancel(InterruptedException("cancel"))
         }
 
-        if (initialize.isSuccess()) return cloneManager
-        else throw initialize.getError()
+        initialize.get()
+        return cloneManager
     }
 
     private fun CloneManager.processPsiFile(file: PsiFile) =
