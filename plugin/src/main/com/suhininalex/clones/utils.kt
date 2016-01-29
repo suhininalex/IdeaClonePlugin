@@ -23,7 +23,7 @@ fun PsiMethod.getStringId() =
         name + "."+
         parameterList;
 
-fun Edge.getLength() = end - begin + 1
+val Edge.length: Int get() =  end - begin + 1
 
 fun Clone.getTextRange(offset: Int = 0) =
         TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
@@ -35,7 +35,7 @@ fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
 fun Token.getTextRange() = source.textRange
 
 fun Node.lengthToRoot() =
-        riseTraverser().sumBy { it.parentEdge?.getLength() ?: 0  }
+    riseTraverser().sumBy { it.parentEdge?.length ?: 0 }
 
 fun <T> callInEventQueue(body: ()->T): T {
     var result: T? = null
@@ -73,6 +73,12 @@ fun <T> Stream<out T>.concat(stream: Stream<out T>) = Stream.concat(this, stream
 fun <T> T.depthFirstTraverse(children: (T) -> Stream<T>): Stream<T> =
     Stream.of(this).concat( children(this).flatMap { it.depthFirstTraverse(children) } )
 
+fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Stream<T>) =
+    this.depthFirstTraverse { if (recursionFilter(it)) children(it) else Stream.empty() }
+
+fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Stream<T>) =
+    this.depthFirstTraverse ({ ! isLeaf(it) }, children).filter { isLeaf(it) }
+
 fun Project.getAllPsiJavaFiles() =
     PsiManager.getInstance(this).findDirectory(baseDir)!!.getPsiJavaFiles()
 
@@ -80,12 +86,12 @@ fun PsiDirectory.getPsiJavaFiles(): Stream<PsiJavaFile> =
     this.depthFirstTraverse { it.subdirectories.stream() }.flatMap { it.files.stream() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
 
 fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty() }.filter { it in filter }
+    this.depthFirstTraverse({it !in filter}) {it.children.stream()} .filter { it in filter }
 
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse { if (it !in filter) it.children.stream() else Stream.empty()  }.filter { it !in filter }
+    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }
 
 fun <T> times(times: Int, provider: ()->Stream<T>) =
     (1..times).stream().flatMap { provider() }

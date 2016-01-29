@@ -2,6 +2,7 @@ package clones
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
@@ -20,28 +21,29 @@ object ProjectClonesInitializer {
         map.computeIfAbsent(project) {initializeCloneManager(project)}
 
     fun initializeCloneManager(project: Project): CloneManager {
-        val cloneManager = CloneManager(50)
         val files = project.getAllPsiJavaFiles().toList()
         val progressView = ProgressView(project, files.size)
-
-        val initialize = task {
-            files.forEach {
-                Application.runReadAction {
-                    cloneManager.processPsiFile(it)
-                    progressView.next(it.name)
-                }
-            }
-        } success {
-            progressView.done()
-        }
+        val initialize = prepareTask(files, progressView)
 
         EventQueue.invokeLater {
             if (! progressView.showAndGet())
                 (initialize as CancelablePromise).cancel(InterruptedException("cancel"))
         }
 
-        initialize.get()
-        return cloneManager
+        return initialize.get()
+    }
+
+    private fun prepareTask(files: List<PsiJavaFile>, progressView: ProgressView) = task {
+        CloneManager(50).apply {
+            files.forEach {
+                Application.runReadAction {
+                    processPsiFile(it)
+                    progressView.next(it.name)
+                }
+            }
+        }
+    } success {
+        progressView.done()
     }
 
     private fun CloneManager.processPsiFile(file: PsiFile) =

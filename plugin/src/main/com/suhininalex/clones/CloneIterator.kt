@@ -26,10 +26,10 @@ class CloneIterator(val cloneClass: CloneClass) : Iterator<Clone> {
 
         with (edge) {
             if (terminal != null) {
-                addEdgesToStack(edge.terminal, offset+edge.getLength())
+                addEdgesToStack(edge.terminal, offset+edge.length)
                 return next()
             } else {
-                val lastElementIndex = end-offset-getLength()
+                val lastElementIndex = end-offset-length
                 val firstElementIndex = lastElementIndex - cloneClass.length + 1
                 return Clone(getFromSequence(firstElementIndex),getFromSequence(lastElementIndex))
             }

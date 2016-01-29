@@ -9,8 +9,6 @@ import com.suhininalex.clones.clonefilter.SubSequenceFilter
 import com.suhininalex.clones.clonefilter.SubclassFilter
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
-import popEach
-import stack
 import stream
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -41,12 +39,9 @@ class CloneManager(internal val minCloneLength: Int) {
         getFilteredClasses(getAllCloneClasses())
     }
 
+    //TODO clear me please
     fun getMethodFilteredClasses(method: PsiMethod) = rwLock.read {
-        val r = getFilteredClasses(getAllMethodClasses(method))
-        r.forEach {
-            it.tokenStream().forEach { print("${it.source.node.elementType} ") }
-            println() }
-        r
+        getFilteredClasses(getAllMethodClasses(method))
     }
 
     val tokenFilter =
@@ -64,20 +59,11 @@ class CloneManager(internal val minCloneLength: Int) {
         tree.removeSequence(id)
     }
 
-    private fun getAllCloneClasses(): List<CloneClass> {
-        val list = LinkedList<CloneClass>()
-        val stack = stack(tree.root)
-        stack.popEach {
-            it.edges.stream()
-                .map { it.terminal }
-                .filter { it != null }
-                .forEach { terminal ->
-                    stack.push(terminal)
-                    list.addIf(CloneClass(terminal)) {lengthClassFilter.isAllowed(it)}
-                }
-        }
-        return list
-    }
+    private fun getAllCloneClasses() =
+        tree.root.depthFirstTraverse { it.edges.stream().map { it.terminal }.filter { it!=null } }
+            .map { CloneClass(it) }
+            .filter { lengthClassFilter.isAllowed(it) }
+            .toList()
 
     fun getFilteredClasses(cloneClasses: List<CloneClass>): List<CloneClass> {
         val subClassFilter = SubclassFilter(cloneClasses)
