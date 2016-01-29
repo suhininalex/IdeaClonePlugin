@@ -34,7 +34,7 @@ object ProjectClonesInitializer {
     }
 
     private fun prepareTask(files: List<PsiJavaFile>, progressView: ProgressView) = task {
-        CloneManager(50).apply {
+        CloneManager().apply {
             files.forEach {
                 Application.runReadAction {
                     processPsiFile(it)

@@ -15,12 +15,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class CloneManager(internal val minCloneLength: Int) {
+class CloneManager() {
 
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(minCloneLength)
+    internal val lengthClassFilter = LengthFilter(50)
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)

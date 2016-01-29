@@ -86,7 +86,7 @@ fun PsiDirectory.getPsiJavaFiles(): Stream<PsiJavaFile> =
     this.depthFirstTraverse { it.subdirectories.stream() }.flatMap { it.files.stream() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
 
 fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse({it !in filter}) {it.children.stream()} .filter { it in filter }
+    this.leafTraverse({it in filter}) {it.children.stream()}
 
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
