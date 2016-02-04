@@ -7,6 +7,7 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.*
+import java.awt.EventQueue
 import java.util.concurrent.ConcurrentHashMap
 
 object ProjectClonesInitializer {
@@ -28,7 +29,9 @@ object ProjectClonesInitializer {
             }
         }
 
-        progressManager.runProcessWithProgressSynchronously(task, "Building suffix trie...", true, project)
+        callInEventQueue {
+            progressManager.runProcessWithProgressSynchronously(task, "Building suffix trie...", true, project)
+        }
 
         return cloneManager
     }

@@ -49,7 +49,7 @@ class CloneReport : LocalQuickFix {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
-        val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClasses(method)
+        val clones = project.getCloneManager().getMethodFilteredClasses(method)
         EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones.toList()) }
     }
 }
