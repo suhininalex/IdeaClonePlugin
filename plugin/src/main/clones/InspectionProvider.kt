@@ -8,6 +8,7 @@ import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.getCloneManager
 import com.suhininalex.clones.getStringId
 import com.suhininalex.clones.getTextRangeInMethod
+import com.suhininalex.clones.toList
 import java.awt.EventQueue
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
@@ -49,6 +50,6 @@ class CloneReport : LocalQuickFix {
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
         val clones = ProjectClonesInitializer.getInstance(project).getMethodFilteredClasses(method)
-        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones) }
+        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones.toList()) }
     }
 }

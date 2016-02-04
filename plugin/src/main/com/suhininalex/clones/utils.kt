@@ -13,6 +13,7 @@ import iterate
 import stream
 import java.awt.EventQueue
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
@@ -38,6 +39,7 @@ fun Node.lengthToRoot() =
     riseTraverser().sumBy { it.parentEdge?.length ?: 0 }
 
 fun <T> callInEventQueue(body: ()->T): T {
+    if (EventQueue.isDispatchThread()) return body()
     var result: T? = null
     EventQueue.invokeAndWait { result = body() }
     return result!!
@@ -112,3 +114,13 @@ fun CloneClass.tokenStream() =
     treeNode.descTraverser().stream().map { it.parentEdge }.filter { it != null }.flatMap { it.asSequence().stream() }
 
 fun Edge.asSequence() = sequence.subList(begin, end + 1) as List<Token>
+
+fun <T> Stream<T>.forEachIndexed(f: (Int, T) -> Unit) {
+    var i = 0
+    this.forEach { f(i++, it) }
+}
+
+fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
+    var i = 0
+    return this.peek { f(i++, it) }
+}

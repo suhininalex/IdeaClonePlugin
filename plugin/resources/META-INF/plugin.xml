@@ -25,7 +25,7 @@
 
   <actions>
     <!-- Add your actions here -->
-      <action id="CopyLineUpAction" class="CopyLineUpAction" text="CopyLineUpAction" description="desc">
+      <action id="ShowClonesHandler" class="ShowClonesHandler" text="ShowClonesHandler" description="desc">
           <add-to-group group-id="EditorActions" anchor="first"/>
           <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
       </action>

@@ -1,16 +1,12 @@
 package clones
 
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.*
-import nl.komponents.kovenant.CancelablePromise
-import nl.komponents.kovenant.task
-import java.awt.EventQueue
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object ProjectClonesInitializer {
@@ -22,28 +18,19 @@ object ProjectClonesInitializer {
 
     fun initializeCloneManager(project: Project): CloneManager {
         val files = project.getAllPsiJavaFiles().toList()
-        val progressView = ProgressView(project, files.size)
-        val initialize = prepareTask(files, progressView)
-
-        EventQueue.invokeLater {
-            if (! progressView.showAndGet())
-                (initialize as CancelablePromise).cancel(InterruptedException("cancel"))
-        }
-
-        return initialize.get()
-    }
-
-    private fun prepareTask(files: List<PsiJavaFile>, progressView: ProgressView) = task {
-        CloneManager().apply {
-            files.forEach {
-                Application.runReadAction {
-                    processPsiFile(it)
-                    progressView.next(it.name)
-                }
+        val cloneManager = CloneManager()
+        val progressManager = ProgressManager.getInstance()
+        val task = {
+            files.forEachIndexed { i, psiJavaFile ->
+                if (progressManager.progressIndicator.isCanceled) throw InterruptedException()
+                progressManager.progressIndicator.fraction = i.toDouble()/files.size
+                Application.runReadAction { cloneManager.processPsiFile(psiJavaFile) }
             }
         }
-    } success {
-        progressView.done()
+
+        progressManager.runProcessWithProgressSynchronously(task, "Building suffix trie...", true, project)
+
+        return cloneManager
     }
 
     private fun CloneManager.processPsiFile(file: PsiFile) =

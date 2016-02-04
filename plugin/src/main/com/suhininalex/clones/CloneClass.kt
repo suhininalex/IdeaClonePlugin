@@ -31,7 +31,6 @@ class CloneClass(val treeNode: Node) {
         fun Edge.getTerminalsWithOffset() =
                 Pair(this, 0).leafTraverse ({it.first.terminal==null}) {
                     val offset = it.first.length + it.second
-                    println("${it.first.parent }")
                     it.first.terminal.edges.stream().map { Pair(it, offset) }
                 }
 

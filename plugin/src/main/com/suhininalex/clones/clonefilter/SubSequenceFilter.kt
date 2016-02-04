@@ -12,9 +12,8 @@ object SubSequenceFilter : CloneClassFilter {
             .map{CloneClass(it)}
             .filter{ it.length > 1 }
             .filter { cloneClass.length != it.length }
-            .filter { cloneClass.length % it.length == 0}
             .noneMatch {
-                times(cloneClass.length / it.length) {it.tokenStream()} equalContent nodes.tokenStream()
+                times(cloneClass.length / it.length + 1) {it.tokenStream()} equalContent nodes.tokenStream()
             }
     }
 

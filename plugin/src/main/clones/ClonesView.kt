@@ -10,11 +10,14 @@ import stream
 import java.awt.EventQueue
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
 
 private class ClonesView (val clones: List<CloneClass>) : Tree() {
+
+    val index = AtomicInteger(1)
 
     val mouseListener = object : MouseAdapter() {
         override fun mouseClicked(e: MouseEvent) {
@@ -41,7 +44,7 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
         }
 
     private fun CloneClass.asTreeNode() =
-        DefaultMutableTreeNode("Clone class with $length tokens and $size duplicates.").apply {
+        DefaultMutableTreeNode("${index.andIncrement}. Clone class with $length tokens and $size duplicates.").apply {
             clones.forEach {
                 add(ViewTreeNode(it))
             }
