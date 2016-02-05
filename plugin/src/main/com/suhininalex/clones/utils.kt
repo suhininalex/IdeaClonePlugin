@@ -127,5 +127,5 @@ fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.ELSE_KEYWORD
+        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT
 ) //Optional: ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE)
