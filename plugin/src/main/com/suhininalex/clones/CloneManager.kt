@@ -3,6 +3,7 @@ package com.suhininalex.clones
 import addIf
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
@@ -24,7 +25,7 @@ class CloneManager() {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(60)
+    internal val lengthClassFilter = LengthFilter(50)
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -47,11 +48,9 @@ class CloneManager() {
         getAllMethodClasses(method).applyFilters()
     }
 
-    val tokenFilter =
-        TokenSet.create(ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.ELSE_KEYWORD) //, ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE)
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asStream(tokenFilter)?.map { node -> Token(node,method) }?.skip(1)?.toList() ?: return
+        val sequence = method.body?.asStream(javaTokenFilter)?.map { node -> Token(node,method) }?.skip(1)?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }
@@ -68,26 +67,28 @@ class CloneManager() {
             .filter { lengthClassFilter.isAllowed(it) }
 
 
-    fun getAllWithProgress(): List<CloneClass> {
-        val cloneClasses = getAllCloneClasses().toList()
-        val progressManager = ProgressManager.getInstance()
+    fun filteredClonesApply(callback: (List<CloneClass>) -> Unit) =
+        ProgressManager.getInstance().run(
+            FilterTask(getAllCloneClasses().toList(), callback)
+        )
 
-        val task = {
-            val commonFilter = createCommonFilter(cloneClasses)
-            cloneClasses.stream().peekIndexed { i, cloneClass ->
-                if (progressManager.progressIndicator.isCanceled) throw InterruptedException()
-                progressManager.progressIndicator.fraction = i.toDouble()/cloneClasses.size
+    class FilterTask(val cloneClasses: List<CloneClass>, val success: (List<CloneClass>) -> Unit) : Task.Backgroundable(null, "Filtering...", true) {
+            var filteredClones: List<CloneClass>? = null
+
+            override fun run(progressIndicator: ProgressIndicator) {
+                val commonFilter = createCommonFilter(cloneClasses)
+                filteredClones = cloneClasses.stream()
+                    .peekIndexed { i, cloneClass ->
+                        if (progressIndicator.isCanceled) throw InterruptedException()
+                        progressIndicator.fraction = i.toDouble()/cloneClasses.size
+                    }
+                    .filter { commonFilter.isAllowed(it) }.toList()
             }
-            .filter { commonFilter.isAllowed(it) }.toList()
+
+            override fun onSuccess() {
+                success(filteredClones!!)
+            }
         }
-
-        return progressManager.runProcessWithProgressSynchronously<List<CloneClass>, Exception>(task,"Filtering...", true, null)
-    }
-
-    fun createCommonFilter(cloneClasses: List<CloneClass>): CloneClassFilter {
-        val subclassFilter = SubclassFilter(cloneClasses)
-        return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) }
-    }
 
     fun Stream<CloneClass>.applyFilters(): Stream<CloneClass> {
         val clones = this.toList()
@@ -100,7 +101,6 @@ class CloneManager() {
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
 
-
         for (branchNode in tree.getAllLastSequenceNodes(id)) {
             for (currentNode in branchNode.riseTraverser()){
                 if (visitedNodes.contains(currentNode)) break;
@@ -112,4 +112,9 @@ class CloneManager() {
     }
 
     fun PsiMethod.getId() = methodIds[getStringId()]
+}
+
+fun createCommonFilter(cloneClasses: List<CloneClass>): CloneClassFilter {
+    val subclassFilter = SubclassFilter(cloneClasses)
+    return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) }
 }

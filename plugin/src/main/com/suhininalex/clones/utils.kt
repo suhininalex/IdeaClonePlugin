@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
@@ -93,7 +94,7 @@ fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }
+    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }.filter { it.children.isEmpty() }
 
 fun <T> times(times: Int, provider: ()->Stream<T>) =
     (1..times).stream().flatMap { provider() }
@@ -124,3 +125,7 @@ fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
     var i = 0
     return this.peek { f(i++, it) }
 }
+
+val javaTokenFilter = TokenSet.create(
+        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.ELSE_KEYWORD
+) //Optional: ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE)

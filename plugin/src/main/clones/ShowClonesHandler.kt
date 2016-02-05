@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.suhininalex.clones.getCloneManager
 import com.suhininalex.clones.toList
 
 /**
@@ -15,7 +16,7 @@ class ShowClonesHandler : EditorAction(ShowClonesHandler.EditorHandler()) {
     private class EditorHandler : EditorActionHandler() {
         override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
             val project = editor.project!!
-            ClonesViewProvider.showClonesData(project, ProjectClonesInitializer.getInstance(project).getAllWithProgress().toList())
+            project.getCloneManager().filteredClonesApply { ClonesViewProvider.showClonesData(project, it) }
         }
     }
 }
