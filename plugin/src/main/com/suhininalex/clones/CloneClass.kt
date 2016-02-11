@@ -13,7 +13,7 @@ class CloneClass(val treeNode: Node) {
             val (edge, offset) = it
             val lastElementIndex = edge.end - offset - edge.length
             val firstElementIndex = lastElementIndex - treeNode.lengthToRoot() + 1
-            return@map Clone(edge.getFromSequence(firstElementIndex), edge.getFromSequence(lastElementIndex))
+            return@map Clone(this, edge.getFromSequence(firstElementIndex), edge.getFromSequence(lastElementIndex))
         }
 
         val size by lazy {
