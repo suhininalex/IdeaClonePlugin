@@ -1,16 +1,21 @@
 package com.suhininalex.clones
 
+import com.suhininalex.clones.clonefilter.isRepeatableBy
 import com.suhininalex.suffixtree.SuffixTree
 import org.junit.Test
 import stream
-import java.util.stream.Stream
-import kotlin.reflect.KFunction0
 
 class UtilsKtTest {
 
     @Test
-    fun atat(){
+    fun concatTest(){
         listOf(1,2,3,4,5).stream().concat(listOf(6,7).stream()).forEach { print("$it ") }
+    }
+
+    @Test
+    fun repeatableTest(){
+        val res = listOf('a','x','b','x','a').isRepeatableBy { listOf('a') }
+        println(res)
     }
 
     @Test
@@ -21,9 +26,10 @@ class UtilsKtTest {
 
     @Test
     fun testZip(){
-        val s1 = listOf(1,2,3,4)
+        val s1 = listOf(1,2,3,4).stream()
         val s2 = listOf("first","second","third")
-        zip(s1.stream(),s2.stream()).forEach { println(it) }
+        zip(s1,s2.stream()).forEach { println(it) }
+        s1.forEach { print(it) }
     }
 
     @Test
@@ -32,4 +38,6 @@ class UtilsKtTest {
         tree.addSequence(listOf('a','x','a','x','a'))
         println(tree)
     }
+
+
 }
