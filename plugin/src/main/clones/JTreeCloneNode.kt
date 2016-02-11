@@ -6,9 +6,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.Clone
+import com.suhininalex.clones.toList
+import com.suhininalex.clones.tokenStream
 import javax.swing.tree.DefaultMutableTreeNode
 
 class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription()) {
+
+//    init {
+//        add(DefaultMutableTreeNode(clone.cloneClass.tokenStream().toList().toString()))
+//    }
 
     fun selectInEditor() = with (clone) {
         SelectInEditorManager.getInstance(project).selectInEditor(
