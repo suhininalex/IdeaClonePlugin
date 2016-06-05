@@ -91,7 +91,7 @@ fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }.filter { it.children.isEmpty() }
+    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }
 
 fun <T> times(times: Int, provider: ()-> Stream<T>) =
     (1..times).stream().flatMap { provider() }
@@ -124,5 +124,10 @@ fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT
-) //Optional: ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE)
+        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT,ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE
+    )
+
+fun Stream<Token>.print(){
+    forEach { print("${it.source.node.elementType} ") }
+    println()
+}
