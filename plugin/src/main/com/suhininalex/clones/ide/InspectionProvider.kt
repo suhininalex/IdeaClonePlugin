@@ -1,13 +1,14 @@
 package com.suhininalex.clones.ide
 
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.BaseJavaLocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaElementVisitor
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.core.getCloneManager
-import com.suhininalex.clones.core.getStringId
-import com.suhininalex.clones.core.getTextRangeInMethod
 import com.suhininalex.clones.core.toList
 import java.awt.EventQueue
 import java.util.concurrent.atomic.AtomicLong
@@ -31,15 +32,15 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
     val counter = AtomicLong(0)
     //TODO method removing!
     override fun visitMethod(method: PsiMethod) {
-        val cloneManager = method.project.getCloneManager()
-        cloneManager.updateMethod(method)
-
-            cloneManager.getMethodFilteredClasses(method).forEach {
-                it.clones.forEach {
-                    if (it.firstElement.method.getStringId() == method.getStringId())
-                        holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), cloneReport)
-                }
-            }
+//        val cloneManager = method.project.getCloneManager()
+//        cloneManager.updateMethod(method)
+//
+//            cloneManager.getMethodFilteredClasses(method).forEach {
+//                it.clones.forEach {
+//                    if (it.firstElement.method.getStringId() == method.getStringId())
+//                        holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), cloneReport)
+//                }
+//            }
     }
 }
 

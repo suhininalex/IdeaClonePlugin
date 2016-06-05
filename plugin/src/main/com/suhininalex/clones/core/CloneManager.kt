@@ -90,7 +90,7 @@ class CloneManager() {
         return clones.stream().filter { commonFilter.isAllowed(it)}
     }
 
-    private fun getAllMethodClasses(method: PsiMethod): Stream<CloneClass> {
+    fun getAllMethodClasses(method: PsiMethod): Stream<CloneClass> {
         val classes = LinkedList<CloneClass>()
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")

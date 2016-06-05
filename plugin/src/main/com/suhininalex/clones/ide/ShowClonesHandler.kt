@@ -16,18 +16,22 @@ object editorHandler : EditorActionHandler() {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         val project = editor.project!!
         project.getCloneManager().filteredClonesApply { ClonesViewProvider.showClonesData(project, it) }
-
-//        println("Update testing:")
-//        val times = project.getAllPsiJavaFiles().flatMap { it.findTokens(TokenSet.create(ElementType.METHOD)) }.map {
-//            elapsedTime {
-//                project.getCloneManager().updateMethod(it as PsiMethod)
-//                project.getCloneManager().getMethodFilteredClasses(it)
-//            }
-//        }
-//        .limit(5000).toList()
-//
-//        println("MAX: ${times.max()}")
-//        println("Average: ${times.average()}")
-//        println("Med: ${times.sorted()[times.size/2]}")
     }
 }
+
+
+//project.getCloneManager()
+
+//println("Update testing:")
+//val times = project.getAllPsiJavaFiles().flatMap { it.findTokens(TokenSet.create(ElementType.METHOD)) }.map {
+//    val t = elapsedTime {
+//        project.getCloneManager().getMethodFilteredClasses(it as PsiMethod)
+//    }
+//    println("Done: $t")
+//    t
+//}
+//        .skip(1).limit(5000).toList()
+//
+//println("MAX: ${times.max()}")
+//println("Average: ${times.average()}")
+//println("Med: ${times.sorted()[times.size/2]}")
