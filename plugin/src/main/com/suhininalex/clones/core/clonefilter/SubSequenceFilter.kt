@@ -1,9 +1,8 @@
-package com.suhininalex.clones.clonefilter
+package com.suhininalex.clones.core.clonefilter
 
 import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.*
+import com.suhininalex.clones.core.*
 import com.suhininalex.suffixtree.Node
 import stream
 
@@ -12,11 +11,11 @@ object SubSequenceFilter : CloneClassFilter {
         cloneClass ?: return false
         val nodes = cloneClass.treeNode.descTraverser()
         return nodes.stream()
-            .map{CloneClass(it)}
+            .map{ CloneClass(it) }
             .filter{ it.length > 1 }
             .filter { cloneClass.length != it.length }
             .noneMatch {
-                val first = times(cloneClass.length / it.length + 1) {it.tokenStream()}.filter { it.source !in xFilter }
+                val first = times(cloneClass.length / it.length + 1) { it.tokenStream() }.filter { it.source !in xFilter }
                 val second = nodes.tokenStream().filter { it.source !in xFilter }
                 first equalContent second
             }

@@ -1,7 +1,7 @@
-package com.suhininalex.clones.clonefilter
+package com.suhininalex.clones.core.clonefilter
 
-import com.suhininalex.clones.CloneClass
-import com.suhininalex.clones.length
+import com.suhininalex.clones.core.CloneClass
+import com.suhininalex.clones.core.length
 
 object CropTailFilter : CloneClassFilter {
 

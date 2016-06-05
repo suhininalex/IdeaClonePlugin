@@ -1,13 +1,14 @@
-package com.suhininalex.clones
+package com.suhininalex.clones.core
 
 import addIf
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.clonefilter.*
+import com.suhininalex.clones.core.clonefilter.CloneClassFilter
+import com.suhininalex.clones.core.clonefilter.LengthFilter
+import com.suhininalex.clones.core.clonefilter.SubSequenceFilter
+import com.suhininalex.clones.core.clonefilter.SubclassFilter
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
 import stream
@@ -43,7 +44,7 @@ class CloneManager() {
 
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asStream(javaTokenFilter)?.map { node -> Token(node,method) }?.toList() ?: return
+        val sequence = method.body?.asStream(javaTokenFilter)?.map { node -> Token(node, method) }?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }
@@ -109,5 +110,5 @@ class CloneManager() {
 
 fun createCommonFilter(cloneClasses: List<CloneClass>): CloneClassFilter {
     val subclassFilter = SubclassFilter(cloneClasses)
-    return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it)  } //&& CropTailFilter.isAllowed(it)
+    return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) } //&& CropTailFilter.isAllowed(it)
 }

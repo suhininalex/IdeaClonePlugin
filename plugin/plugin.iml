@@ -16,7 +16,6 @@
     <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-core:3.0.0-beta.4" level="project" />
     <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-functional:3.0.0-beta.4" level="project" />
     <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-jvm:3.0.0-beta.4" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4584" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4584" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>

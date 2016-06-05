@@ -1,4 +1,4 @@
-package clones
+package com.suhininalex.clones.ide
 
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -6,8 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.*
-import java.awt.EventQueue
+import com.suhininalex.clones.core.*
 import java.util.concurrent.ConcurrentHashMap
 
 object ProjectClonesInitializer {
@@ -15,7 +14,7 @@ object ProjectClonesInitializer {
     private val map = ConcurrentHashMap<Project, CloneManager>()
 
     fun getInstance(project: Project) =
-        map.computeIfAbsent(project) {initializeCloneManager(project)}
+        map.computeIfAbsent(project) { initializeCloneManager(project) }
 
     fun initializeCloneManager(project: Project): CloneManager {
         val files = project.getAllPsiJavaFiles().toList()
@@ -29,9 +28,11 @@ object ProjectClonesInitializer {
             }
         }
 
-        callInEventQueue {
+        val succeed = callInEventQueue {
             progressManager.runProcessWithProgressSynchronously(task, "Building suffix trie...", true, project)
         }
+
+        if (! succeed) throw InterruptedException()
 
         return cloneManager
     }

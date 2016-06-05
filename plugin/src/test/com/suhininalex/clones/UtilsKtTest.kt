@@ -1,10 +1,11 @@
 package com.suhininalex.clones
 
+import com.suhininalex.clones.core.concat
+import com.suhininalex.clones.core.times
+import com.suhininalex.clones.core.zip
 import com.suhininalex.suffixtree.SuffixTree
 import org.junit.Test
 import stream
-import java.util.stream.Stream
-import kotlin.reflect.KFunction0
 
 class UtilsKtTest {
 
@@ -16,14 +17,14 @@ class UtilsKtTest {
     @Test
     fun repeatStream(){
         val s = listOf(1,2,3)
-        times(3){s.stream()}.forEach { print("$it ") }
+        times(3) { s.stream() }.forEach { print("$it ") }
     }
 
     @Test
     fun testZip(){
         val s1 = listOf(1,2,3,4)
         val s2 = listOf("first","second","third")
-        zip(s1.stream(),s2.stream()).forEach { println(it) }
+        zip(s1.stream(), s2.stream()).forEach { println(it) }
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.suhininalex.clones
+package com.suhininalex.clones.core
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod

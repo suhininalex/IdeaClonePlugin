@@ -1,15 +1,16 @@
-package clones
+package com.suhininalex.clones.ide
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaElementVisitor
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiMethod
-import com.suhininalex.clones.getCloneManager
-import com.suhininalex.clones.getStringId
-import com.suhininalex.clones.getTextRangeInMethod
-import com.suhininalex.clones.toList
+import com.suhininalex.clones.core.getCloneManager
+import com.suhininalex.clones.core.getStringId
+import com.suhininalex.clones.core.getTextRangeInMethod
+import com.suhininalex.clones.core.toList
 import java.awt.EventQueue
+import java.util.concurrent.atomic.AtomicLong
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
@@ -20,24 +21,25 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
     override fun getDisplayName() = "Clone detection"
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-        CloneInspectionVisitor(holder)
+            CloneInspectionVisitor(holder)
 }
 
 class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() {
 
     val cloneReport = CloneReport()
 
+    val counter = AtomicLong(0)
     //TODO method removing!
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
         cloneManager.updateMethod(method)
 
-        cloneManager.getMethodFilteredClasses(method).forEach {
-            it.clones.forEach {
-                if (it.firstElement.method.getStringId()==method.getStringId())
-                    holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), cloneReport)
+            cloneManager.getMethodFilteredClasses(method).forEach {
+                it.clones.forEach {
+                    if (it.firstElement.method.getStringId() == method.getStringId())
+                        holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(), cloneReport)
+                }
             }
-        }
     }
 }
 

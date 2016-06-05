@@ -9,31 +9,18 @@
       <em>...</em>
     ]]></description>
 
-  <!--<change-notes><![CDATA[-->
-      <!--Add change notes here.<br>-->
-      <!--<em>most HTML tags may be used</em>-->
-    <!--]]>-->
-  <!--</change-notes>-->
-
   <idea-version since-build="131"/>
 
-  <!--<application-components>-->
-  <!--</application-components>-->
-
-  <!--<project-components>-->
-  <!--</project-components>-->
-
   <actions>
-    <!-- Add your actions here -->
-      <action id="ShowClonesHandler" class="ShowClonesHandler" text="ShowClonesHandler" description="desc">
+      <action id="ShowClonesHandler" class="com.suhininalex.clones.ide.ShowClonesHandler" text="ShowClonesHandler" description="desc">
           <add-to-group group-id="EditorActions" anchor="first"/>
           <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
       </action>
   </actions>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
-                         groupBundle="messages.InspectionsBundle" enabledByDefault="true"
-                         level="WARNING" implementationClass="clones.InspectionProvider"/>
-    </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+      <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
+                       groupBundle="messages.InspectionsBundle" enabledByDefault="true"
+                       level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"/>
+  </extensions>
 </idea-plugin>

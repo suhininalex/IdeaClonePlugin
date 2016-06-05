@@ -1,6 +1,5 @@
-package com.suhininalex.clones
+package com.suhininalex.clones.core
 
-import clones.ProjectClonesInitializer
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -8,13 +7,13 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 import iterate
 import stream
 import java.awt.EventQueue
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
@@ -25,12 +24,10 @@ fun PsiMethod.getStringId() =
         name + "."+
         parameterList;
 
-val Edge.length: Int get() =  end - begin + 1
+val Edge.length: Int
+    get() = end - begin + 1
 
-fun Clone.getTextRange(offset: Int = 0) =
-        TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset - offset)
-
-fun Clone.getTextRangeInMethod() = getTextRange(firstElement.method.textRange.startOffset)
+fun Clone.getTextRangeInMethod() = TextRange(firstElement.getTextRange().startOffset, lastElement.getTextRange().endOffset)
 
 fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
 
@@ -54,7 +51,7 @@ fun Node.riseTraverser() = object: Iterable<Node> {
     var node: Node? = this@riseTraverser
     override fun iterator() = iterate {
         val result = node
-        node=node?.parentEdge?.parent
+        node = node?.parentEdge?.parent
         result
     }
 }
@@ -96,7 +93,7 @@ operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(el
 fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
     this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }.filter { it.children.isEmpty() }
 
-fun <T> times(times: Int, provider: ()->Stream<T>) =
+fun <T> times(times: Int, provider: ()-> Stream<T>) =
     (1..times).stream().flatMap { provider() }
 
 fun <T1,T2> zip(first: Iterator<T1>, second: Iterator<T2>) = iterate {

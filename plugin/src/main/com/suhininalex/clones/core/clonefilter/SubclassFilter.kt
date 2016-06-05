@@ -1,10 +1,9 @@
-package com.suhininalex.clones.clonefilter
+package com.suhininalex.clones.core.clonefilter
 
-import com.suhininalex.clones.CloneClass
+import com.suhininalex.clones.core.CloneClass
 import com.suhininalex.suffixtree.Node
 import stream
-
-import java.util.IdentityHashMap
+import java.util.*
 
 class SubclassFilter(cloneClassesToFilter: Iterable<CloneClass>) : CloneClassFilter {
 
