@@ -17,11 +17,27 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
     <properties>
-        <kotlin.version>1.0.1</kotlin.version>
+        <kotlin.version>1.1.0-beta-17</kotlin.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -46,6 +62,10 @@
     </dependencies>
 
     <repositories>
+        <repository>
+            <id>Kotlin-beta</id>
+            <url>http://dl.bintray.com/kotlin/kotlin-eap-1.1</url>
+        </repository>
           <repository>
             <id>suhininalex</id>
             <url>https://github.com/suhininalex/SuffixTree/raw/master/mvn-repo</url>
