@@ -5,6 +5,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
+import com.suhininalex.clones.core.Clone
 import com.suhininalex.clones.core.CloneClass
 import stream
 import java.awt.EventQueue
@@ -47,6 +48,8 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
                 this.add(ViewTreeNode(it))
             }
         }
+
+    fun Clone.asString() = firstPsi.node.elementType.toString() + " | " + lastPsi.node.elementType.toString();
 }
 
 object ClonesViewProvider {

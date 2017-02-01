@@ -23,7 +23,7 @@ class CloneManager() {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(50)
+    internal val lengthClassFilter = LengthFilter(60)
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -44,7 +44,7 @@ class CloneManager() {
 
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asStream(javaTokenFilter)?.map { node -> Token(node, method) }?.toList() ?: return
+        val sequence = method.body?.asStream()?.filter { it !in javaTokenFilter }?.map { node -> Token(node, method) }?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }

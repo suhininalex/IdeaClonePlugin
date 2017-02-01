@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
-import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
@@ -14,6 +14,7 @@ import iterate
 import stream
 import java.awt.EventQueue
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
@@ -27,7 +28,7 @@ fun PsiMethod.getStringId() =
 val Edge.length: Int
     get() = end - begin + 1
 
-fun Clone.getTextRangeInMethod() = TextRange(firstElement.getTextRange().startOffset, lastElement.getTextRange().endOffset)
+fun Clone.getTextRangeInMethod(offset: Int) = TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset-offset)
 
 fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
 
@@ -90,8 +91,8 @@ fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
 
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
-fun PsiElement.asStream(filter: TokenSet): Stream<PsiElement> =
-    this.depthFirstTraverse ({it !in filter}) { it.children.stream() } .filter { it !in filter }
+fun PsiElement.asStream(): Stream<PsiElement> =
+    this.depthFirstTraverse { it.children.stream() }
 
 fun <T> times(times: Int, provider: ()-> Stream<T>) =
     (1..times).stream().flatMap { provider() }
@@ -124,7 +125,7 @@ fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        ElementType.WHITE_SPACE, ElementType.SEMICOLON, ElementType.RBRACE, ElementType.LBRACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT,ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE
+        WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, RPARENTH, LPARENTH, RBRACE, LBRACE, CODE_BLOCK, EXPRESSION_LIST
     )
 
 fun Stream<Token>.print(){
