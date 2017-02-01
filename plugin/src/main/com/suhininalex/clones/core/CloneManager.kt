@@ -1,13 +1,8 @@
 package com.suhininalex.clones.core
 
-import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.psi.PsiMethod
-import com.suhininalex.clones.core.clonefilter.CloneClassFilter
-import com.suhininalex.clones.core.clonefilter.LengthFilter
-import com.suhininalex.clones.core.clonefilter.SubSequenceFilter
-import com.suhininalex.clones.core.clonefilter.SubclassFilter
+import com.suhininalex.clones.core.clonefilter.*
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
 import java.lang.IllegalStateException
@@ -36,11 +31,6 @@ class CloneManager {
         addMethodUnlocked(method)
     }
 
-    fun getMethodFilteredClasses(method: PsiMethod) = rwLock.read {
-        getAllMethodClasses(method).applyFilters()
-    }
-
-
     private fun addMethodUnlocked(method: PsiMethod) {
         val sequence = method.body?.asSequence()?.filter { it !in javaTokenFilter }?.map { node -> Token(node, method) }?.toList() ?: return
         val id = tree.addSequence(sequence)
@@ -53,44 +43,13 @@ class CloneManager {
         tree.removeSequence(id)
     }
 
-    private fun getAllCloneClasses(): Sequence<CloneClass>  =
-        tree.root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it!=null } }
-            .map { CloneClass(it) }
-            .filter { lengthClassFilter.isAllowed(it) }
-
-
-    fun filteredClonesApply(callback: (List<CloneClass>) -> Unit) =
-        ProgressManager.getInstance().run(
-            FilterTask(getAllCloneClasses().toList(), callback)
-        )
-
-    class FilterTask(val cloneClasses: List<CloneClass>, val success: (List<CloneClass>) -> Unit) : Task.Backgroundable(null, "Filtering...", true) {
-            var filteredClones: List<CloneClass>? = null
-
-            val filter by lazy {
-                createCommonFilter(cloneClasses)
-            }
-
-            override fun run(progressIndicator: ProgressIndicator) {
-                filteredClones = cloneClasses.filterIndexed { i, cloneClass ->
-                        if (progressIndicator.isCanceled) throw InterruptedException()
-                        progressIndicator.fraction = i.toDouble()/cloneClasses.size
-                        filter.isAllowed(cloneClass)
-                    }
-            }
-
-            override fun onSuccess() {
-                success(filteredClones!!)
-            }
-        }
-
-    fun Sequence<CloneClass>.applyFilters(): Sequence<CloneClass> {
-        val clones = this.toList()
-        val commonFilter = createCommonFilter(clones)
-        return clones.asSequence().filter { commonFilter.isAllowed(it)}
+    fun getAllCloneClasses(): Sequence<CloneClass>  = rwLock.read {
+        tree.root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
+                .map(::CloneClass)
+                .filter { lengthClassFilter.isAllowed(it) }
     }
 
-    fun getAllMethodClasses(method: PsiMethod): Sequence<CloneClass> {
+    fun getAllMethodClasses(method: PsiMethod): Sequence<CloneClass> = rwLock.read {
         val classes = LinkedList<CloneClass>()
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
@@ -106,9 +65,4 @@ class CloneManager {
     }
 
     fun PsiMethod.getId() = methodIds[getStringId()]
-}
-
-fun createCommonFilter(cloneClasses: List<CloneClass>): CloneClassFilter {
-    val subclassFilter = SubclassFilter(cloneClasses)
-    return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) } //&& CropTailFilter.isAllowed(it)
 }

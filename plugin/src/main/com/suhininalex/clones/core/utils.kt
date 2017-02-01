@@ -58,7 +58,7 @@ fun <T> T.depthFirstTraverse(children: (T) -> Sequence<T>): Sequence<T> =
        sequenceOf(this) + children(this).flatMap { it.depthFirstTraverse(children) }
 
 fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Sequence<T>) =
-        this.depthFirstTraverse { if (recursionFilter(it)) children(it) else sequenceOf() }
+        this.depthFirstTraverse { if (recursionFilter(it)) children(it) else emptySequence() }
 
 fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Sequence<T>) =
     this.depthFirstTraverse ({ ! isLeaf(it) }, children).filter { isLeaf(it) }

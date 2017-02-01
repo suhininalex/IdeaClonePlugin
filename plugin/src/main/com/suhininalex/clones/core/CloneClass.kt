@@ -8,7 +8,7 @@ class CloneClass(val treeNode: Node) {
     val clones: Sequence<Clone>
         get() =
             if (length==0) {
-                sequenceOf()
+                emptySequence()
             } else {
                 treeNode.edges.asSequence().flatMap { it.getTerminalsWithOffset() }.map { (edge, offset) ->
                     val lastElementIndex = edge.end - offset - edge.length
