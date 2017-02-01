@@ -8,14 +8,18 @@ import java.util.stream.Stream
 
 class CloneClass(val treeNode: Node) {
 
-    val clones: Stream<Clone> get() =
-        if (length==0) Stream.empty()
-        else treeNode.edges.stream().flatMap { it.getTerminalsWithOffset() }.map {
-            val (edge, offset) = it
-            val lastElementIndex = edge.end - offset - edge.length
-            val firstElementIndex = lastElementIndex - treeNode.lengthToRoot() + 1
-            return@map Clone(this, edge.getFromSequence(firstElementIndex), edge.getFromSequence(lastElementIndex))
-        }
+    val clones: Sequence<Clone>
+        get() =
+            if (length==0) {
+                sequenceOf()
+            } else {
+                treeNode.edges.asSequence().flatMap { it.getTerminalsWithOffset() }.map { (edge, offset) ->
+                    val lastElementIndex = edge.end - offset - edge.length
+                    val firstElementIndex = lastElementIndex - treeNode.lengthToRoot() + 1
+                    return@map Clone(this, edge.getFromSequence(firstElementIndex), edge.getFromSequence(lastElementIndex))
+                }
+            }
+
 
     val size by lazy {
         clones.count()
@@ -32,7 +36,7 @@ class CloneClass(val treeNode: Node) {
     private fun Edge.getTerminalsWithOffset() =
         Pair(this, 0).leafTraverse ({it.first.terminal==null}) {
             val offset = it.first.length + it.second
-            it.first.terminal.edges.stream().map { Pair(it, offset) }
+            it.first.terminal.edges.asSequence().map { Pair(it, offset) }
         }
 
     private fun Edge.getFromSequence(pos: Int) = sequence[pos] as Token

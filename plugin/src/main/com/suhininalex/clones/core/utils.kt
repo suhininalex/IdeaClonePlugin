@@ -13,6 +13,7 @@ import com.suhininalex.suffixtree.Node
 import iterate
 import stream
 import java.awt.EventQueue
+import java.lang.IllegalArgumentException
 import java.util.*
 import java.util.concurrent.atomic.AtomicLong
 import java.util.stream.Collectors
@@ -69,54 +70,41 @@ fun <T> Stream<T>.toList(): List<T> = collect(Collectors.toList()) as List<T>
 
 fun <T> Iterator<T>.nextOrNull() = if (hasNext()) next() else null
 
-fun <T> Stream<out T>.concat(stream: Stream<out T>) = Stream.concat(this, stream)
+fun <T> T.depthFirstTraverse(children: (T) -> Sequence<T>): Sequence<T> =
+       sequenceOf(this) + children(this).flatMap { it.depthFirstTraverse(children) }
 
-fun <T> T.depthFirstTraverse(children: (T) -> Stream<T>): Stream<T> =
-    Stream.of(this).concat( children(this).flatMap { it.depthFirstTraverse(children) } )
+fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Sequence<T>) =
+        this.depthFirstTraverse { if (recursionFilter(it)) children(it) else sequenceOf() }
 
-fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Stream<T>) =
-    this.depthFirstTraverse { if (recursionFilter(it)) children(it) else Stream.empty() }
-
-fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Stream<T>) =
+fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Sequence<T>) =
     this.depthFirstTraverse ({ ! isLeaf(it) }, children).filter { isLeaf(it) }
 
 fun Project.getAllPsiJavaFiles() =
     PsiManager.getInstance(this).findDirectory(baseDir)!!.getPsiJavaFiles()
 
-fun PsiDirectory.getPsiJavaFiles(): Stream<PsiJavaFile> =
-    this.depthFirstTraverse { it.subdirectories.stream() }.flatMap { it.files.stream() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
+fun PsiDirectory.getPsiJavaFiles(): Sequence<PsiJavaFile> =
+    this.depthFirstTraverse { it.subdirectories.asSequence() }.flatMap { it.files.asSequence() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
 
-fun PsiElement.findTokens(filter: TokenSet): Stream<PsiElement> =
-    this.leafTraverse({it in filter}) {it.children.stream()}
+fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
+    this.leafTraverse({it in filter}) {it.children.asSequence()}
 
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
-fun PsiElement.asStream(): Stream<PsiElement> =
-    this.depthFirstTraverse { it.children.stream() }
+fun PsiElement.asStream(): Sequence<PsiElement> =
+    this.depthFirstTraverse { it.children.asSequence() }
 
-fun <T> times(times: Int, provider: ()-> Stream<T>) =
-    (1..times).stream().flatMap { provider() }
+fun <T> times(times: Int, provider: ()-> Sequence<T>): Sequence<T> =
+    (1..times).asSequence().flatMap { provider() }
 
-fun <T1,T2> zip(first: Iterator<T1>, second: Iterator<T2>) = iterate {
-    if (first.hasNext() && second.hasNext()) Pair(first.next(), second.next()) else null
-}
+infix fun <T> Sequence<T>.equalContent(another: Sequence<T>) =
+    zip(another).all { (a,b) -> a == b }
 
-fun <T1, T2> zip(first: Stream<T1>, second: Stream<T2>) =
-    zip(first.iterator(), second.iterator()).stream()
+fun CloneClass.tokenSequence(): Sequence<Token> =
+    treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
-fun <T> Iterator<T>.stream() = StreamSupport.stream(Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED), false)
-
-infix fun <T> Stream<T>.equalContent(another: Stream<T>) =
-    zip(this, another).allMatch { it.first == it.second }
-
-fun CloneClass.tokenStream() =
-    treeNode.descTraverser().stream().map { it.parentEdge }.filter { it != null }.flatMap { it.asSequence().stream() }
-
-fun Edge.asSequence() = sequence.subList(begin, end + 1) as List<Token>
-
-fun <T> Stream<T>.forEachIndexed(f: (Int, T) -> Unit) {
-    var i = 0
-    this.forEach { f(i++, it) }
+fun Edge.asSequence(): Sequence<Token> {
+    terminal ?: throw IllegalArgumentException("You should never call this method for terminating edge.")
+    return (sequence.subList(begin, end + 1) as MutableList<Token>).asSequence()
 }
 
 fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
@@ -128,7 +116,6 @@ val javaTokenFilter = TokenSet.create(
         WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, RPARENTH, LPARENTH, RBRACE, LBRACE, CODE_BLOCK, EXPRESSION_LIST
     )
 
-fun Stream<Token>.print(){
-    forEach { print("${it.source.node.elementType} ") }
-    println()
-}
+
+fun <T> Sequence<T>.isEmpty() =
+        iterator().hasNext()

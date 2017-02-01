@@ -54,11 +54,6 @@
             <artifactId>utils</artifactId>
             <version>0.0</version>
         </dependency>
-        <dependency>
-            <groupId>nl.komponents.kovenant</groupId>
-            <artifactId>kovenant</artifactId>
-            <version>3.0.0-beta.4</version>
-        </dependency>
     </dependencies>
 
     <repositories>

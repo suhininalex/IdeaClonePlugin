@@ -11,10 +11,9 @@ import com.suhininalex.clones.core.clonefilter.SubSequenceFilter
 import com.suhininalex.clones.core.clonefilter.SubclassFilter
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
-import stream
+import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import java.util.stream.Stream
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
@@ -23,7 +22,7 @@ class CloneManager() {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(60)
+    internal val lengthClassFilter = LengthFilter(40)
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -55,8 +54,8 @@ class CloneManager() {
         tree.removeSequence(id)
     }
 
-    private fun getAllCloneClasses()  =
-        tree.root.depthFirstTraverse { it.edges.stream().map { it.terminal }.filter { it!=null } }
+    private fun getAllCloneClasses(): Sequence<CloneClass>  =
+        tree.root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it!=null } }
             .map { CloneClass(it) }
             .filter { lengthClassFilter.isAllowed(it) }
 
@@ -84,13 +83,13 @@ class CloneManager() {
             }
         }
 
-    fun Stream<CloneClass>.applyFilters(): Stream<CloneClass> {
+    fun Sequence<CloneClass>.applyFilters(): Sequence<CloneClass> {
         val clones = this.toList()
         val commonFilter = createCommonFilter(clones)
-        return clones.stream().filter { commonFilter.isAllowed(it)}
+        return clones.asSequence().filter { commonFilter.isAllowed(it)}
     }
 
-    fun getAllMethodClasses(method: PsiMethod): Stream<CloneClass> {
+    fun getAllMethodClasses(method: PsiMethod): Sequence<CloneClass> {
         val classes = LinkedList<CloneClass>()
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method!")
@@ -102,7 +101,7 @@ class CloneManager() {
                 classes.addIf(CloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
             }
         }
-        return classes.stream()
+        return classes.asSequence()
     }
 
     fun PsiMethod.getId() = methodIds[getStringId()]

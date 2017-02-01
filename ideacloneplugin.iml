@@ -6,66 +6,21 @@
         <option name="compilerInfo">
           <KotlinCompilerInfo>
             <option name="compilerSettings">
-              <CompilerSettings>
-                <option name="additionalArguments" value="-version" />
-                <option name="copyJsLibraryFiles" value="true" />
-                <option name="outputDirectoryForJsLibraryFiles" value="lib" />
-              </CompilerSettings>
+              <CompilerSettings />
             </option>
             <option name="k2jsCompilerArguments">
               <K2JSCompilerArguments>
-                <option name="outputFile" />
-                <option name="noStdlib" value="false" />
-                <option name="libraryFiles" />
-                <option name="sourceMap" value="false" />
-                <option name="metaInfo" value="false" />
-                <option name="kjsm" value="false" />
-                <option name="target" />
-                <option name="moduleKind" />
-                <option name="main" />
-                <option name="outputPrefix" />
-                <option name="outputPostfix" />
-                <option name="languageVersion" />
-                <option name="apiVersion" />
-                <option name="suppressWarnings" value="false" />
-                <option name="verbose" value="false" />
-                <option name="version" value="false" />
-                <option name="help" value="false" />
-                <option name="extraHelp" value="false" />
-                <option name="noInline" value="false" />
-                <option name="repeat" />
-                <option name="pluginClasspaths" />
-                <option name="pluginOptions" />
-                <option name="freeArgs">
-                  <list />
-                </option>
-                <option name="unknownExtraFlags">
-                  <list />
-                </option>
+                <option name="moduleKind" value="plain" />
               </K2JSCompilerArguments>
             </option>
             <option name="_commonCompilerArguments">
               <DummyImpl>
-                <option name="languageVersion" />
-                <option name="apiVersion" />
-                <option name="suppressWarnings" value="false" />
-                <option name="verbose" value="false" />
-                <option name="version" value="false" />
-                <option name="help" value="false" />
-                <option name="extraHelp" value="false" />
-                <option name="noInline" value="false" />
-                <option name="repeat" />
                 <option name="pluginClasspaths">
                   <array />
                 </option>
+                <option name="coroutinesWarn" value="true" />
                 <option name="pluginOptions">
                   <array />
-                </option>
-                <option name="freeArgs">
-                  <list />
-                </option>
-                <option name="unknownExtraFlags">
-                  <list />
                 </option>
               </DummyImpl>
             </option>
@@ -73,8 +28,8 @@
         </option>
         <option name="versionInfo">
           <KotlinVersionInfo>
-            <option name="apiLevel" value="1.0" />
-            <option name="languageLevel" value="1.0" />
+            <option name="apiLevel" value="1.1" />
+            <option name="languageLevel" value="1.1" />
             <option name="targetPlatformName" value="JVM 1.6" />
           </KotlinVersionInfo>
         </option>
@@ -94,10 +49,5 @@
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Maven: com.suhininalex:suffixtree:0.1" level="project" />
     <orderEntry type="library" name="Maven: net.suhininalex:utils:0.0" level="project" />
-    <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant:3.0.0-beta.4" level="project" />
-    <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-combine:3.0.0-beta.4" level="project" />
-    <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-core:3.0.0-beta.4" level="project" />
-    <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-functional:3.0.0-beta.4" level="project" />
-    <orderEntry type="library" name="Maven: nl.komponents.kovenant:kovenant-jvm:3.0.0-beta.4" level="project" />
   </component>
 </module>
