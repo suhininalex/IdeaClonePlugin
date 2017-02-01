@@ -65,7 +65,7 @@ fun <T> Iterable<T>.isEmpty() = !iterator().hasNext()
 
 fun <T> Stream<T>.isEmpty() = iterator().hasNext()
 
-fun <T> Stream<T>.toList(): List<T> = collect(Collectors.toList()!!)
+fun <T> Stream<T>.toList(): List<T> = collect(Collectors.toList()) as List<T>
 
 fun <T> Iterator<T>.nextOrNull() = if (hasNext()) next() else null
 
