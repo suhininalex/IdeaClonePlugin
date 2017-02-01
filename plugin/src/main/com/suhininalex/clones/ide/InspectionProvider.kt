@@ -8,7 +8,6 @@ import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.core.getCloneManager
 import com.suhininalex.clones.core.getStringId
 import com.suhininalex.clones.core.getTextRangeInMethod
-import com.suhininalex.clones.core.toList
 import java.awt.EventQueue
 import java.util.concurrent.atomic.AtomicLong
 

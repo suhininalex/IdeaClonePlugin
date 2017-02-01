@@ -11,14 +11,8 @@ import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 import iterate
-import stream
 import java.awt.EventQueue
 import java.lang.IllegalArgumentException
-import java.util.*
-import java.util.concurrent.atomic.AtomicLong
-import java.util.stream.Collectors
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 
 fun PsiMethod.getStringId() =
         containingFile.containingDirectory.name + "." +
@@ -60,16 +54,6 @@ fun Node.riseTraverser() = object: Iterable<Node> {
 
 fun Node.descTraverser() = riseTraverser().reversed()
 
-fun <T> Iterator<T>?.hasNext() = if (this!=null) hasNext() else false
-
-fun <T> Iterable<T>.isEmpty() = !iterator().hasNext()
-
-fun <T> Stream<T>.isEmpty() = iterator().hasNext()
-
-fun <T> Stream<T>.toList(): List<T> = collect(Collectors.toList()) as List<T>
-
-fun <T> Iterator<T>.nextOrNull() = if (hasNext()) next() else null
-
 fun <T> T.depthFirstTraverse(children: (T) -> Sequence<T>): Sequence<T> =
        sequenceOf(this) + children(this).flatMap { it.depthFirstTraverse(children) }
 
@@ -90,7 +74,7 @@ fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
 
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
-fun PsiElement.asStream(): Sequence<PsiElement> =
+fun PsiElement.asSequence(): Sequence<PsiElement> =
     this.depthFirstTraverse { it.children.asSequence() }
 
 fun <T> times(times: Int, provider: ()-> Sequence<T>): Sequence<T> =
@@ -103,19 +87,31 @@ fun CloneClass.tokenSequence(): Sequence<Token> =
     treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
 fun Edge.asSequence(): Sequence<Token> {
-    terminal ?: throw IllegalArgumentException("You should never call this method for terminating edge.")
-    return (sequence.subList(begin, end + 1) as MutableList<Token>).asSequence()
-}
-
-fun <T> Stream<T>.peekIndexed(f: (Int, T) -> Unit): Stream<T> {
-    var i = 0
-    return this.peek { f(i++, it) }
+    if (isTerminal) {
+        throw IllegalArgumentException("You should never call this method for terminating edge.")
+    } else {
+        return (sequence.subList(begin, end + 1) as MutableList<Token>).asSequence()
+    }
 }
 
 val javaTokenFilter = TokenSet.create(
         WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, RPARENTH, LPARENTH, RBRACE, LBRACE, CODE_BLOCK, EXPRESSION_LIST
     )
 
+val Edge.isTerminal: Boolean
+    get() = this.terminal == null
 
 fun <T> Sequence<T>.isEmpty() =
         iterator().hasNext()
+
+fun <T> Sequence<T>.peek(operation: (T) -> Unit): Sequence<T> =
+    filter {
+        operation(it)
+        true
+    }
+
+fun <T> Sequence<T>.peekIndexed(operation: (Int, T) -> Unit): Sequence<T> =
+        filterIndexed { i, value ->
+            operation(i, value)
+            true
+        }

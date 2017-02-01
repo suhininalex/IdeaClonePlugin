@@ -7,7 +7,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
 import com.suhininalex.clones.core.Clone
 import com.suhininalex.clones.core.CloneClass
-import stream
 import java.awt.EventQueue
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -37,7 +36,7 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
 
     fun buildTree(): TreeNode =
         DefaultMutableTreeNode("root").apply {
-            clones.stream().sorted(CloneClass.lengthComparator.reversed()).forEach {
+            clones.asSequence().sortedBy { it.length }.forEach {
                 this.add(it.asTreeNode())
             }
         }

@@ -43,7 +43,7 @@ class CloneManager() {
 
 
     private fun addMethodUnlocked(method: PsiMethod) {
-        val sequence = method.body?.asStream()?.filter { it !in javaTokenFilter }?.map { node -> Token(node, method) }?.toList() ?: return
+        val sequence = method.body?.asSequence()?.filter { it !in javaTokenFilter }?.map { node -> Token(node, method) }?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.getStringId(), id)
     }
@@ -68,14 +68,16 @@ class CloneManager() {
     class FilterTask(val cloneClasses: List<CloneClass>, val success: (List<CloneClass>) -> Unit) : Task.Backgroundable(null, "Filtering...", true) {
             var filteredClones: List<CloneClass>? = null
 
+            val filter by lazy {
+                createCommonFilter(cloneClasses)
+            }
+
             override fun run(progressIndicator: ProgressIndicator) {
-                val commonFilter = createCommonFilter(cloneClasses)
-                filteredClones = cloneClasses.stream()
-                    .peekIndexed { i, cloneClass ->
+                filteredClones = cloneClasses.filterIndexed { i, cloneClass ->
                         if (progressIndicator.isCanceled) throw InterruptedException()
                         progressIndicator.fraction = i.toDouble()/cloneClasses.size
+                        filter.isAllowed(cloneClass)
                     }
-                    .filter { commonFilter.isAllowed(it) }.toList()
             }
 
             override fun onSuccess() {

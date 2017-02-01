@@ -13,20 +13,20 @@ object SubSequenceFilter : CloneClassFilter {
 
 
         val nodes = cloneClass.treeNode.descTraverser()
-        return nodes.stream()
+        return nodes.asSequence()
             .map{ CloneClass(it) }
             .filter{ it.length > 1 }
             .filter { cloneClass.length != it.length }
-            .noneMatch {
+            .none {
                 val first = times(cloneClass.length / it.length + 1) { it.tokenSequence() }.filter { it.source !in xFilter }
-                val second = nodes.tokenStream().filter { it.source !in xFilter }
+                val second = nodes.tokenSequence().filter { it.source !in xFilter }
                 first equalContent second
             }
     }
 
     val xFilter = TokenSet.create(ElementType.ELSE_KEYWORD, ElementType.OROR, ElementType.ANDAND)
 
-    fun Iterable<Node>.tokenStream() = asSequence().map { it.parentEdge }.filterNotNull().flatMap(Edge::asSequence)
+    fun Iterable<Node>.tokenSequence() = asSequence().map { it.parentEdge }.filterNotNull().flatMap(Edge::asSequence)
 
 
 }

@@ -2,9 +2,6 @@ package com.suhininalex.clones.core
 
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
-import stream
-import java.util.*
-import java.util.stream.Stream
 
 class CloneClass(val treeNode: Node) {
 
@@ -28,10 +25,6 @@ class CloneClass(val treeNode: Node) {
     val length = treeNode.lengthToRoot()
 
     val isEmpty = clones.isEmpty()
-
-    companion object {
-        val lengthComparator = Comparator { first: CloneClass, second: CloneClass -> first.length - second.length }
-    }
 
     private fun Edge.getTerminalsWithOffset() =
         Pair(this, 0).leafTraverse ({it.first.terminal==null}) {

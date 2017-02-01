@@ -15,11 +15,6 @@ class UtilsKtTest {
         println(x.toList())
     }
 
-    @Test
-    fun repeatStream(){
-        val s = listOf(1,2,3)
-        times(3) { s.asSequence() }.forEach { print("$it ") }
-    }
 
     @Test
     fun buildBadTree(){
