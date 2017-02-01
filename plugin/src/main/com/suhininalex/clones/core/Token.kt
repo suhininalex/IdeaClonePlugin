@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
-import net.suhininalex.kotlin.utils.abbrevate
 
 class Token(val source: PsiElement, val method: PsiMethod) : Comparable<Token> {
 
@@ -24,8 +23,11 @@ class Token(val source: PsiElement, val method: PsiMethod) : Comparable<Token> {
         else false
 
     override fun toString() =
-        if (nonAnonimized) source.text.abbrevate(5)
-        else source.node.elementType.toString()
+        if (nonAnonimized) {
+            source.text.abbreviate(5)
+        } else {
+            source.node.elementType.toString()
+        }
 }
 
 fun PsiElement.notNeedAnonimization() =

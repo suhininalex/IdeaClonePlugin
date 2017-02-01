@@ -49,11 +49,6 @@
             <artifactId>suffixtree</artifactId>
             <version>0.1</version>
         </dependency>
-        <dependency>
-            <groupId>net.suhininalex</groupId>
-            <artifactId>utils</artifactId>
-            <version>0.0</version>
-        </dependency>
     </dependencies>
 
     <repositories>

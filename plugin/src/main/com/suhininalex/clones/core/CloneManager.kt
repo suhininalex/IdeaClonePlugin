@@ -1,6 +1,5 @@
 package com.suhininalex.clones.core
 
-import addIf
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -17,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class CloneManager() {
+class CloneManager {
 
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()

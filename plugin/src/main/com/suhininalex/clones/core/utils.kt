@@ -10,9 +10,9 @@ import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
-import iterate
 import java.awt.EventQueue
 import java.lang.IllegalArgumentException
+import java.util.*
 
 fun PsiMethod.getStringId() =
         containingFile.containingDirectory.name + "." +
@@ -104,14 +104,19 @@ val Edge.isTerminal: Boolean
 fun <T> Sequence<T>.isEmpty() =
         iterator().hasNext()
 
-fun <T> Sequence<T>.peek(operation: (T) -> Unit): Sequence<T> =
-    filter {
-        operation(it)
-        true
-    }
+inline fun <E> MutableList<E>.addIf(element: E, condition:(element: E)->Boolean){
+    if (condition(element)) add(element)
+}
 
-fun <T> Sequence<T>.peekIndexed(operation: (Int, T) -> Unit): Sequence<T> =
-        filterIndexed { i, value ->
-            operation(i, value)
-            true
-        }
+fun <T> iterate(f:()->T?) = object : Iterator<T>{
+    var next :T? = f()
+    override fun hasNext() = next!=null
+    override fun next():T {
+        val result = next ?: throw NoSuchElementException()
+        next = f()
+        return result
+    }
+}
+
+fun String.abbreviate(length: Int) =
+    "${take(length)}..."
