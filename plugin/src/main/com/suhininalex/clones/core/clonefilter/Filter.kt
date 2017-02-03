@@ -39,9 +39,7 @@ fun Sequence<CloneClass>.filterClones(): List<CloneClass> {
 fun List<CloneClass>.filterWithProgressbar(): Promise<List<CloneClass>, Exception> {
     val deferred = deferred<List<CloneClass>, Exception>()
     task {
-        ProgressManager.getInstance().run(
-                FilterTask(this, deferred)
-        )
+        ProgressManager.getInstance().run(FilterTask(this, deferred))
     }
     return deferred.promise
 }

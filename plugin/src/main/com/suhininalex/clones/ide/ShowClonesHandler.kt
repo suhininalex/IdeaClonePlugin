@@ -18,6 +18,7 @@ class ShowClonesHandler : EditorAction(editorHandler)
 object editorHandler : EditorActionHandler() {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         val project = editor.project!!
+
         task {
             project.getCloneManager().getAllCloneClasses().toList()
                 .filterWithProgressbar()

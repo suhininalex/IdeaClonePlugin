@@ -14,10 +14,11 @@ import java.awt.EventQueue
 import java.lang.IllegalArgumentException
 import java.util.*
 
-fun PsiMethod.getStringId() =
+val PsiMethod.stringId: String
+    get() =
         containingFile.containingDirectory.name + "." +
         containingClass!!.name + "." +
-        name + "."+
+        name + "." +
         parameterList;
 
 val Edge.length: Int
@@ -54,20 +55,11 @@ fun Node.riseTraverser() = object: Iterable<Node> {
 
 fun Node.descTraverser() = riseTraverser().reversed()
 
-fun <T> T.depthFirstTraverse(children: (T) -> Sequence<T>): Sequence<T> =
-       sequenceOf(this) + children(this).flatMap { it.depthFirstTraverse(children) }
-
-fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Sequence<T>) =
-        this.depthFirstTraverse { if (recursionFilter(it)) children(it) else emptySequence() }
-
-fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Sequence<T>) =
-    this.depthFirstTraverse ({ ! isLeaf(it) }, children).filter { isLeaf(it) }
-
 fun Project.getAllPsiJavaFiles() =
     PsiManager.getInstance(this).findDirectory(baseDir)!!.getPsiJavaFiles()
 
 fun PsiDirectory.getPsiJavaFiles(): Sequence<PsiJavaFile> =
-    this.depthFirstTraverse { it.subdirectories.asSequence() }.flatMap { it.files.asSequence() }.filter { it is PsiJavaFile }.map { it as PsiJavaFile }
+    this.depthFirstTraverse { it.subdirectories.asSequence() }.flatMap { it.files.asSequence() }.filterIsInstance<PsiJavaFile>()
 
 fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
     this.leafTraverse({it in filter}) {it.children.asSequence()}
@@ -77,14 +69,8 @@ operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(el
 fun PsiElement.asSequence(): Sequence<PsiElement> =
     this.depthFirstTraverse { it.children.asSequence() }
 
-fun <T> times(times: Int, provider: ()-> Sequence<T>): Sequence<T> =
-    (1..times).asSequence().flatMap { provider() }
-
-infix fun <T> Sequence<T>.equalContent(another: Sequence<T>) =
-    zip(another).all { (a,b) -> a == b }
-
 fun CloneClass.tokenSequence(): Sequence<Token> =
-    treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
+        treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
 fun Edge.asSequence(): Sequence<Token> {
     if (isTerminal) {
@@ -96,10 +82,25 @@ fun Edge.asSequence(): Sequence<Token> {
 
 val javaTokenFilter = TokenSet.create(
         WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, RPARENTH, LPARENTH, RBRACE, LBRACE, CODE_BLOCK, EXPRESSION_LIST
-    )
+)
 
 val Edge.isTerminal: Boolean
     get() = this.terminal == null
+
+fun <T> T.depthFirstTraverse(children: (T) -> Sequence<T>): Sequence<T> =
+        sequenceOf(this) + children(this).flatMap { it.depthFirstTraverse(children) }
+
+fun <T> T.depthFirstTraverse(recursionFilter: (T)-> Boolean, children: (T) -> Sequence<T>) =
+        this.depthFirstTraverse { if (recursionFilter(it)) children(it) else emptySequence() }
+
+fun <T> T.leafTraverse(isLeaf: (T)-> Boolean, children: (T) -> Sequence<T>) =
+        this.depthFirstTraverse ({ ! isLeaf(it) }, children).filter { isLeaf(it) }
+
+fun <T> times(times: Int, provider: ()-> Sequence<T>): Sequence<T> =
+    (1..times).asSequence().flatMap { provider() }
+
+infix fun <T> Sequence<T>.equalContent(another: Sequence<T>) =
+    zip(another).all { (a,b) -> a == b }
 
 fun <T> Sequence<T>.isEmpty() =
         iterator().hasNext()

@@ -2,8 +2,7 @@ package com.suhininalex.clones.ide
 
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.*

@@ -22,5 +22,6 @@
       <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
                        level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"/>
+      <postStartupActivity implementation="com.suhininalex.clones.ide.PluginInitializer" />
   </extensions>
 </idea-plugin>

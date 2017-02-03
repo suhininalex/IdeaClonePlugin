@@ -2,13 +2,11 @@ package com.suhininalex.clones.ide
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaElementVisitor
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.suhininalex.clones.core.clonefilter.filterClones
 import com.suhininalex.clones.core.getCloneManager
-import com.suhininalex.clones.core.getStringId
 import com.suhininalex.clones.core.getTextRangeInMethod
+import com.suhininalex.clones.core.stringId
 import java.awt.EventQueue
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
@@ -27,16 +25,13 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
 
     val cloneReport = CloneReport()
 
-    //TODO method removing!
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
-        cloneManager.updateMethod(method)
-
         cloneManager.getAllMethodClasses(method)
                 .filterClones()
                 .forEach {
                     it.clones.forEach {
-                        if (it.firstElement.method.getStringId() == method.getStringId())
+                        if (it.firstElement.method.stringId == method.stringId)
                             holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(method.textRange.startOffset), cloneReport)
                     }
                 }
