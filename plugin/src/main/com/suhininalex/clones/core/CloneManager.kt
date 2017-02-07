@@ -1,6 +1,5 @@
 package com.suhininalex.clones.core
 
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.core.clonefilter.*
 import com.suhininalex.suffixtree.Node

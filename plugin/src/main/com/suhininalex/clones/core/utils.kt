@@ -68,7 +68,7 @@ fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
 operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asSequence(): Sequence<PsiElement> =
-    this.depthFirstTraverse { it.children.asSequence() }
+    this.depthFirstTraverse { it.children.asSequence() }.filter { it.firstChild == null }
 
 fun CloneClass.tokenSequence(): Sequence<Token> =
         treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
@@ -83,7 +83,7 @@ fun Edge.asSequence(): Sequence<Token> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT//, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
+        WHITE_SPACE, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT//, SEMICOLON, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
 )
 
 val Edge.isTerminal: Boolean
