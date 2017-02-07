@@ -8,17 +8,16 @@ import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.Clone
 import javax.swing.tree.DefaultMutableTreeNode
 
-class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription()) {
+class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription())
 
-    fun selectInEditor() = with (clone) {
-        SelectInEditorManager.getInstance(project).selectInEditor(
+fun Clone.selectInEditor(){
+    SelectInEditorManager.getInstance(project).selectInEditor(
             file,
             firstPsi.textRange.startOffset,
             lastPsi.textRange.endOffset,
             false,
             false
-        )
-    }
+    )
 }
 
 fun Clone.getDescription() = "Lines ${firstPsi.lineNumber} to ${lastPsi.lineNumber} from ${file.presentableName} "

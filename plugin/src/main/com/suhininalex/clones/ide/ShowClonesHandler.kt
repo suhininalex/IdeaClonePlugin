@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.suhininalex.clones.core.clonefilter.filterWithProgressbar
 import com.suhininalex.clones.core.getCloneManager
+import com.suhininalex.clones.core.splitToSiblings
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
 
@@ -24,6 +25,7 @@ object editorHandler : EditorActionHandler() {
                 .filterWithProgressbar()
                 .then {
                     ClonesViewProvider.showClonesData(project, it)
+                    splitToSiblings(it)
                 }
         }
     }

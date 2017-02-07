@@ -23,7 +23,7 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
         override fun mouseClicked(e: MouseEvent) {
             if (e.clickCount == 2)
                 getSelectionModel().selectionPath.lastPathComponent.let {
-                    if (it is ViewTreeNode) it.selectInEditor()
+                    if (it is ViewTreeNode) it.clone.selectInEditor()
                 }
         }
     }
@@ -36,7 +36,7 @@ private class ClonesView (val clones: List<CloneClass>) : Tree() {
 
     fun buildTree(): TreeNode =
         DefaultMutableTreeNode("root").apply {
-            clones.asSequence().sortedBy { it.length }.forEach {
+            clones.asSequence().sortedByDescending { it.length }.forEach {
                 this.add(it.asTreeNode())
             }
         }

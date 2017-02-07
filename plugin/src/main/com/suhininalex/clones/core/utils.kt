@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiUtil
 import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
@@ -72,6 +73,7 @@ fun PsiElement.asSequence(): Sequence<PsiElement> =
 fun CloneClass.tokenSequence(): Sequence<Token> =
         treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
+@Suppress("UNCHECKED_CAST")
 fun Edge.asSequence(): Sequence<Token> {
     if (isTerminal) {
         throw IllegalArgumentException("You should never call this method for terminating edge.")
@@ -81,7 +83,7 @@ fun Edge.asSequence(): Sequence<Token> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, RPARENTH, LPARENTH, RBRACE, LBRACE, CODE_BLOCK, EXPRESSION_LIST
+        WHITE_SPACE, SEMICOLON, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT//, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
 )
 
 val Edge.isTerminal: Boolean
