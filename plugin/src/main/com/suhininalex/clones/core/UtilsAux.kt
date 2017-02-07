@@ -12,16 +12,19 @@ fun splitToSiblings(clones: List<CloneClass>){
     println(tokens)
 
     val end = clone.lastElement.source.textRange.endOffset
+    val start = clone.firstElement.source.textRange.startOffset
 
-    var lastPsi: PsiElement? = clone.firstPsi
     val all = generateSequence (clone.firstPsi) { it.findNextSibling(end) }
-            .forEach {
-                if ( ! it.haveSibling(end)) {
-                    println("FROM: ${lastPsi!!.str} to ${it.str} LENGTH(${getLength(lastPsi!!, it)})")
-                    printRange(lastPsi!!, it)
-                    lastPsi = it.findNextSibling(end) //or it.parent.firstSibling
-                }
+            .filter { ! it.haveSibling(end) }
+            .map {
+                    val firstSibling = it.parent.firstChild
+                    val leftPsi = if (firstSibling.textRange.startOffset < start) clone.firstPsi else firstSibling
+                    leftPsi to it
+            }.forEach { (leftPsi, rightPsi) ->
+                println("FROM: ${leftPsi.str} to ${rightPsi.str} LENGTH(${getLength(leftPsi, rightPsi)})")
+                printRange(leftPsi, rightPsi)
             }
+//    TODO("last string problem")
 
 }
 
@@ -32,7 +35,6 @@ fun PsiElement.findNextSibling(maxEndOffset: Int): PsiElement? {
 fun PsiElement.findChildBeforeOffset(offset: Int): PsiElement? {
     var current = this
     while (current.textRange.endOffset > offset) {
-//        println("FIND CHILD FOR: $str")
         current = current.firstChild ?: return null
     }
     return current
@@ -41,7 +43,6 @@ fun PsiElement.findChildBeforeOffset(offset: Int): PsiElement? {
 fun PsiElement.findParentWithSibling(): PsiElement {
     var current = this
     while (current.nextSibling == null) {
-//        println("FIND PARENT FOR: ${current.str}")
         current = current.parent
     }
     return current
