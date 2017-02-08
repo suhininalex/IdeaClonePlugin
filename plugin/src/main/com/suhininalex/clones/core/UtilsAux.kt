@@ -2,10 +2,13 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.ide.document
-import com.suhininalex.clones.ide.firstPsi
+import com.suhininalex.clones.ide.endLine
+import com.suhininalex.clones.ide.startLine
+import java.util.*
 
 data class CloneRange(val firstPsi: PsiElement, val lastPsi: PsiElement)
 
@@ -81,4 +84,19 @@ fun CloneRange.printText(){
 
 fun PsiElement.haveSibling(maxEndOffset: Int): Boolean {
     return nextSibling != null && nextSibling.textRange.endOffset <= maxEndOffset
+}
+
+data class CloneRangeID(val file: PsiFile, val startLine: Int, val endLine: Int)
+
+fun CloneRange.getRangeID() = CloneRangeID(firstPsi.containingFile, firstPsi.startLine, lastPsi.endLine)
+
+fun filterSameCloneRangeClasses(clones: List<CloneRangeClass>): List<CloneRangeClass> {
+    val map = HashMap<CloneRangeID, CloneRangeClass>()
+    clones.forEach { cloneRangeClass ->
+        cloneRangeClass.cloneRanges.map { it.getRangeID() }.forEach {
+            val savedRangeClass = map.getOrPut(it) { cloneRangeClass }
+            if (savedRangeClass.cloneRanges.size < cloneRangeClass.cloneRanges.size) map.put(it, cloneRangeClass)
+        }
+    }
+    return HashSet(map.values).toList()
 }

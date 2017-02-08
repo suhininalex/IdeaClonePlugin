@@ -5,12 +5,12 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.suhininalex.clones.core.Clone
+import com.suhininalex.clones.core.CloneRange
 import javax.swing.tree.DefaultMutableTreeNode
 
-class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription())
+class ViewTreeNode(val clone: CloneRange) : DefaultMutableTreeNode(clone.getDescription())
 
-fun Clone.selectInEditor(){
+fun CloneRange.selectInEditor(){
     SelectInEditorManager.getInstance(project).selectInEditor(
             file,
             firstPsi.textRange.startOffset,
@@ -20,22 +20,19 @@ fun Clone.selectInEditor(){
     )
 }
 
-fun Clone.getDescription() = "Lines ${firstPsi.lineNumber} to ${lastPsi.lineNumber} from ${file.presentableName} "
+fun CloneRange.getDescription() = "Lines ${firstPsi.startLine} to ${lastPsi.endLine} from ${file.presentableName} (${file.hashCode()})"
 
-val Clone.firstPsi: PsiElement
-    get() = firstElement.source
-
-val Clone.lastPsi: PsiElement
-    get() = lastElement.source
-
-val Clone.file: VirtualFile
+val CloneRange.file: VirtualFile
     get() = firstPsi.containingFile.virtualFile
 
-val Clone.project: Project
+val CloneRange.project: Project
     get() = firstPsi.project
 
 val PsiElement.document: Document
     get() = containingFile.viewProvider.document!!
 
-val PsiElement.lineNumber: Int
-    get() = document.getLineNumber(textOffset) + 1
+val PsiElement.startLine: Int
+    get() = document.getLineNumber(textRange.startOffset) + 1
+
+val PsiElement.endLine: Int
+    get() = document.getLineNumber(textRange.endOffset) + 1

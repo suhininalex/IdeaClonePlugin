@@ -4,9 +4,10 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.clonefilter.filterClones
+import com.suhininalex.clones.core.extractSiblingClones
+import com.suhininalex.clones.core.filterSameCloneRangeClasses
 import com.suhininalex.clones.core.getCloneManager
 import com.suhininalex.clones.core.getTextRangeInMethod
-import com.suhininalex.clones.core.stringId
 import java.awt.EventQueue
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
@@ -27,16 +28,25 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
 
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
-        cloneManager.getAllMethodClasses(method)
+        val result = cloneManager.getAllMethodClasses(method)
                 .filterClones()
+
+        val r2 = extractSiblingClones(result)
+
+        filterSameCloneRangeClasses(r2)
                 .forEach {
-                    it.clones.forEach {
-                        if (it.firstElement.method.stringId == method.stringId)
+                    it.cloneRanges.forEach {
+                        if (it.firstPsi in method)
                             holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(method.textRange.startOffset), cloneReport)
                     }
                 }
     }
 }
+
+operator fun PsiElement.contains(element: PsiElement): Boolean =
+    if (containingFile == element.containingFile)
+        element.textRange.startOffset in textRange
+    else false
 
 class CloneReport : LocalQuickFix {
 
@@ -47,6 +57,8 @@ class CloneReport : LocalQuickFix {
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
         val clones = project.getCloneManager().getAllMethodClasses(method).filterClones()
-        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones.toList()) }
+        val c = extractSiblingClones(clones)
+        val c2 = filterSameCloneRangeClasses(c)
+        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, c2) }
     }
 }

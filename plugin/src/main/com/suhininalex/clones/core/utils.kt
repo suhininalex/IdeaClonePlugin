@@ -25,11 +25,9 @@ val PsiMethod.stringId: String
 val Edge.length: Int
     get() = end - begin + 1
 
-fun Clone.getTextRangeInMethod(offset: Int) = TextRange(firstElement.getTextRange().startOffset - offset, lastElement.getTextRange().endOffset-offset)
+fun CloneRange.getTextRangeInMethod(offset: Int) = TextRange(firstPsi.textRange.startOffset - offset, lastPsi.textRange.endOffset-offset)
 
 fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
-
-fun Token.getTextRange() = source.textRange
 
 fun Node.lengthToRoot() =
     riseTraverser().sumBy { it.parentEdge?.length ?: 0 }

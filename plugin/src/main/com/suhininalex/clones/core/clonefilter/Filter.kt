@@ -3,12 +3,8 @@ package com.suhininalex.clones.core.clonefilter
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
-import com.intellij.psi.PsiElement
-import com.suhininalex.clones.core.Clone
 import com.suhininalex.clones.core.CloneClass
 import com.suhininalex.clones.core.callInEventQueue
-import com.suhininalex.clones.ide.firstPsi
-import com.suhininalex.clones.ide.selectInEditor
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred

@@ -5,11 +5,11 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterWithProgressbar
-import com.suhininalex.clones.core.getCloneManager
-import com.suhininalex.clones.core.splitToSiblings
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
+import java.awt.EventQueue
 
 /**
  * Handler for action ctrl+alt+a
@@ -24,8 +24,10 @@ object editorHandler : EditorActionHandler() {
             project.getCloneManager().getAllCloneClasses().toList()
                 .filterWithProgressbar()
                 .then {
-                    ClonesViewProvider.showClonesData(project, it)
-                    splitToSiblings(it)
+                    Application.runReadAction {
+                        val result = extractSiblingClones(it)
+                        ClonesViewProvider.showClonesData(project, filterSameCloneRangeClasses(result))
+                    }
                 }
         }
     }
