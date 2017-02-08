@@ -2,6 +2,8 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.ElementType.*
+import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.ide.document
 import com.suhininalex.clones.ide.firstPsi
 
@@ -12,21 +14,42 @@ fun splitToSiblings(clones: List<CloneClass>){
     println(tokens)
 
     val end = clone.lastElement.source.textRange.endOffset
-    val start = clone.firstElement.source.textRange.startOffset
 
-    val all = generateSequence (clone.firstPsi) { it.findNextSibling(end) }
+    var leftPsi: PsiElement? = clone.firstPsi
+    val result = generateSequence (clone.firstPsi) { it.findNextSibling(end) }
             .filter { ! it.haveSibling(end) }
             .map {
-                    val firstSibling = it.parent.firstChild
-                    val leftPsi = if (firstSibling.textRange.startOffset < start) clone.firstPsi else firstSibling
-                    leftPsi to it
-            }.forEach { (leftPsi, rightPsi) ->
-                println("FROM: ${leftPsi.str} to ${rightPsi.str} LENGTH(${getLength(leftPsi, rightPsi)})")
-                printRange(leftPsi, rightPsi)
-            }
-//    TODO("last string problem")
+                val result = leftPsi!! to it
+                leftPsi = it.findNextSibling(end)
+                result
+            }.toList()
 
+
+    result
+        .map {
+            it.cropBadTokens()
+        }
+        .filter { (a,b) -> getLength(a,b) > 50 }
+        .forEach { (leftPsi, rightPsi) ->
+            println("FROM: ${leftPsi.str} to ${rightPsi.str} LENGTH(${getLength(leftPsi, rightPsi)})")
+            printRange(leftPsi, rightPsi)
+        }
 }
+
+fun Pair<PsiElement, PsiElement>.cropBadTokens(): Pair<PsiElement, PsiElement> {
+    var (left, right) = this
+    while (left in badTokens && left.nextSibling != null) {
+        left = left.nextSibling
+    }
+    while (right in badTokens && right.prevSibling != null) {
+        right = right.prevSibling
+    }
+    return left to right
+}
+
+val badTokens = TokenSet.create(
+        WHITE_SPACE, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, SEMICOLON, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
+)
 
 fun PsiElement.findNextSibling(maxEndOffset: Int): PsiElement? {
     return findParentWithSibling().nextSibling.findChildBeforeOffset(maxEndOffset)
@@ -60,5 +83,5 @@ fun printRange(firstPsi: PsiElement, secondPsi: PsiElement){
 }
 
 fun PsiElement.haveSibling(maxEndOffset: Int): Boolean {
-    return nextSibling != null && nextSibling.textRange.endOffset < maxEndOffset
+    return nextSibling != null && nextSibling.textRange.endOffset <= maxEndOffset
 }
