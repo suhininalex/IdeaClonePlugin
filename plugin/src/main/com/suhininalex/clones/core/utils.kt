@@ -123,3 +123,14 @@ fun <T> iterate(f:()->T?) = object : Iterator<T>{
 
 fun String.abbreviate(length: Int) =
     "${take(length)}..."
+
+fun <T> Sequence<Sequence<T>>.zipped(): List<List<T>>{
+    val result = ArrayList<ArrayList<T>>()
+    forEach {
+        it.forEachIndexed { i, it ->
+            if (i >= result.size) result.add(ArrayList<T>())
+            result[i].add(it)
+        }
+    }
+    return result
+}
