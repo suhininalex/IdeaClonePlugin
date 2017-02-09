@@ -23,5 +23,6 @@
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
                        level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"/>
       <postStartupActivity implementation="com.suhininalex.clones.ide.PluginInitializer" />
+      <applicationConfigurable instance="com.suhininalex.clones.ide.configuration.SettingsPanel" groupId="tools" />
   </extensions>
 </idea-plugin>
