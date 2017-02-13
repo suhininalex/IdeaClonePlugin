@@ -3,6 +3,9 @@ package com.suhininalex.clones.ide.configuration
 import com.intellij.ide.util.PropertiesComponent
 import kotlin.reflect.KProperty
 
+/**
+ * Properties have to be changed only from these delegators
+ */
 open class IdeaSettings(val nameSpace: String)
 
 class StringProperty(val defaultValue: String) {

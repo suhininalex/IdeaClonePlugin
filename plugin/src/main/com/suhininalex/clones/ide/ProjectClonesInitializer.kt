@@ -2,6 +2,7 @@ package com.suhininalex.clones.ide
 
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Computable
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
@@ -16,7 +17,9 @@ object ProjectClonesInitializer {
         map.computeIfAbsent(project) { initializeCloneManager(project) }
 
     fun initializeCloneManager(project: Project): CloneManager {
-        val files = project.getAllPsiJavaFiles().toList()
+        val files: List<PsiJavaFile> = Application.runReadAction ( Computable {
+            project.getAllPsiJavaFiles().toList()
+        })
         val cloneManager = CloneManager()
         val progressManager = ProgressManager.getInstance()
         val task = {

@@ -1,10 +1,8 @@
 package com.suhininalex.clones.ide.configuration
 
 import com.intellij.openapi.options.Configurable
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.BoxLayout
-import javax.swing.JLabel
+import java.awt.BorderLayout
+import javax.swing.*
 
 
 class SettingsPanel: Configurable {
@@ -25,14 +23,17 @@ class SettingsPanel: Configurable {
 
     override fun createComponent(): JComponent {
         return JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-            add(JLabel("Label sample"))
+            add(JLabel("Minimal length of detected clone"), BorderLayout.AFTER_LAST_LINE)
+            add(JFormattedTextField(50), BorderLayout.LINE_END)
+            add(JLabel(" symbols"), BorderLayout.LINE_END)
 
+            add(JLabel("Minimal length of detected clone"), BorderLayout.AFTER_LAST_LINE)
+            add(JFormattedTextField(50), BorderLayout.LINE_END)
+            add(JLabel(" symbols"), BorderLayout.LINE_END)
         }
     }
 
     override fun reset() {
-        println("RESEEET")
     }
 
     override fun getHelpTopic(): String? = null
