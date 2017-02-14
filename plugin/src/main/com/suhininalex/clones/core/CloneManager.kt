@@ -52,7 +52,7 @@ class CloneManager {
     fun getAllMethodClasses(method: PsiMethod): Sequence<CloneClass> = rwLock.read {
         val classes = LinkedList<CloneClass>()
         val visitedNodes = HashSet<Node>()
-        val id = method.getId() ?: throw IllegalStateException("There are no such method!")
+        val id = method.getId() ?: throw IllegalStateException("There are no such method in CloneManager (${method.stringId}).")
 
         for (branchNode in tree.getAllLastSequenceNodes(id)) {
             for (currentNode in branchNode.riseTraverser()){

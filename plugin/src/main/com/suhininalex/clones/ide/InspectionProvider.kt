@@ -3,11 +3,8 @@ package com.suhininalex.clones.ide
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
+import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterClones
-import com.suhininalex.clones.core.extractSiblingClones
-import com.suhininalex.clones.core.filterSameCloneRangeClasses
-import com.suhininalex.clones.core.getCloneManager
-import com.suhininalex.clones.core.getTextRangeInMethod
 import java.awt.EventQueue
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
