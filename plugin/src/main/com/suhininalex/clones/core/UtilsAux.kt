@@ -131,3 +131,7 @@ fun filterSameCloneRangeClasses(clones: List<CloneRangeClass>): List<CloneRangeC
     }
     return map.entries.groupBy { it.value }.values.map { CloneRangeClass(it.map { it.key.cloneRange }) }
 }
+
+fun scoreSelfCoverage(cloneRange: CloneRange){
+    
+}
