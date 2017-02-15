@@ -32,7 +32,7 @@ class CloneManager {
 
     private fun addMethodUnlocked(method: PsiMethod) {
         if (method.stringId in methodIds) return
-        val sequence = method.body?.asSequence()?.filter { it !in javaTokenFilter }?.map { node -> Token(node, method) }?.toList() ?: return
+        val sequence = method.body?.asSequence()?.filter { it !in javaTokenFilter }?.map(::Token)?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.stringId, id)
     }

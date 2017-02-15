@@ -5,7 +5,7 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 
-class Token(val source: PsiElement, val method: PsiMethod) : Comparable<Token> {
+class Token(val source: PsiElement) : Comparable<Token> {
 
     val nonAnonimized = source.notNeedAnonimization()
 

@@ -41,7 +41,7 @@ private class ClonesView (val clones: List<CloneRangeClass>) : Tree() {
         }
 
     private fun CloneRangeClass.asTreeNode() =
-        DefaultMutableTreeNode("${index.andIncrement}. Clone class with $length tokens and ${cloneRanges.size} duplicates.").apply {
+        DefaultMutableTreeNode("${index.andIncrement}. Clone class with $length tokens and ${cloneRanges.size} duplicates. Coverage: ${cloneRanges[0].scoreSelfCoverage()}%").apply {
             cloneRanges.forEach {
                 this.add(ViewTreeNode(it))
             }

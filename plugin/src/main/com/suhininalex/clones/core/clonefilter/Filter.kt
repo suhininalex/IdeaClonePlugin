@@ -47,5 +47,5 @@ fun List<CloneClass>.filterWithProgressbar(): Promise<List<CloneClass>, Exceptio
 
 fun createCommonFilter(cloneClasses: List<CloneClass>): CloneClassFilter {
     val subclassFilter = SubclassFilter(cloneClasses)
-    return CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) } //&& CropTailFilter.isAllowed(it)
+    return subclassFilter //CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) } //&& CropTailFilter.isAllowed(it)
 }

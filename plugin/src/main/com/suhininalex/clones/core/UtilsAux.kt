@@ -2,12 +2,14 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.core.clonefilter.LengthFilter
+import com.suhininalex.clones.core.clonefilter.filterClones
 import com.suhininalex.clones.ide.document
 import com.suhininalex.clones.ide.endLine
 import com.suhininalex.clones.ide.startLine
+import com.suhininalex.suffixtree.SuffixTree
 import java.util.*
 
 data class CloneRange(val firstPsi: PsiElement, val lastPsi: PsiElement)
@@ -132,6 +134,66 @@ fun filterSameCloneRangeClasses(clones: List<CloneRangeClass>): List<CloneRangeC
     return map.entries.groupBy { it.value }.values.map { CloneRangeClass(it.map { it.key.cloneRange }) }
 }
 
-fun scoreSelfCoverage(cloneRange: CloneRange){
-    
+fun CloneRangeClass.scoreSelfCoverage(): Int =
+        cloneRanges[0].scoreSelfCoverage()
+
+fun CloneRange.scoreSelfCoverage(): Int{
+    val sequence = sequenceFromRange(firstPsi, lastPsi).toList()
+
+    val tree = SuffixTree<Token>()
+    tree.addSequence(sequence.map(::Token))
+    val clones = tree.getAllCloneClasses().filterClones();
+    val raw = clones.map { CloneRangeClass(it.clones.map { CloneRange(it.firstPsi, it.lastPsi) }.toList()) }
+    val length = raw.flatMap { it.cloneRanges }
+            .map{ TextRange(it.firstPsi.startLine, it.lastPsi.endLine+1) }
+            .uniteRanges()
+            .sumBy { it.length }
+    val bigLength = TextRange(firstPsi.startLine, lastPsi.endLine).length + 1
+    return length*100/bigLength
+}
+
+fun PsiElement.nextElement(): PsiElement{
+    var current = this
+    while (current.nextSibling == null)
+        current = current.parent
+    current = current.nextSibling
+    while (current.firstChild != null)
+        current = current.firstChild
+    return current
+}
+
+fun sequenceFromRange(firstPsi: PsiElement, lastPsi: PsiElement): Sequence<PsiElement> {
+    var first = firstPsi
+    while (first.firstChild != null)
+        first = first.firstChild
+    return generateSequence (firstPsi) { it.nextElement() }.takeWhile { it.textRange.endOffset <= lastPsi.textRange.endOffset }.filter { it !in javaTokenFilter }
+}
+
+val lengthClassFilter = LengthFilter(10)
+
+fun SuffixTree<Token>.getAllCloneClasses(): Sequence<CloneClass>  =
+        root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
+                .map(::CloneClass)
+                .filter { lengthClassFilter.isAllowed(it) }
+
+fun List<TextRange>.uniteRanges(): List<TextRange> {
+    if (size < 2) return this
+    val sorted = sortedBy { it.startOffset }.asSequence()
+    val result = ArrayList<TextRange>()
+    val first = sorted.first()
+    var lastLeft = first.startOffset
+    var lastRight = first.endOffset
+    sorted.forEach {
+        if (it.endOffset <= lastRight ) {
+            // skip
+        } else if (it.startOffset <= lastRight)  {
+            lastRight = it.endOffset
+        } else {
+            result.add(TextRange(lastLeft, lastRight))
+            lastLeft = it.startOffset
+            lastRight = it.endOffset
+        }
+    }
+    result.add(TextRange(lastLeft, lastRight))
+    return result
 }

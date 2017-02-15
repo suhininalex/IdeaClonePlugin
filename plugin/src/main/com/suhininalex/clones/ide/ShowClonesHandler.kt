@@ -25,7 +25,7 @@ object editorHandler : EditorActionHandler() {
                 .filterWithProgressbar()
                 .then {
                     Application.runReadAction {
-                        val result = extractSiblingClones(it)
+                        val result = extractSiblingClones(it).filter { it.scoreSelfCoverage() < 85 }
                         ClonesViewProvider.showClonesData(project, filterSameCloneRangeClasses(result))
                     }
                 }
