@@ -13,7 +13,7 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
 
     override fun getShortName() = "CloneDetection"
 
-    override fun getDisplayName() = "Clone detection"
+    override fun getDisplayName() = "TreeClone detection"
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             CloneInspectionVisitor(holder)

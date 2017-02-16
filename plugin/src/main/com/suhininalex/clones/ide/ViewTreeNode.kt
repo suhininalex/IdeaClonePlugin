@@ -5,12 +5,13 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.suhininalex.clones.core.CloneRange
+import com.suhininalex.clones.core.RangeClone
+import com.suhininalex.clones.core.interfaces.Clone
 import javax.swing.tree.DefaultMutableTreeNode
 
-class ViewTreeNode(val clone: CloneRange) : DefaultMutableTreeNode(clone.getDescription())
+class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription())
 
-fun CloneRange.selectInEditor(){
+fun Clone.selectInEditor(){
     SelectInEditorManager.getInstance(project).selectInEditor(
             file,
             firstPsi.textRange.startOffset,
@@ -20,12 +21,12 @@ fun CloneRange.selectInEditor(){
     )
 }
 
-fun CloneRange.getDescription() = "Lines ${firstPsi.startLine} to ${lastPsi.endLine} from ${file.presentableName} (${file.hashCode()})"
+fun Clone.getDescription() = "Lines ${firstPsi.startLine} to ${lastPsi.endLine} from ${file.presentableName} (${file.hashCode()})"
 
-val CloneRange.file: VirtualFile
+val Clone.file: VirtualFile
     get() = firstPsi.containingFile.virtualFile
 
-val CloneRange.project: Project
+val Clone.project: Project
     get() = firstPsi.project
 
 val PsiElement.document: Document

@@ -7,18 +7,18 @@ import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 
 object SubSequenceFilter : CloneClassFilter {
-    override fun isAllowed(cloneClass: CloneClass?): Boolean {
-        cloneClass ?: return false
+    override fun isAllowed(treeCloneClass: TreeCloneClass?): Boolean {
+        treeCloneClass ?: return false
 
 
 
-        val nodes = cloneClass.treeNode.descTraverser()
+        val nodes = treeCloneClass.treeNode.descTraverser()
         return nodes.asSequence()
-            .map{ CloneClass(it) }
+            .map{ TreeCloneClass(it) }
             .filter{ it.length > 1 }
-            .filter { cloneClass.length != it.length }
+            .filter { treeCloneClass.length != it.length }
             .none {
-                val first = times(cloneClass.length / it.length + 1) { it.tokenSequence() }.filter { it.source !in xFilter }
+                val first = times(treeCloneClass.length / it.length + 1) { it.tokenSequence() }.filter { it.source !in xFilter }
                 val second = nodes.tokenSequence().filter { it.source !in xFilter }
                 first equalContent second
             }

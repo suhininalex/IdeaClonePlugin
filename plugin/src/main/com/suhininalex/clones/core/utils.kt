@@ -8,6 +8,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiUtil
+import com.suhininalex.clones.core.interfaces.Clone
 import com.suhininalex.clones.ide.ProjectClonesInitializer
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
@@ -68,7 +69,7 @@ operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(el
 fun PsiElement.asSequence(): Sequence<PsiElement> =
     this.depthFirstTraverse { it.children.asSequence() }.filter { it.firstChild == null }
 
-fun SuffixTreeCloneClass.tokenSequence(): Sequence<Token> =
+fun TreeCloneClass.tokenSequence(): Sequence<Token> =
         treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
 @Suppress("UNCHECKED_CAST")

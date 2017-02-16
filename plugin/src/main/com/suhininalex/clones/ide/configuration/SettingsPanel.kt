@@ -14,7 +14,7 @@ class SettingsPanel: Configurable {
     }
 
     override fun getDisplayName(): String {
-        return "Clone finder configuration"
+        return "TreeClone finder configuration"
     }
 
     override fun apply() {

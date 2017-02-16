@@ -2,28 +2,27 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.ElementType.*
-import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.clonefilter.LengthFilter
 import com.suhininalex.clones.core.clonefilter.filterClones
-import com.suhininalex.clones.ide.document
+import com.suhininalex.clones.core.interfaces.Clone
+import com.suhininalex.clones.core.interfaces.CloneClass
 import com.suhininalex.clones.ide.endLine
 import com.suhininalex.clones.ide.method
 import com.suhininalex.clones.ide.startLine
 import com.suhininalex.suffixtree.SuffixTree
 import java.util.*
 
-class CloneRangeID(val cloneRange: CloneRange){
+class CloneID(val clone: Clone){
 
-    val file = cloneRange.firstPsi.containingFile
-    val startLine = cloneRange.firstPsi.startLine
-    val endLine = cloneRange.lastPsi.endLine
+    val file = clone.firstPsi.containingFile
+    val startLine = clone.firstPsi.startLine
+    val endLine = clone.lastPsi.endLine
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
-        other as CloneRangeID
+        other as CloneID
 
         if (file != other.file) return false
         if (startLine != other.startLine) return false
@@ -40,35 +39,35 @@ class CloneRangeID(val cloneRange: CloneRange){
     }
 }
 
-fun filterSameCloneRangeClasses(clones: List<CloneRangeClass>): List<CloneRangeClass> {
-    val map = HashMap<CloneRangeID, Int>()
+fun filterSameCloneRangeClasses(clones: List<CloneClass>): List<RangeCloneClass> {
+    val map = HashMap<CloneID, Int>()
     var groupId = 0
     clones.forEach { cloneRangeClass ->
-        val cloneWithAnotherParent = cloneRangeClass.cloneRanges.find { map[CloneRangeID(it)] != null }
+        val cloneWithAnotherParent = cloneRangeClass.clones.find { map[CloneID(it)] != null }
         val groupId: Int =
                 if (cloneWithAnotherParent == null) {
                     groupId++
                 } else {
-                    map[CloneRangeID(cloneWithAnotherParent)]!!
+                    map[CloneID(cloneWithAnotherParent)]!!
                 }
 
-        cloneRangeClass.cloneRanges.map(::CloneRangeID).forEach {
+        cloneRangeClass.clones.map(::CloneID).forEach {
             map.put(it, groupId)
         }
     }
-    return map.entries.groupBy { it.value }.values.map { CloneRangeClass(it.map { it.key.cloneRange }) }
+    return map.entries.groupBy { it.value }.values.map { RangeCloneClass(it.map { it.key.clone }) }
 }
 
-fun CloneRangeClass.scoreSelfCoverage(): Int =
-        cloneRanges[0].scoreSelfCoverage()
+fun CloneClass.scoreSelfCoverage(): Int =
+        clones.first().scoreSelfCoverage()
 
-fun CloneRange.scoreSelfCoverage(): Int{
+fun Clone.scoreSelfCoverage(): Int{
     val sequence = sequenceFromRange(firstPsi, lastPsi).toList()
 
     val tree = SuffixTree<Token>()
     tree.addSequence(sequence.map(::Token))
     val clones = tree.getAllCloneClasses().filterClones();
-    val raw = clones.map { CloneRangeClass(it.clones.map { CloneRange(it.firstPsi, it.lastPsi) }.toList()) }
+    val raw = clones.map { RangeCloneClass(it.clones.map { RangeClone(it.firstPsi, it.lastPsi) }.toList()) }
     val length = raw.flatMap { it.cloneRanges }
             .map{ TextRange(it.firstPsi.startLine, it.lastPsi.endLine+1) }
             .uniteRanges()
@@ -96,9 +95,9 @@ fun sequenceFromRange(firstPsi: PsiElement, lastPsi: PsiElement): Sequence<PsiEl
 
 val lengthClassFilter = LengthFilter(10)
 
-fun SuffixTree<Token>.getAllCloneClasses(): Sequence<CloneClass>  =
+fun SuffixTree<Token>.getAllCloneClasses(): Sequence<TreeCloneClass>  =
         root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
-                .map(::CloneClass)
+                .map(::TreeCloneClass)
                 .filter { lengthClassFilter.isAllowed(it) }
 
 fun List<TextRange>.uniteRanges(): List<TextRange> {
@@ -128,9 +127,9 @@ data class CloneScore(val selfCoverage: Double, val sameMethodCount: Double, val
 fun CloneScore.score(): Double =
         (1-selfCoverage*sameMethodCount)*length
 
-fun CloneRangeClass.getScore() =
-    CloneScore(scoreSelfCoverage()/100.0, scoreSameMethod()/100.0, cloneRanges[0].getLength())
+fun CloneClass.getScore() =
+    CloneScore(scoreSelfCoverage()/100.0, scoreSameMethod()/100.0, clones.first().getLength())
 
-fun CloneRangeClass.scoreSameMethod(): Int =
-    if (cloneRanges.size < 2) 100
-    else (cloneRanges.map{ it.firstPsi.method }.groupBy { it }.map { it.value.size }.max()!!-1)*100/(cloneRanges.size-1)
+fun CloneClass.scoreSameMethod(): Int =
+    if (clones.count() < 2) 100
+    else (clones.map{ it.firstPsi.method }.groupBy { it }.map { it.value.size }.max()!!-1)*100/(clones.count()-1)

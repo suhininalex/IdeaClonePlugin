@@ -1,7 +1,7 @@
 package com.suhininalex.clones.core.clonefilter;
 
-import com.suhininalex.clones.core.CloneClass;
+import com.suhininalex.clones.core.TreeCloneClass;
 
 public interface CloneClassFilter {
-    boolean isAllowed(CloneClass cloneClass);
+    boolean isAllowed(TreeCloneClass treeCloneClass);
 }

@@ -43,14 +43,14 @@ class CloneManager {
         tree.removeSequence(id)
     }
 
-    fun getAllCloneClasses(): Sequence<CloneClass>  = rwLock.read {
+    fun getAllCloneClasses(): Sequence<TreeCloneClass>  = rwLock.read {
         tree.root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
-                .map(::CloneClass)
+                .map(::TreeCloneClass)
                 .filter { lengthClassFilter.isAllowed(it) }
     }
 
-    fun getAllMethodClasses(method: PsiMethod): Sequence<CloneClass> = rwLock.read {
-        val classes = LinkedList<CloneClass>()
+    fun getAllMethodClasses(method: PsiMethod): Sequence<TreeCloneClass> = rwLock.read {
+        val classes = LinkedList<TreeCloneClass>()
         val visitedNodes = HashSet<Node>()
         val id = method.getId() ?: throw IllegalStateException("There are no such method in CloneManager (${method.stringId}).")
 
@@ -58,7 +58,7 @@ class CloneManager {
             for (currentNode in branchNode.riseTraverser()){
                 if (visitedNodes.contains(currentNode)) break;
                 visitedNodes.add(currentNode)
-                classes.addIf(CloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
+                classes.addIf(TreeCloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
             }
         }
         return classes.asSequence()

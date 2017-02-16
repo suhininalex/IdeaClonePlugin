@@ -4,32 +4,34 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.core.interfaces.Clone
+import com.suhininalex.clones.core.interfaces.CloneClass
 import com.suhininalex.clones.ide.document
 
-data class CloneRange(val firstPsi: PsiElement, val lastPsi: PsiElement)
+data class RangeClone(override val firstPsi: PsiElement, override val lastPsi: PsiElement): Clone
 
-class CloneRangeClass(val cloneRanges: List<CloneRange>)
+class RangeCloneClass(val cloneRanges: List<Clone>): CloneClass {
+    override val clones: Sequence<Clone>
+        get() = cloneRanges.asSequence()
+}
 
-fun List<CloneClass>.extractSiblingClones() : List<CloneRangeClass> =
+fun List<CloneClass>.extractSiblingClones() : List<CloneClass> =
         flatMap ( CloneClass::extractSiblingClones )
 
-//fun extractSiblingClones(clones: List<CloneClass>): List<CloneRangeClass> =
-//        clones.flatMap ( CloneClass::extractSiblingClones )
-
-fun CloneClass.extractSiblingClones(): List<CloneRangeClass> =
-        clones.map(Clone::extractSiblingSequences).zipped().map(::CloneRangeClass).filter { it.cloneRanges[0].getLength() > 50 }
+fun CloneClass.extractSiblingClones(): List<CloneClass> =
+        clones.map(Clone::extractSiblingSequences).zipped().map(::RangeCloneClass).filter { it.cloneRanges[0].getLength() > 50 }
 
 /**
  * Only sequence of siblings is interesting as a clone
  */
-fun Clone.extractSiblingSequences(): Sequence<CloneRange> {
-    val maxEndOffset = lastElement.source.textRange.endOffset
+fun Clone.extractSiblingSequences(): Sequence<Clone> {
+    val maxEndOffset = lastPsi.textRange.endOffset
     var leftPsi: PsiElement? = firstPsi
     //TODO fold
     return generateSequence (firstPsi) { it.findNextSibling(maxEndOffset) }
             .filter { ! it.haveSibling(maxEndOffset) }
             .map {
-                val result = CloneRange(leftPsi!!, it)
+                val result = RangeClone(leftPsi!!, it)
                 leftPsi = it.findNextSibling(maxEndOffset)
                 result
             }
@@ -37,7 +39,7 @@ fun Clone.extractSiblingSequences(): Sequence<CloneRange> {
             .filter {it.getLength() > 0 }
 }
 
-fun CloneRange.cropBadTokens(): CloneRange {
+fun Clone.cropBadTokens(): Clone {
     var left = firstPsi
     var right = lastPsi
     while (left in badTokens && left.nextSibling != null) {
@@ -46,7 +48,7 @@ fun CloneRange.cropBadTokens(): CloneRange {
     while (right in badTokens && right.prevSibling != null) {
         right = right.prevSibling
     }
-    return CloneRange(left, right)
+    return RangeClone(left, right)
 }
 
 val badTokens = TokenSet.create(
@@ -73,10 +75,10 @@ fun PsiElement.findParentWithSibling(): PsiElement {
     return current
 }
 
-fun CloneRange.getLength(): Int =
+fun Clone.getLength(): Int =
         lastPsi.textRange.endOffset - firstPsi.textRange.startOffset
 
-fun CloneRange.printText(){
+fun Clone.printText(){
     val range = TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
     println(firstPsi.document.getText(range))
 }
