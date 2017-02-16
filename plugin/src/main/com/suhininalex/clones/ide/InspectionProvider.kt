@@ -26,11 +26,9 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
         val result = cloneManager.getAllMethodClasses(method)
-                .filterClones()
+                .filterClones().extractSiblingClones()
 
-        val r2 = extractSiblingClones(result)
-
-        filterSameCloneRangeClasses(r2)
+        filterSameCloneRangeClasses(result)
                 .forEach {
                     it.cloneRanges.forEach {
                         if (it.firstPsi in method)
@@ -53,9 +51,8 @@ class CloneReport : LocalQuickFix {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
-        val clones = project.getCloneManager().getAllMethodClasses(method).filterClones()
-        val c = extractSiblingClones(clones)
-        val c2 = filterSameCloneRangeClasses(c)
+        val clones = project.getCloneManager().getAllMethodClasses(method).filterClones().extractSiblingClones()
+        val c2 = filterSameCloneRangeClasses(clones)
         EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, c2) }
     }
 }

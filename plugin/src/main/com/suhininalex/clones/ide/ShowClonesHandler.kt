@@ -25,7 +25,7 @@ object editorHandler : EditorActionHandler() {
                 .filterWithProgressbar()
                 .then {
                     Application.runReadAction {
-                        val result = extractSiblingClones(it).filter {
+                        val result = it.extractSiblingClones().filter {
                             val score = it.getScore()
                             if (score.selfCoverage > 0.85) false
                             else if (score.selfCoverage > 0.7 && score.sameMethodCount > 0.7) false
