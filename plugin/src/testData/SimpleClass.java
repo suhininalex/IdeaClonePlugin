@@ -8,21 +8,15 @@ public class Main {
 
     /** Update the means. */
     private void updateMeans() {
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
+        System.out.print(Utilities.pad("MaxTime", 10));
+        System.out.print(Utilities.pad("AvgTime", 10));
+        System.out.print(Utilities.pad("TotTime", 10));
+    }
+
+    /** Update the means. */
+    private void updateMeans2() {
+        System.out.print(Utilities.pad("MaxTime", 10));
+        System.out.print(Utilities.pad("AvgTime", 10));
+        System.out.print(Utilities.pad("TotTime", 10));
     }
 }

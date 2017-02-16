@@ -8,6 +8,7 @@ import com.suhininalex.clones.core.clonefilter.LengthFilter
 import com.suhininalex.clones.core.clonefilter.filterClones
 import com.suhininalex.clones.ide.document
 import com.suhininalex.clones.ide.endLine
+import com.suhininalex.clones.ide.method
 import com.suhininalex.clones.ide.startLine
 import com.suhininalex.suffixtree.SuffixTree
 import java.util.*
@@ -197,3 +198,15 @@ fun List<TextRange>.uniteRanges(): List<TextRange> {
     result.add(TextRange(lastLeft, lastRight))
     return result
 }
+
+data class CloneScore(val selfCoverage: Double, val sameMethodCount: Double, val length: Int)
+
+fun CloneScore.score(): Double =
+        (1-selfCoverage*sameMethodCount)*length
+
+fun CloneRangeClass.getScore() =
+    CloneScore(scoreSelfCoverage()/100.0, scoreSameMethod()/100.0, cloneRanges[0].getLength())
+
+fun CloneRangeClass.scoreSameMethod(): Int =
+    if (cloneRanges.size < 2) 100
+    else (cloneRanges.map{ it.firstPsi.method }.groupBy { it }.map { it.value.size }.max()!!-1)*100/(cloneRanges.size-1)

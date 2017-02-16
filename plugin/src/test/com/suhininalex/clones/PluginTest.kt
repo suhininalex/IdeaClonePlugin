@@ -37,7 +37,7 @@ class PluginTest : LightCodeInsightFixtureTestCase() {
             println("Class ${classN++}")
             println("==========================================================")
             clone.printText()
-            clone.scoreSelfCoverage()
+            println("SCORE: ${clone.scoreSelfCoverage()}")
         }
     }
 }
