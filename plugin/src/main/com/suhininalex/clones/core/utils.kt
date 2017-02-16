@@ -25,7 +25,7 @@ val PsiMethod.stringId: String
 val Edge.length: Int
     get() = end - begin + 1
 
-fun CloneRange.getTextRangeInMethod(offset: Int) = TextRange(firstPsi.textRange.startOffset - offset, lastPsi.textRange.endOffset-offset)
+fun Clone.getTextRangeInMethod(offset: Int) = TextRange(firstPsi.textRange.startOffset - offset, lastPsi.textRange.endOffset-offset)
 
 fun Project.getCloneManager() = ProjectClonesInitializer.getInstance(this)
 
@@ -68,7 +68,7 @@ operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(el
 fun PsiElement.asSequence(): Sequence<PsiElement> =
     this.depthFirstTraverse { it.children.asSequence() }.filter { it.firstChild == null }
 
-fun CloneClass.tokenSequence(): Sequence<Token> =
+fun SuffixTreeCloneClass.tokenSequence(): Sequence<Token> =
         treeNode.descTraverser().asSequence().map { it.parentEdge }.filter { it != null }.flatMap(Edge::asSequence)
 
 @Suppress("UNCHECKED_CAST")
@@ -131,4 +131,9 @@ fun <T> Sequence<Sequence<T>>.zipped(): List<List<T>>{
         }
     }
     return result
+}
+
+fun <T> Sequence<T>.areEqual(): Boolean {
+    val first = first()
+    return all { it == first }
 }
