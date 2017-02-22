@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.*
+import com.intellij.psi.impl.source.tree.JavaElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiUtil
 import com.suhininalex.clones.core.interfaces.Clone
@@ -82,7 +83,7 @@ fun Edge.asSequence(): Sequence<Token> {
 }
 
 val javaTokenFilter = TokenSet.create(
-        WHITE_SPACE, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT//, SEMICOLON, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
+        WHITE_SPACE, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, REFERENCE_PARAMETER_LIST, MODIFIER_LIST//, SEMICOLON, CODE_BLOCK, RPARENTH, LPARENTH, RBRACE, LBRACE,  EXPRESSION_LIST
 )
 
 val Edge.isTerminal: Boolean

@@ -3,6 +3,7 @@ package com.suhininalex.clones.core
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.impl.source.tree.JavaElementType
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.interfaces.Clone
 import com.suhininalex.clones.core.interfaces.CloneClass
@@ -19,7 +20,7 @@ fun List<CloneClass>.extractSiblingClones() : List<CloneClass> =
         flatMap ( CloneClass::extractSiblingClones )
 
 fun CloneClass.extractSiblingClones(): List<CloneClass> =
-        clones.map(Clone::extractSiblingSequences).zipped().map(::RangeCloneClass).filter { it.cloneRanges[0].getLength() > 50 }
+        clones.map { it.normalize() }.map(Clone::extractSiblingSequences).zipped().map(::RangeCloneClass)
 
 /**
  * Only sequence of siblings is interesting as a clone
@@ -36,7 +37,7 @@ fun Clone.extractSiblingSequences(): Sequence<Clone> {
                 result
             }
             .map { it.cropBadTokens() }
-            .filter {it.getLength() > 0 }
+            .filter {it.tokenSequence().count() > 15 }
 }
 
 fun Clone.cropBadTokens(): Clone {
@@ -75,6 +76,12 @@ fun PsiElement.findParentWithSibling(): PsiElement {
     return current
 }
 
+fun PsiElement.normalizeUp(): PsiElement{
+    var current = this
+    while (current.textRange.startOffset == current.parent.textRange.startOffset) current = current.parent
+    return current
+}
+
 fun Clone.getLength(): Int =
         lastPsi.textRange.endOffset - firstPsi.textRange.startOffset
 
@@ -84,5 +91,11 @@ fun Clone.printText(){
 }
 
 fun PsiElement.haveSibling(maxEndOffset: Int): Boolean {
-    return nextSibling != null && nextSibling.textRange.endOffset <= maxEndOffset
+    return  nextSibling != null && nextSibling.before(maxEndOffset)
+//            || parent.node.elementType == JavaElementType.REFERENCE_EXPRESSION && parent.haveSibling(maxEndOffset)
 }
+
+fun PsiElement.before(endOffset: Int): Boolean =
+        textRange.endOffset <= endOffset
+//                || node.elementType == JavaElementType.IF_STATEMENT && firstChild.before(endOffset)
+

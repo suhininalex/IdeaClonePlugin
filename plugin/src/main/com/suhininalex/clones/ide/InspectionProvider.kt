@@ -26,7 +26,7 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
         val result = cloneManager.getAllMethodClasses(method)
-                .filterClones().extractSiblingClones()
+                .filterClones().splitSiblingClones()
 
         filterSameCloneRangeClasses(result)
                 .forEach {

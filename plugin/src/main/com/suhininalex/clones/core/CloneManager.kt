@@ -15,7 +15,7 @@ class CloneManager {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(50)
+    internal val lengthClassFilter = LengthFilter(25)
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -52,7 +52,7 @@ class CloneManager {
     fun getAllMethodClasses(method: PsiMethod): Sequence<TreeCloneClass> = rwLock.read {
         val classes = LinkedList<TreeCloneClass>()
         val visitedNodes = HashSet<Node>()
-        val id = method.getId() ?: throw IllegalStateException("There are no such method in CloneManager (${method.stringId}).")
+        val id = method.getId() ?: return emptySequence()// throw IllegalStateException("There are no such method in CloneManager (${method.stringId}).")
 
         for (branchNode in tree.getAllLastSequenceNodes(id)) {
             for (currentNode in branchNode.riseTraverser()){

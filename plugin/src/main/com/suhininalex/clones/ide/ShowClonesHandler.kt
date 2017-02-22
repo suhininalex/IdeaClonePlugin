@@ -25,13 +25,18 @@ object editorHandler : EditorActionHandler() {
                 .filterWithProgressbar()
                 .then {
                     Application.runReadAction {
-                        val result = it.extractSiblingClones().filter {
-                            val score = it.getScore()
-                            if (score.selfCoverage > 0.85) false
-                            else if (score.selfCoverage > 0.7 && score.sameMethodCount > 0.7) false
-                            else true
+                        try {
+                            val result = it.splitSiblingClones()
+                                .filter {
+                                    val score = it.getScore()
+                                    if (score.selfCoverage > 0.85) false
+                                    else if (score.selfCoverage > 0.7 && score.sameMethodCount > 0.7) false
+                                    else true
+                                }
+                            ClonesViewProvider.showClonesData(project, filterSameCloneRangeClasses(result))
+                        } catch (e: Throwable){
+                            e.printStackTrace()
                         }
-                        ClonesViewProvider.showClonesData(project, filterSameCloneRangeClasses(result))
                     }
                 }
         }

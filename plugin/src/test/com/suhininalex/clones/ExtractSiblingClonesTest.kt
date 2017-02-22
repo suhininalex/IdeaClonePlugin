@@ -1,33 +1,56 @@
 package com.suhininalex.clones
 
-import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterClones
-import com.suhininalex.clones.core.interfaces.Clone
 import com.suhininalex.clones.core.interfaces.CloneClass
+import com.suhininalex.clones.ide.method
 
 class ExtractSiblingClonesTest : FolderProjectTest("testdata/sphinx4/src") {
 
-    fun testSimpleTest() {
-        val clones = cloneManager.getAllCloneClasses().filterClones().toList()
+    val clones
+        get() = cloneManager.getAllCloneClasses().filterClones().toList()
 
+//    fun testNotAloneDuplicate() {
+//        val problems = clones.splitSiblingClones().filter { ! checkCountInvariant(it) }
+//        problems.forEach {
+//            println("========================")
+//            println("Problem class:")
+//            it.printInfo()
+//        }
+//        assertTrue(problems.isEmpty())
+//    }
 
-        clones.extractSiblingClones().filter { ! checkTokenLengthInvariant(it) }.forEach {
-            println("===================")
-            it.clones.first().printText()
+    fun testSameTokenLengthSequence(){
+        val problems = clones
+//            .filter {
+//                it.splitToSiblingClones().any { ! checkTokenLengthInvariant(it) }
+//            }
+
+        problems.forEach {
+            assert(it.clones.map { it.tokenSequence().count() }.areEqual())
+            try {it.splitToSiblingClones()}
+            catch (e: Throwable) {
+//                assert(it.clones.map{it.normalize()}.map { it.tokenSequence().count() }.areEqual())
+                println("========================")
+                println("Problem source:")
+                println(it.clones.first().firstPsi.method?.text)
+                println("--------------------------")
+                it.clones.first().printText()
+                println("----------------------")
+                it.clones.map{it.normalize()}.forEach {
+                    println(it.tokenSequence().map{it.node.elementType}.toList())
+                }
+            }
+
         }
-        clones.filter { ! checkCountInvariant(it) }.forEach {
-            println("===================")
-            it.clones.first().printText()
-        }
+        assertTrue(problems.isEmpty())
     }
 }
 
-fun checkCountInvariant(cloneRangeClass: CloneClass): Boolean =
-    cloneRangeClass.clones.count() > 1
-
-fun checkTokenLengthInvariant(cloneRangeClass: CloneClass): Boolean =
-    cloneRangeClass.clones.map { it.tokenSequence().count() }.areEqual()
-
-fun Clone.tokenSequence(): Sequence<PsiElement> =
-    sequenceFromRange(firstPsi, lastPsi)
+fun CloneClass.printInfo(){
+    clones.forEach {
+        println(it.tokenSequence().toList())
+        it.printText()
+        println("------------------------")
+    }
+}
