@@ -5,20 +5,20 @@ import com.suhininalex.clones.core.clonefilter.filterClones
 import com.suhininalex.clones.core.interfaces.CloneClass
 import com.suhininalex.clones.ide.method
 
-class ExtractSiblingClonesTest : FolderProjectTest("testdata/sphinx4/src") {
+class ExtractSiblingClonesTest : FolderProjectTest("testdata/sphinx4") {
 
     val clones
         get() = cloneManager.getAllCloneClasses().filterClones().toList()
 
-//    fun testNotAloneDuplicate() {
-//        val problems = clones.splitSiblingClones().filter { ! checkCountInvariant(it) }
-//        problems.forEach {
-//            println("========================")
-//            println("Problem class:")
-//            it.printInfo()
-//        }
-//        assertTrue(problems.isEmpty())
-//    }
+    fun testNotAloneDuplicate() {
+        val problems = filterSameCloneRangeClasses(clones.splitSiblingClones()).filter { ! checkCountInvariant(it) }
+        problems.forEach {
+            println("========================")
+            println("Problem class:")
+            it.printInfo()
+        }
+        assertTrue(problems.isEmpty())
+    }
 
     fun testSameTokenLengthSequence(){
         val problems = clones

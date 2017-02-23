@@ -28,9 +28,10 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
         val result = cloneManager.getAllMethodClasses(method)
                 .filterClones().splitSiblingClones()
 
-        filterSameCloneRangeClasses(result)
+//        filterSameCloneRangeClasses(result)
+                result
                 .forEach {
-                    it.cloneRanges.forEach {
+                    it.clones.forEach {
                         if (it.firstPsi in method)
                             holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(method.textRange.startOffset), cloneReport)
                     }

@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeNode
 
-private class ClonesView (val clones: List<RangeCloneClass>) : Tree() {
+private class ClonesView (val clones: List<CloneClass>) : Tree() {
 
     val index = AtomicInteger(1)
 
@@ -57,7 +57,7 @@ object ClonesViewProvider {
                 getToolWindow("CloneFinder") ?: registerToolWindow("CloneFinder", true, ToolWindowAnchor.BOTTOM)
             }
 
-    fun showClonesData(project: Project, clonesList: List<RangeCloneClass>) =
+    fun showClonesData(project: Project, clonesList: List<CloneClass>) =
         EventQueue.invokeLater {
             with (project.getToolWindow()) {
                 hide(null)

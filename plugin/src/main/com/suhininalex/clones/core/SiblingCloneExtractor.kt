@@ -40,20 +40,30 @@ fun Clone.extractSiblingSequences(): Sequence<Clone> {
             .filter {it.tokenSequence().count() > 15 }
 }
 
+
+
 fun Clone.cropBadTokens(): Clone {
     var left = firstPsi
     var right = lastPsi
-    while (left in badTokens && left.nextSibling != null) {
+    while ( ! (left in leftBadTokens && left.parent.lastChild.textRange.endOffset <= lastPsi.textRange.endOffset) && left in badTokens && left.nextSibling != null) {
         left = left.nextSibling
     }
-    while (right in badTokens && right.prevSibling != null) {
+    while (! (right in rightBadTokens && right.parent.firstChild.textRange.startOffset >= firstPsi.textRange.startOffset) && right in badTokens && right.prevSibling != null) {
         right = right.prevSibling
     }
     return RangeClone(left, right)
 }
 
 val badTokens = TokenSet.create(
-        ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.SEMICOLON, ElementType.CODE_BLOCK, ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE, ElementType.EXPRESSION_LIST, ElementType.COMMA
+        ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.SEMICOLON, ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE, ElementType.EXPRESSION_LIST, ElementType.COMMA
+)
+
+val leftBadTokens = TokenSet.create(
+         ElementType.LPARENTH, ElementType.LBRACE, ElementType.LBRACKET
+)
+
+val rightBadTokens = TokenSet.create(
+        ElementType.RPARENTH, ElementType.RBRACE, ElementType.RBRACKET
 )
 
 fun PsiElement.findNextSibling(maxEndOffset: Int): PsiElement? {

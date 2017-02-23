@@ -2,6 +2,7 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.mromanak.unionfind.UnionFindSet
 import com.suhininalex.clones.core.clonefilter.LengthFilter
 import com.suhininalex.clones.core.clonefilter.filterClones
 import com.suhininalex.clones.core.interfaces.Clone
@@ -40,39 +41,30 @@ class CloneID(val clone: Clone){
 }
 
 fun filterSameCloneRangeClasses(clones: List<CloneClass>): List<RangeCloneClass> {
-    val map = HashMap<CloneID, Int>()
-    var groupId = 0
-    clones.forEach { cloneRangeClass ->
-        val cloneWithAnotherParent = cloneRangeClass.clones.find { map[CloneID(it)] != null }
-        val groupId: Int =
-                if (cloneWithAnotherParent == null) {
-                    groupId++
-                } else {
-                    map[CloneID(cloneWithAnotherParent)]!!
-                }
-
-        cloneRangeClass.clones.map(::CloneID).forEach {
-            map.put(it, groupId)
+    val unionSet = UnionFindSet(clones.flatMap { it.clones.toList() }.map(::CloneID))
+    clones.forEach {
+        if (it.clones.count()>0) {
+            val first = CloneID(it.clones.first())
+            it.clones.forEach { unionSet.join(first, CloneID(it)) }
         }
     }
-    return map.entries.groupBy { it.value }.values.map { RangeCloneClass(it.map { it.key.clone }) }
+    return unionSet.equivalenceClasses.map { RangeCloneClass(it.map { it.clone }.toList()) }
 }
 
 fun CloneClass.scoreSelfCoverage(): Int =
         clones.first().scoreSelfCoverage()
 
 fun Clone.scoreSelfCoverage(): Int{
-    val sequence = sequenceFromRange(firstPsi, lastPsi).toList()
-
     val tree = SuffixTree<Token>()
-    tree.addSequence(sequence.map(::Token))
-    val clones = tree.getAllCloneClasses().filterClones();
-    val raw = clones.map { RangeCloneClass(it.clones.map { RangeClone(it.firstPsi, it.lastPsi) }.toList()) }
-    val length = raw.flatMap { it.cloneRanges }
-            .map{ TextRange(it.firstPsi.startLine, it.lastPsi.endLine+1) }
+    val sequence = tokenSequence().toList()
+    val map = sequence.mapIndexed { i, psiElement ->  psiElement to i}.toMap()
+    tree.addSequence(sequence.map(::Token).toList())
+    val clones = tree.getAllCloneClasses().filterClones()
+    val length = clones.flatMap { it.clones.toList() }
+            .map{ map[it.firstPsi]!! to map[it.lastPsi]!! }
             .uniteRanges()
-            .sumBy { it.length }
-    val bigLength = TextRange(firstPsi.startLine, lastPsi.endLine).length + 1
+            .sumBy { it.second - it.first + 1 }
+    val bigLength = sequence.size
     return length*100/bigLength
 }
 
@@ -96,12 +88,8 @@ fun PsiElement.prevLeafElement(): PsiElement{
     return current
 }
 
-fun sequenceFromRange(firstPsi: PsiElement, lastPsi: PsiElement): Sequence<PsiElement> {
-    var first = firstPsi
-    while (first.firstChild != null)
-        first = first.firstChild
-    return generateSequence (first) { it.nextLeafElement() }.takeWhile { it.textRange.endOffset <= lastPsi.textRange.endOffset }.filter { it !in javaTokenFilter }
-}
+fun sequenceFromRange(firstPsi: PsiElement, lastPsi: PsiElement): Sequence<PsiElement> =
+        generateSequence (firstPsi.firstEndChild()) { it.nextLeafElement() }.takeWhile { it.textRange.endOffset <= lastPsi.textRange.endOffset }.filter { it !in javaTokenFilter }
 
 val lengthClassFilter = LengthFilter(10)
 
@@ -110,25 +98,25 @@ fun SuffixTree<Token>.getAllCloneClasses(): Sequence<TreeCloneClass>  =
                 .map(::TreeCloneClass)
                 .filter { lengthClassFilter.isAllowed(it) }
 
-fun List<TextRange>.uniteRanges(): List<TextRange> {
+fun List<Pair<Int,Int>>.uniteRanges(): List<Pair<Int, Int>> {
     if (size < 2) return this
-    val sorted = sortedBy { it.startOffset }.asSequence()
-    val result = ArrayList<TextRange>()
+    val sorted = sortedBy { it.first }.asSequence()
+    val result = ArrayList<Pair<Int,Int>>()
     val first = sorted.first()
-    var lastLeft = first.startOffset
-    var lastRight = first.endOffset
+    var lastLeft = first.first
+    var lastRight = first.second
     sorted.forEach {
-        if (it.endOffset <= lastRight ) {
+        if (it.second <= lastRight ) {
             // skip
-        } else if (it.startOffset <= lastRight)  {
-            lastRight = it.endOffset
+        } else if (it.first <= lastRight)  {
+            lastRight = it.second
         } else {
-            result.add(TextRange(lastLeft, lastRight))
-            lastLeft = it.startOffset
-            lastRight = it.endOffset
+            result.add(lastLeft to lastRight)
+            lastLeft = it.first
+            lastRight = it.second
         }
     }
-    result.add(TextRange(lastLeft, lastRight))
+    result.add(lastLeft to lastRight)
     return result
 }
 
