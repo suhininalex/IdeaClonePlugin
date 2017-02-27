@@ -1,10 +1,9 @@
 package com.suhininalex.clones
 
-import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterClones
-import com.suhininalex.clones.core.interfaces.Clone
-import com.suhininalex.clones.core.interfaces.CloneClass
+import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.utils.areEqual
 
 class TreeClonesTest : FolderProjectTest("testdata/sphinx4/") {
 

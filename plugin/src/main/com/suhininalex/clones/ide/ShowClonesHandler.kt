@@ -7,6 +7,8 @@ import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterWithProgressbar
+import com.suhininalex.clones.core.utils.Application
+import com.suhininalex.clones.core.utils.getCloneManager
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
 import java.awt.EventQueue
@@ -26,14 +28,11 @@ object editorHandler : EditorActionHandler() {
                 .then {
                     Application.runReadAction {
                         try {
-                            val result = it.splitSiblingClones()
-                                .filter {
-                                    val score = it.getScore()
-                                    if (score.selfCoverage > 0.85) false
-                                    else if (score.selfCoverage > 0.7 && score.sameMethodCount > 0.7) false
-                                    else true
-                                }
-                            ClonesViewProvider.showClonesData(project, filterSameCloneRangeClasses(result))
+                            val clones = it
+                                    .splitSiblingClones()
+                                    .filterSameCloneRangeClasses()
+                                    .filterSelfCoveredClasses()
+                            ClonesViewProvider.showClonesData(project, clones)
                         } catch (e: Throwable){
                             e.printStackTrace()
                         }

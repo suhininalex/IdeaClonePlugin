@@ -1,6 +1,10 @@
-package com.suhininalex.clones.core
+package com.suhininalex.clones.core.structures
 
-import com.suhininalex.clones.core.interfaces.CloneClass
+import com.suhininalex.clones.core.Token
+import com.suhininalex.clones.core.utils.isEmpty
+import com.suhininalex.clones.core.utils.leafTraverse
+import com.suhininalex.clones.core.utils.length
+import com.suhininalex.clones.core.utils.lengthToRoot
 import com.suhininalex.suffixtree.Edge
 import com.suhininalex.suffixtree.Node
 
@@ -19,7 +23,7 @@ class TreeCloneClass(val treeNode: Node): CloneClass {
             }
 
 
-    val size by lazy {
+    override val size by lazy {
         clones.count()
     }
 

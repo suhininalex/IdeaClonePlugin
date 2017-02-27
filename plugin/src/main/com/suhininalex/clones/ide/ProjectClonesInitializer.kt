@@ -7,6 +7,10 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType.METHOD
 import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.*
+import com.suhininalex.clones.core.utils.Application
+import com.suhininalex.clones.core.utils.callInEventQueue
+import com.suhininalex.clones.core.utils.findTokens
+import com.suhininalex.clones.core.utils.getAllPsiJavaFiles
 import java.util.concurrent.ConcurrentHashMap
 
 object ProjectClonesInitializer {

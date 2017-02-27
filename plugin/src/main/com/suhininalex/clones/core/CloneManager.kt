@@ -1,10 +1,10 @@
 package com.suhininalex.clones.core
 
 import com.intellij.psi.PsiMethod
-import com.suhininalex.clones.core.clonefilter.*
+import com.suhininalex.clones.core.structures.TreeCloneClass
+import com.suhininalex.clones.core.utils.*
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
@@ -15,7 +15,7 @@ class CloneManager {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val lengthClassFilter = LengthFilter(25)
+    internal val minTokenLength = 20
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -23,11 +23,6 @@ class CloneManager {
 
     fun removeMethod(method: PsiMethod) = rwLock.write {
         removeMethodUnlocked(method)
-    }
-
-    fun updateMethod(method: PsiMethod) = rwLock.write {
-        removeMethodUnlocked(method)
-        addMethodUnlocked(method)
     }
 
     private fun addMethodUnlocked(method: PsiMethod) {
@@ -44,25 +39,32 @@ class CloneManager {
     }
 
     fun getAllCloneClasses(): Sequence<TreeCloneClass>  = rwLock.read {
-        tree.root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
-                .map(::TreeCloneClass)
-                .filter { lengthClassFilter.isAllowed(it) }
+        tree.getAllCloneClasses(minTokenLength)
     }
 
     fun getAllMethodClasses(method: PsiMethod): Sequence<TreeCloneClass> = rwLock.read {
-        val classes = LinkedList<TreeCloneClass>()
-        val visitedNodes = HashSet<Node>()
-        val id = method.getId() ?: return emptySequence()// throw IllegalStateException("There are no such method in CloneManager (${method.stringId}).")
-
-        for (branchNode in tree.getAllLastSequenceNodes(id)) {
-            for (currentNode in branchNode.riseTraverser()){
-                if (visitedNodes.contains(currentNode)) break;
-                visitedNodes.add(currentNode)
-                classes.addIf(TreeCloneClass(currentNode)) {lengthClassFilter.isAllowed(it)}
-            }
-        }
-        return classes.asSequence()
+        val id = method.getId() ?: return emptySequence()
+        return tree.getAllSequenceClasses(id, minTokenLength).asSequence()
     }
 
     fun PsiMethod.getId() = methodIds[stringId]
+}
+
+fun SuffixTree<Token>.getAllCloneClasses(minTokenLength: Int): Sequence<TreeCloneClass>  =
+        root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
+                .map(::TreeCloneClass)
+                .filter { it.length > minTokenLength }
+
+fun SuffixTree<Token>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequence<TreeCloneClass>  {
+    val classes = LinkedList<TreeCloneClass>()
+    val visitedNodes = HashSet<Node>()
+
+    for (branchNode in this.getAllLastSequenceNodes(id)) {
+        for (currentNode in branchNode.riseTraverser()){
+            if (visitedNodes.contains(currentNode)) break;
+            visitedNodes.add(currentNode)
+            classes.addIf(TreeCloneClass(currentNode)) {it.length > minTokenLength}
+        }
+    }
+    return classes.asSequence()
 }

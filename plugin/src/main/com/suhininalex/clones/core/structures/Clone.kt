@@ -1,4 +1,4 @@
-package com.suhininalex.clones.core.interfaces
+package com.suhininalex.clones.core.structures
 
 import com.intellij.psi.PsiElement
 

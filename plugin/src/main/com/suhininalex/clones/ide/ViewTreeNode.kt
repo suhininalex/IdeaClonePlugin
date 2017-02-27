@@ -5,8 +5,7 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.suhininalex.clones.core.RangeClone
-import com.suhininalex.clones.core.interfaces.Clone
+import com.suhininalex.clones.core.structures.Clone
 import javax.swing.tree.DefaultMutableTreeNode
 
 class ViewTreeNode(val clone: Clone) : DefaultMutableTreeNode(clone.getDescription())

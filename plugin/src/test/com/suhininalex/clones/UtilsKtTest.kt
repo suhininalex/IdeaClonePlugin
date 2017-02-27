@@ -1,12 +1,9 @@
 package com.suhininalex.clones
 
-import com.intellij.openapi.util.TextRange
 import com.mromanak.unionfind.UnionFindSet
-import com.suhininalex.clones.core.times
-import com.suhininalex.clones.core.uniteRanges
+import com.suhininalex.clones.core.utils.uniteRanges
 import com.suhininalex.suffixtree.SuffixTree
 import org.junit.Test
-import java.util.*
 
 class UtilsKtTest {
 
@@ -40,16 +37,23 @@ class UtilsKtTest {
             val one = it.first()
             it.forEach { set.join(it, one) }
         }
-        set.equivalenceClasses.forEach { println(it) }
+        set.equivalenceClasses.forEach(::println)
     }
 
     @Test
     fun uniteRangesTest(){
         val ranges = listOf(
-                4 to 8,
-                9 to 20,
-                50 to 100
+                4..8,
+                9..20,
+                50..100
         )
         println(ranges.uniteRanges())
     }
+
+    @Test
+    fun uniteRangesTest2(){
+        println(5.hashCode())
+    }
 }
+
+fun Int.hashCode() = this + 1

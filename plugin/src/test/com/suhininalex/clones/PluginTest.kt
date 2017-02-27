@@ -2,6 +2,7 @@ package com.suhininalex.clones
 
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterClones
+import com.suhininalex.clones.core.utils.printText
 
 class PluginTest : FolderProjectTest("testdata/siblingClones/") {
 

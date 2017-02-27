@@ -1,26 +1,21 @@
 package com.suhininalex.clones.core
 
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.impl.source.tree.JavaElementType
+import com.intellij.psi.impl.source.tree.ElementType.*
 import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.core.interfaces.Clone
-import com.suhininalex.clones.core.interfaces.CloneClass
-import com.suhininalex.clones.ide.document
+import com.suhininalex.clones.core.structures.Clone
+import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.utils.*
 
 data class RangeClone(override val firstPsi: PsiElement, override val lastPsi: PsiElement): Clone
 
 class RangeCloneClass(val cloneRanges: List<Clone>): CloneClass {
+    override val size: Int
+        get() = cloneRanges.size
+
     override val clones: Sequence<Clone>
         get() = cloneRanges.asSequence()
 }
-
-fun List<CloneClass>.extractSiblingClones() : List<CloneClass> =
-        flatMap ( CloneClass::extractSiblingClones )
-
-fun CloneClass.extractSiblingClones(): List<CloneClass> =
-        clones.map { it.normalize() }.map(Clone::extractSiblingSequences).zipped().map(::RangeCloneClass)
 
 /**
  * Only sequence of siblings is interesting as a clone
@@ -29,48 +24,48 @@ fun Clone.extractSiblingSequences(): Sequence<Clone> {
     val maxEndOffset = lastPsi.textRange.endOffset
     var leftPsi: PsiElement? = firstPsi
     //TODO fold
-    return generateSequence (firstPsi) { it.findNextSibling(maxEndOffset) }
+    return generateSequence (firstPsi) { it.findMaxNextElement(maxEndOffset) }
             .filter { ! it.haveSibling(maxEndOffset) }
             .map {
                 val result = RangeClone(leftPsi!!, it)
-                leftPsi = it.findNextSibling(maxEndOffset)
+                leftPsi = it.findMaxNextElement(maxEndOffset)
                 result
             }
             .map { it.cropBadTokens() }
-            .filter {it.tokenSequence().count() > 15 }
+            .filter {it.tokenSequence().count() > 20 }
 }
-
-
 
 fun Clone.cropBadTokens(): Clone {
     var left = firstPsi
     var right = lastPsi
-    while ( ! (left in leftBadTokens && left.parent.lastChild.textRange.endOffset <= lastPsi.textRange.endOffset) && left in badTokens && left.nextSibling != null) {
+    while ( ! (left in lBraces && left.parent.lastChild.textRange.endOffset <= lastPsi.textRange.endOffset) && left in badTokens && left.nextSibling != null) {
         left = left.nextSibling
     }
-    while (! (right in rightBadTokens && right.parent.firstChild.textRange.startOffset >= firstPsi.textRange.startOffset) && right in badTokens && right.prevSibling != null) {
+    while (! (right in rBraces && right.parent.firstChild.textRange.startOffset >= firstPsi.textRange.startOffset) && right in badTokens && right.prevSibling != null) {
         right = right.prevSibling
     }
     return RangeClone(left, right)
 }
 
-val badTokens = TokenSet.create(
-        ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.SEMICOLON, ElementType.RPARENTH, ElementType.LPARENTH, ElementType.RBRACE, ElementType.LBRACE, ElementType.EXPRESSION_LIST, ElementType.COMMA
-)
+val badTokens: TokenSet = TokenSet.create(
+        WHITE_SPACE, DOC_COMMENT, C_STYLE_COMMENT, END_OF_LINE_COMMENT, SEMICOLON, RPARENTH, LPARENTH, RBRACE, LBRACE, EXPRESSION_LIST, COMMA
+    )
 
-val leftBadTokens = TokenSet.create(
-         ElementType.LPARENTH, ElementType.LBRACE, ElementType.LBRACKET
-)
+val lBraces: TokenSet =
+        TokenSet.create(LPARENTH, LBRACE, LBRACKET)
 
-val rightBadTokens = TokenSet.create(
-        ElementType.RPARENTH, ElementType.RBRACE, ElementType.RBRACKET
-)
+val rBraces: TokenSet =
+        TokenSet.create(RPARENTH, RBRACE, RBRACKET)
 
-fun PsiElement.findNextSibling(maxEndOffset: Int): PsiElement? {
-    return findParentWithSibling().nextSibling.findChildBeforeOffset(maxEndOffset)
+fun PsiElement.findMaxNextElement(maxEndOffset: Int): PsiElement? {
+    return findParentWithSibling().nextSibling.findMaxChildBeforeOffset(maxEndOffset)
 }
 
-fun PsiElement.findChildBeforeOffset(offset: Int): PsiElement? {
+/**
+ * Takes first child inclusive @this which ends before offset
+ * returns null if there is no such element
+ */
+fun PsiElement.findMaxChildBeforeOffset(offset: Int): PsiElement? {
     var current = this
     while (current.textRange.endOffset > offset) {
         current = current.firstChild ?: return null
@@ -78,6 +73,9 @@ fun PsiElement.findChildBeforeOffset(offset: Int): PsiElement? {
     return current
 }
 
+/**
+ * Finds first parent inclusive @this which have nextSibling
+ */
 fun PsiElement.findParentWithSibling(): PsiElement {
     var current = this
     while (current.nextSibling == null) {
@@ -86,26 +84,12 @@ fun PsiElement.findParentWithSibling(): PsiElement {
     return current
 }
 
-fun PsiElement.normalizeUp(): PsiElement{
-    var current = this
-    while (current.textRange.startOffset == current.parent.textRange.startOffset) current = current.parent
-    return current
-}
-
 fun Clone.getLength(): Int =
-        lastPsi.textRange.endOffset - firstPsi.textRange.startOffset
+    lastPsi.textRange.endOffset - firstPsi.textRange.startOffset
 
-fun Clone.printText(){
-    val range = TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
-    println(firstPsi.document.getText(range))
-}
-
-fun PsiElement.haveSibling(maxEndOffset: Int): Boolean {
-    return  nextSibling != null && nextSibling.before(maxEndOffset)
-//            || parent.node.elementType == JavaElementType.REFERENCE_EXPRESSION && parent.haveSibling(maxEndOffset)
-}
+fun PsiElement.haveSibling(maxEndOffset: Int): Boolean =
+    nextSibling != null && nextSibling.before(maxEndOffset)
 
 fun PsiElement.before(endOffset: Int): Boolean =
-        textRange.endOffset <= endOffset
-//                || node.elementType == JavaElementType.IF_STATEMENT && firstChild.before(endOffset)
+    textRange.endOffset <= endOffset
 

@@ -3,8 +3,8 @@ package com.suhininalex.clones.core.clonefilter
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
-import com.suhininalex.clones.core.TreeCloneClass
-import com.suhininalex.clones.core.callInEventQueue
+import com.suhininalex.clones.core.structures.TreeCloneClass
+import com.suhininalex.clones.core.utils.callInEventQueue
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred
@@ -15,7 +15,7 @@ class FilterTask(val treeCloneClasses: List<TreeCloneClass>, val deferred: Defer
     var filteredTreeClones: List<TreeCloneClass>? = null
 
     val filter by lazy {
-        createCommonFilter(treeCloneClasses)
+        SubclassFilter(treeCloneClasses)
     }
 
     override fun run(progressIndicator: ProgressIndicator) {
@@ -31,10 +31,11 @@ class FilterTask(val treeCloneClasses: List<TreeCloneClass>, val deferred: Defer
     }
 }
 
+//TODO rename
 fun Sequence<TreeCloneClass>.filterClones(): List<TreeCloneClass> {
     val clones = this.toList()
-    val commonFilter = createCommonFilter(clones)
-    return clones.filter { commonFilter.isAllowed(it)}
+    val subClassFilter = SubclassFilter(clones)
+    return clones.filter { subClassFilter.isAllowed(it)}
 }
 
 fun List<TreeCloneClass>.filterWithProgressbar(): Promise<List<TreeCloneClass>, Exception> {
@@ -43,9 +44,4 @@ fun List<TreeCloneClass>.filterWithProgressbar(): Promise<List<TreeCloneClass>, 
         callInEventQueue { ProgressManager.getInstance().run(FilterTask(this, deferred))  }
     }
     return deferred.promise
-}
-
-fun createCommonFilter(treeCloneClasses: List<TreeCloneClass>): CloneClassFilter {
-    val subclassFilter = SubclassFilter(treeCloneClasses)
-    return subclassFilter //CloneClassFilter { subclassFilter.isAllowed(it) && SubSequenceFilter.isAllowed(it) } //&& CropTailFilter.isAllowed(it)
 }

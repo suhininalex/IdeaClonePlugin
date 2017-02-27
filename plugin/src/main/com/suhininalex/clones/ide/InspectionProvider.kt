@@ -6,6 +6,7 @@ import com.intellij.psi.*
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.clonefilter.filterClones
 import java.awt.EventQueue
+import com.suhininalex.clones.core.utils.*
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
@@ -25,17 +26,13 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
 
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
-        val result = cloneManager.getAllMethodClasses(method)
-                .filterClones().splitSiblingClones()
-
-//        filterSameCloneRangeClasses(result)
-                result
-                .forEach {
-                    it.clones.forEach {
-                        if (it.firstPsi in method)
-                            holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(method.textRange.startOffset), cloneReport)
-                    }
-                }
+        val result = cloneManager.findAllClones(method)
+        result.forEach {
+            it.clones.forEach {
+                if (it.firstPsi in method)
+                    holder.registerProblem(method, "Method may have clones", ProblemHighlightType.WEAK_WARNING, it.getTextRangeInMethod(method.textRange.startOffset), cloneReport)
+            }
+        }
     }
 }
 
@@ -52,8 +49,11 @@ class CloneReport : LocalQuickFix {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
-        val clones = project.getCloneManager().getAllMethodClasses(method).filterClones().extractSiblingClones()
-        val c2 = filterSameCloneRangeClasses(clones)
-        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, c2) }
+        val clones = project.getCloneManager().findAllClones(method)
+
+        EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones) }
     }
 }
+
+fun CloneManager.findAllClones(psiMethod: PsiMethod) =
+        getAllMethodClasses(psiMethod).filterClones().splitSiblingClones().filterSameCloneRangeClasses().filterSelfCoveredClasses()

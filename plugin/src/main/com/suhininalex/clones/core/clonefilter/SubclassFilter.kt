@@ -1,10 +1,10 @@
 package com.suhininalex.clones.core.clonefilter
 
-import com.suhininalex.clones.core.TreeCloneClass
+import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.suffixtree.Node
 import java.util.*
 
-class SubclassFilter(treeCloneClassesToFilter: Iterable<TreeCloneClass>) : CloneClassFilter {
+class SubclassFilter(treeCloneClassesToFilter: Iterable<TreeCloneClass>) {
 
     /**
      * link from node to suffixTreeCloneClass with suffix link to this node
@@ -15,7 +15,7 @@ class SubclassFilter(treeCloneClassesToFilter: Iterable<TreeCloneClass>) : Clone
                 .forEach { put(it.treeNode.suffixLink, it) }
         }
 
-    override fun isAllowed(treeCloneClass: TreeCloneClass): Boolean {
+    fun isAllowed(treeCloneClass: TreeCloneClass): Boolean {
         val greaterClass = reverseSuffixLink[treeCloneClass.treeNode] ?: return true
         return greaterClass.size != treeCloneClass.size
     }

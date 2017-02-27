@@ -1,9 +1,10 @@
 package com.suhininalex.clones.core
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.core.utils.abbreviate
+import com.suhininalex.clones.core.utils.*
 
 class Token(val source: PsiElement) : Comparable<Token> {
 
