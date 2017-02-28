@@ -1,18 +1,19 @@
 package com.suhininalex.clones
 
-import com.suhininalex.clones.core.*
-import com.suhininalex.clones.core.clonefilter.filterClones
+import com.suhininalex.clones.core.postprocessing.filterSameCloneRangeClasses
+import com.suhininalex.clones.core.postprocessing.filterSubClassClones
+import com.suhininalex.clones.core.postprocessing.splitSiblingClones
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.utils.printText
 import com.suhininalex.clones.core.utils.stringId
+import com.suhininalex.clones.core.utils.tokenSequence
 import com.suhininalex.clones.ide.childrenMethods
 import com.suhininalex.clones.ide.findAllClones
-import com.suhininalex.clones.ide.method
 
 class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
 
     val clones
-        get() = cloneManager.getAllCloneClasses().filterClones().toList()
+        get() = cloneManager.getAllCloneClasses().toList().filterSubClassClones()
 
     fun testNotAloneDuplicate() {
         val problems = clones.splitSiblingClones().filterSameCloneRangeClasses().filter { ! checkCountInvariant(it) }

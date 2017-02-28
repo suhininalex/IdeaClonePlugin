@@ -1,6 +1,7 @@
 package com.suhininalex.clones.core
 
 import com.intellij.psi.PsiMethod
+import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.suffixtree.Node

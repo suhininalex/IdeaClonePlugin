@@ -1,6 +1,6 @@
 //package com.suhininalex.clones;
 //
-//import com.suhininalex.clones.core.Token;
+//import com.suhininalex.clones.core.structures.Token;
 //import com.suhininalex.suffixtree.Edge;
 //import com.suhininalex.suffixtree.Node;
 //import com.suhininalex.suffixtree.SuffixTree;

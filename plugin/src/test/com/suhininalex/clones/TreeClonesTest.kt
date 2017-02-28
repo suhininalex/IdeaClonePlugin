@@ -1,14 +1,14 @@
 package com.suhininalex.clones
 
-import com.suhininalex.clones.core.*
-import com.suhininalex.clones.core.clonefilter.filterClones
+import com.suhininalex.clones.core.postprocessing.filterSubClassClones
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.utils.areEqual
+import com.suhininalex.clones.core.utils.tokenSequence
 
 class TreeClonesTest : FolderProjectTest("testdata/sphinx4/") {
 
     val clones
-        get() = cloneManager.getAllCloneClasses().filterClones().toList()
+        get() = cloneManager.getAllCloneClasses().toList().filterSubClassClones().toList()
 
     fun testNotAloneDuplicate() {
         assertTrue(clones.all(::checkCountInvariant))

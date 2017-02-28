@@ -1,6 +1,6 @@
 package com.suhininalex.clones.core.structures
 
-import com.suhininalex.clones.core.Token
+import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.utils.isEmpty
 import com.suhininalex.clones.core.utils.leafTraverse
 import com.suhininalex.clones.core.utils.length

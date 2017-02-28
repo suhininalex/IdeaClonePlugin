@@ -1,4 +1,4 @@
-package com.suhininalex.clones.core
+package com.suhininalex.clones.core.structures
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.ElementType

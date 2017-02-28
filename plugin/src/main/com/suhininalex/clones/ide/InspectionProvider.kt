@@ -4,7 +4,11 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.*
-import com.suhininalex.clones.core.clonefilter.filterClones
+import com.suhininalex.clones.core.postprocessing.filterSameCloneRangeClasses
+import com.suhininalex.clones.core.postprocessing.filterSelfCoveredClasses
+import com.suhininalex.clones.core.postprocessing.filterSubClassClones
+import com.suhininalex.clones.core.postprocessing.splitSiblingClones
+import com.suhininalex.clones.core.structures.CloneClass
 import java.awt.EventQueue
 import com.suhininalex.clones.core.utils.*
 
@@ -55,5 +59,5 @@ class CloneReport : LocalQuickFix {
     }
 }
 
-fun CloneManager.findAllClones(psiMethod: PsiMethod) =
-        getAllMethodClasses(psiMethod).filterClones().splitSiblingClones().filterSameCloneRangeClasses().filterSelfCoveredClasses()
+fun CloneManager.findAllClones(psiMethod: PsiMethod): List<CloneClass> =
+        getAllMethodClasses(psiMethod).toList().filterSubClassClones().splitSiblingClones().filterSameCloneRangeClasses().filterSelfCoveredClasses()

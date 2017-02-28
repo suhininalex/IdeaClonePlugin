@@ -6,8 +6,10 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
 import com.suhininalex.clones.core.*
+import com.suhininalex.clones.core.postprocessing.scoreSelfCoverage
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.TreeClone
+import com.suhininalex.clones.core.utils.textLength
 import java.awt.EventQueue
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -69,7 +71,8 @@ object ClonesViewProvider {
         }
 }
 
-fun Project.getToolWindowManager() = ToolWindowManager.getInstance(this)
+fun Project.getToolWindowManager(): ToolWindowManager =
+        ToolWindowManager.getInstance(this)
 
 val CloneClass.length: Int
-    get() = clones.first().getLength()
+    get() = clones.first().textLength
