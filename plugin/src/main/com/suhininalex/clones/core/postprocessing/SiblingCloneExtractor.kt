@@ -1,16 +1,24 @@
 package com.suhininalex.clones.core.postprocessing
 
+import com.intellij.openapi.util.Computable
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.postprocessing.helpers.cropBadTokens
 import com.suhininalex.clones.core.postprocessing.helpers.extractSiblingSequences
 import com.suhininalex.clones.core.structures.*
 import com.suhininalex.clones.core.utils.*
+import nl.komponents.kovenant.Promise
+import java.lang.Exception
 
 
 fun List<CloneClass>.splitSiblingClones() : List<CloneClass> =
         flatMap ( CloneClass::splitToSiblingClones )
 
-fun CloneClass.splitToSiblingClones(): List<CloneClass> {
+fun ListWithProgressBar<CloneClass>.splitSiblingClones(): Promise<List<CloneClass>, Exception> =
+    flatMapWithProgressBar(name) {
+        Application.runReadAction(Computable{it.splitToSiblingClones()})
+    }
+
+private fun CloneClass.splitToSiblingClones(): List<CloneClass> {
     normalizePsiHierarchy().run {
         val randomClone = clones.first()
         val siblingClones = randomClone

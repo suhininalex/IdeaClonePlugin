@@ -57,27 +57,34 @@ class BackgroundTask<T>(val name: String, private val task: (ProgressIndicator) 
     }
 }
 
-fun <T> ProgressManager.invoke(task: BackgroundTask<T>): Promise<T, Exception> {
-    EventQueue.invokeLater { run(task)  }
+fun <T> ProgressManager.backgroundTask(name: String, task: (ProgressIndicator) -> T): Promise<T, Exception> {
+    val task = BackgroundTask(name, task)
+    EventQueue.invokeLater { run(task) }
     return task.promise
 }
 
-fun <T> List<T>.filterWithProgressBar(name: String, predicate: (T) -> Boolean): Promise<List<T>, Exception> {
-    val task = BackgroundTask(name){ progressIndicator ->
-        this.filterIndexed { i, it ->
-            if (progressIndicator.isCanceled) throw InterruptedException()
-            progressIndicator.fraction = i.toDouble()/ size
-            predicate(it)
-        }
-    }
-    return ProgressManager.getInstance().invoke(task)
-}
-
-
 class ListWithProgressBar<out T>(val name: String, val list: List<T>){
     fun filter(predicate: (T) -> Boolean): Promise<List<T>, Exception> {
-        return list.filterWithProgressBar(name, predicate)
+        return ProgressManager.getInstance().backgroundTask(name){ progressIndicator ->
+            list.filterIndexed { i, it ->
+                if (progressIndicator.isCanceled) throw InterruptedException()
+                progressIndicator.fraction = i.toDouble()/ list.size
+                predicate(it)
+            }
+        }
     }
+
+    fun <R> flatMapWithProgressBar(name: String, f: (T) -> List<R>): Promise<List<R>, Exception> {
+        return ProgressManager.getInstance().backgroundTask(name){ progressIndicator ->
+            var i = 0
+            list.flatMap {
+                if (progressIndicator.isCanceled) throw InterruptedException()
+                progressIndicator.fraction = i++.toDouble()/ list.size
+                f(it)
+            }
+        }
+    }
+
 }
 
 fun <T> List<T>.withProgressBar(name: String): ListWithProgressBar<T> =

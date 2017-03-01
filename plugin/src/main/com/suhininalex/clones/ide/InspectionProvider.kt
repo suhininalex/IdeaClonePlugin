@@ -3,12 +3,7 @@ package com.suhininalex.clones.ide
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
-import com.suhininalex.clones.core.*
-import com.suhininalex.clones.core.postprocessing.filterSameCloneRangeClasses
-import com.suhininalex.clones.core.postprocessing.filterSelfCoveredClasses
-import com.suhininalex.clones.core.postprocessing.filterSubClassClones
-import com.suhininalex.clones.core.postprocessing.splitSiblingClones
-import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.postprocessing.*
 import java.awt.EventQueue
 import com.suhininalex.clones.core.utils.*
 
@@ -30,7 +25,7 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
 
     override fun visitMethod(method: PsiMethod) {
         val cloneManager = method.project.getCloneManager()
-        val result = cloneManager.findAllClones(method)
+        val result = cloneManager.getMethodFilteredClones(method)
         result.forEach {
             it.clones.forEach {
                 if (it.firstPsi in method)
@@ -41,9 +36,7 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
 }
 
 operator fun PsiElement.contains(element: PsiElement): Boolean =
-    if (containingFile == element.containingFile)
-        element.textRange.startOffset in textRange
-    else false
+    containingFile == element.containingFile && element.textRange in textRange
 
 class CloneReport : LocalQuickFix {
 
@@ -53,11 +46,8 @@ class CloneReport : LocalQuickFix {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = descriptor.psiElement as PsiMethod
-        val clones = project.getCloneManager().findAllClones(method)
+        val clones = project.getCloneManager().getMethodFilteredClones(method)
 
         EventQueue.invokeLater { ClonesViewProvider.showClonesData(project, clones) }
     }
 }
-
-fun CloneManager.findAllClones(psiMethod: PsiMethod): List<CloneClass> =
-        getAllMethodClasses(psiMethod).toList().filterSubClassClones().splitSiblingClones().filterSameCloneRangeClasses().filterSelfCoveredClasses()

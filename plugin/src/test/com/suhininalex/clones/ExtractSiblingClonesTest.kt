@@ -1,14 +1,11 @@
 package com.suhininalex.clones
 
-import com.suhininalex.clones.core.postprocessing.filterSameCloneRangeClasses
-import com.suhininalex.clones.core.postprocessing.filterSubClassClones
-import com.suhininalex.clones.core.postprocessing.splitSiblingClones
+import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.utils.printText
 import com.suhininalex.clones.core.utils.stringId
 import com.suhininalex.clones.core.utils.tokenSequence
 import com.suhininalex.clones.ide.childrenMethods
-import com.suhininalex.clones.ide.findAllClones
 
 class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
 
@@ -16,7 +13,7 @@ class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
         get() = cloneManager.getAllCloneClasses().toList().filterSubClassClones()
 
     fun testNotAloneDuplicate() {
-        val problems = clones.splitSiblingClones().filterSameCloneRangeClasses().filter { ! checkCountInvariant(it) }
+        val problems = clones.splitSiblingClones().mergeCloneClasses().filter { ! checkCountInvariant(it) }
         problems.forEach {
             println("========================")
             println("Problem class:")
@@ -32,7 +29,7 @@ class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
 //            }
         baseDirectoryPsi.childrenMethods.forEach {
             println("METHOD: ${it.stringId}")
-            cloneManager.findAllClones(it).forEach {
+            cloneManager.getMethodFilteredClones(it).forEach {
                 println("========================")
                 it.clones.forEach {
                     it.printText()
@@ -40,7 +37,7 @@ class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
                 }
             }
         }
-//        problems.splitSiblingClones().filterSameCloneRangeClasses().forEach {
+//        problems.splitSiblingClones().mergeCloneClasses().forEach {
 //                println("========================")
 //                it.clones.forEach {
 //                    it.printText()
