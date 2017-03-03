@@ -22,14 +22,33 @@ class SettingsPanel: Configurable {
     }
 
     override fun createComponent(): JComponent {
-        return JPanel().apply {
-            add(JLabel("Minimal length of detected clone"), BorderLayout.AFTER_LAST_LINE)
-            add(JFormattedTextField(50), BorderLayout.LINE_END)
-            add(JLabel(" symbols"), BorderLayout.LINE_END)
 
-            add(JLabel("Minimal length of detected clone"), BorderLayout.AFTER_LAST_LINE)
-            add(JFormattedTextField(50), BorderLayout.LINE_END)
-            add(JLabel(" symbols"), BorderLayout.LINE_END)
+        val minTokenLengthField = JFormattedTextField(50)
+
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+            val LengthClone = JPanel(BorderLayout()).apply {
+                val label = JLabel("Minimal length of detected clone")
+                add(label, BorderLayout.WEST)
+                label.labelFor = minTokenLengthField
+                val afterLabel = JLabel(" tokens")
+                add(afterLabel, BorderLayout.EAST)
+                afterLabel.labelFor = minTokenLengthField
+                add(minTokenLengthField)
+            }
+
+            add(Box.createVerticalStrut(10))
+            add(LengthClone)
+
+//            val LengthClone2 = JPanel(BorderLayout()).apply {
+//                add(JLabel("Minimal length of detected clone"))
+//                add(JFormattedTextField(50))
+//                add(JLabel(" symbols"))
+//            }
+//
+//            add(Box.createVerticalStrut(3));
+//            add(LengthClone2)
         }
     }
 

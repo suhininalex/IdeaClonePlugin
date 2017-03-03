@@ -6,7 +6,6 @@ import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
-import com.suhininalex.clones.ide.method
 import nl.komponents.kovenant.Promise
 import java.lang.Exception
 

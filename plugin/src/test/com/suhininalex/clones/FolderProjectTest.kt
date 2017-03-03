@@ -2,9 +2,8 @@ package com.suhininalex.clones
 
 import com.intellij.psi.PsiDirectory
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
 import com.suhininalex.clones.core.*
-import com.suhininalex.clones.ide.childrenMethods
+import com.suhininalex.clones.core.utils.childrenMethods
 import kotlin.properties.Delegates
 
 open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTestCase() {

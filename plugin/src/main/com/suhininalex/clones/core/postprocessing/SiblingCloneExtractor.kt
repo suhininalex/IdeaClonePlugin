@@ -14,7 +14,7 @@ fun List<CloneClass>.splitSiblingClones() : List<CloneClass> =
         flatMap ( CloneClass::splitToSiblingClones )
 
 fun ListWithProgressBar<CloneClass>.splitSiblingClones(): Promise<List<CloneClass>, Exception> =
-    flatMapWithProgressBar(name) {
+    flatMap(name) {
         Application.runReadAction(Computable{it.splitToSiblingClones()})
     }
 

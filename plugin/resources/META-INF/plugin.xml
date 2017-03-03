@@ -13,7 +13,7 @@
 
   <actions>
       <action id="ShowClonesHandler" class="com.suhininalex.clones.ide.ShowClonesHandler" text="ShowClonesHandler" description="desc">
-          <add-to-group group-id="EditorActions" anchor="first"/>
+          <add-to-group group-id="AnalyzeMenu" anchor="last"/>
           <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
       </action>
   </actions>

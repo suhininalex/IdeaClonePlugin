@@ -1,11 +1,17 @@
 package com.suhininalex.clones.core
 
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Computable
+import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
+import nl.komponents.kovenant.then
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
@@ -68,4 +74,39 @@ fun SuffixTree<Token>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequ
         }
     }
     return classes.asSequence()
+}
+
+var cachedCloneManager: ProjectCloneManager? = null
+fun Project.getCloneManager(): ProjectCloneManager {
+    if (cachedCloneManager?.project != this){
+        cachedCloneManager = ProjectCloneManager(this)
+    }
+    return cachedCloneManager!!
+}
+
+
+class ProjectCloneManager(val project: Project){
+    private var _initialized = false
+    val initialized: Boolean
+        get() = initialized
+
+    val cloneManager = CloneManager()
+
+    init {
+        val files: List<PsiJavaFile> = Application.runReadAction ( Computable {
+            project.getAllPsiJavaFiles().toList()
+        })
+
+        files.withProgressBar("Initializing").foreach {
+            Application.runReadAction {
+                it.findTokens(TokenSet.create(ElementType.METHOD)).forEach {
+                    cloneManager.addMethod(it as PsiMethod)
+                }
+            }
+        }.then {
+            _initialized = true
+        }
+
+    }
+
 }

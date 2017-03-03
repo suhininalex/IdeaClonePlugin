@@ -5,8 +5,8 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.suhininalex.clones.core.getCloneManager
 import com.suhininalex.clones.core.postprocessing.*
-import com.suhininalex.clones.core.utils.getCloneManager
 import nl.komponents.kovenant.then
 
 /**
@@ -18,7 +18,7 @@ object editorHandler : EditorActionHandler() {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         val project = editor.project!!
 
-        project.getCloneManager().getAllFilteredClones().then {
+        project.getCloneManager().cloneManager.getAllFilteredClones().then {
             ClonesViewProvider.showClonesData(project, it)
         }
     }

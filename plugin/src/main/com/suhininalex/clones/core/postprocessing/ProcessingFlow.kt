@@ -21,6 +21,8 @@ fun CloneManager.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         withProgressBar("Same Ranges").mergeCloneClasses().get()
     }.thenApply {
         withProgressBar("Self covered").filterSelfCoveredClasses().get()
+    }.fail {
+        throw it
     }
 
 fun CloneManager.getMethodFilteredClones(method: PsiMethod): List<CloneClass> =

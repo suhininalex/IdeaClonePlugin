@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiTreeUtil
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred
 import java.awt.EventQueue
@@ -42,7 +43,7 @@ val javaTokenFilter = TokenSet.create(
         ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.REFERENCE_PARAMETER_LIST, ElementType.MODIFIER_LIST
 )
 
-class BackgroundTask<T>(val name: String, private val task: (ProgressIndicator) -> T) : Task.Backgroundable(null, name, true){
+class BackgroundTask<T>(val name: String, cancelAble: Boolean, private val task: (ProgressIndicator) -> T) : Task.Backgroundable(null, name, cancelAble){
     private val deferred = deferred<T, Exception>()
 
     val promise = deferred.promise
@@ -57,15 +58,15 @@ class BackgroundTask<T>(val name: String, private val task: (ProgressIndicator) 
     }
 }
 
-fun <T> ProgressManager.backgroundTask(name: String, task: (ProgressIndicator) -> T): Promise<T, Exception> {
-    val task = BackgroundTask(name, task)
+fun <T> ProgressManager.backgroundTask(name: String, cancelAble: Boolean = true, task: (ProgressIndicator) -> T): Promise<T, Exception> {
+    val task = BackgroundTask(name, cancelAble, task)
     EventQueue.invokeLater { run(task) }
     return task.promise
 }
 
-class ListWithProgressBar<out T>(val name: String, val list: List<T>){
+class ListWithProgressBar<out T>(val name: String, val cancelAble: Boolean, val list: List<T>){
     fun filter(predicate: (T) -> Boolean): Promise<List<T>, Exception> {
-        return ProgressManager.getInstance().backgroundTask(name){ progressIndicator ->
+        return ProgressManager.getInstance().backgroundTask(name, cancelAble){ progressIndicator ->
             list.filterIndexed { i, it ->
                 if (progressIndicator.isCanceled) throw InterruptedException()
                 progressIndicator.fraction = i.toDouble()/ list.size
@@ -74,8 +75,18 @@ class ListWithProgressBar<out T>(val name: String, val list: List<T>){
         }
     }
 
-    fun <R> flatMapWithProgressBar(name: String, f: (T) -> List<R>): Promise<List<R>, Exception> {
-        return ProgressManager.getInstance().backgroundTask(name){ progressIndicator ->
+    fun foreach(task: (T) -> Unit): Promise<Unit, Exception> {
+        return ProgressManager.getInstance().backgroundTask(name, cancelAble){ progressIndicator ->
+            list.forEachIndexed { i, it ->
+                if (progressIndicator.isCanceled) throw InterruptedException()
+                progressIndicator.fraction = i.toDouble()/ list.size
+                task(it)
+            }
+        }
+    }
+
+    fun <R> flatMap(name: String, f: (T) -> List<R>): Promise<List<R>, Exception> {
+        return ProgressManager.getInstance().backgroundTask(name, cancelAble){ progressIndicator ->
             var i = 0
             list.flatMap {
                 if (progressIndicator.isCanceled) throw InterruptedException()
@@ -87,8 +98,8 @@ class ListWithProgressBar<out T>(val name: String, val list: List<T>){
 
 }
 
-fun <T> List<T>.withProgressBar(name: String): ListWithProgressBar<T> =
-        ListWithProgressBar(name, this)
+fun <T> List<T>.withProgressBar(name: String, cancelAble: Boolean = true): ListWithProgressBar<T> =
+        ListWithProgressBar(name, cancelAble, this)
 
 fun PsiElement.nextLeafElement(): PsiElement {
     var current = this
@@ -121,3 +132,14 @@ fun PsiElement.lastEndChild(): PsiElement {
     while (current.lastChild != null) current = current.lastChild
     return current
 }
+
+val PsiElement?.method: PsiMethod?
+    get() =
+        if (this is PsiMethod) {
+            this
+        } else {
+            PsiTreeUtil.getParentOfType(this, PsiMethod::class.java)
+        }
+
+val PsiElement.childrenMethods: Collection<PsiMethod>
+    get() = PsiTreeUtil.findChildrenOfType(this, PsiMethod::class.java)
