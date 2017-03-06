@@ -6,6 +6,7 @@ import com.suhininalex.clones.core.postprocessing.helpers.cropBadTokens
 import com.suhininalex.clones.core.postprocessing.helpers.extractSiblingSequences
 import com.suhininalex.clones.core.structures.*
 import com.suhininalex.clones.core.utils.*
+import com.suhininalex.clones.ide.configuration.PluginSettings
 import nl.komponents.kovenant.Promise
 import java.lang.Exception
 
@@ -19,28 +20,28 @@ fun ListWithProgressBar<CloneClass>.splitSiblingClones(): Promise<List<CloneClas
     }
 
 private fun CloneClass.splitToSiblingClones(): List<CloneClass> {
+    val minTokenLength = PluginSettings.minCloneLength
     normalizePsiHierarchy().run {
         val randomClone = clones.first()
         val siblingClones = randomClone
                 .extractSiblingSequences()
                 .map(PsiRange::cropBadTokens)
-                .filter {it.tokenSequence().count() > 20 }
+                .filter { it.tokenSequence().count() > minTokenLength }
                 .toList()
         val siblingRanges = siblingClones.mapToTokenIndexes(randomClone.tokenSequence())
         return clones.map { it.extractSubClones(siblingRanges).asSequence() }.zipped().map(::RangeCloneClass)
     }
 }
 
-
 private fun PsiElement.getNextGoodElement(): PsiElement {
     var current = this
-    while (current in javaTokenFilter) current = current.nextLeafElement()
+    while (isNoiseElement(current) ) current = current.nextLeafElement()
     return current
 }
 
 private fun PsiElement.getPrevGoodElement(): PsiElement {
     var current = this
-    while (current in javaTokenFilter) current = current.prevLeafElement()
+    while (isNoiseElement(current)) current = current.prevLeafElement()
     return current
 }
 

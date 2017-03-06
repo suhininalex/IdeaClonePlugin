@@ -34,7 +34,7 @@ fun Clone.printText(){
 fun Clone.tokenSequence(): Sequence<PsiElement> =
         generateSequence (firstPsi.firstEndChild()) { it.nextLeafElement() }
                 .takeWhile { it.textRange.endOffset <= lastPsi.textRange.endOffset }
-                .filter { it !in javaTokenFilter }
+                .filterNot( ::isNoiseElement)
 
 val Clone.textLength: Int
         get() = lastPsi.textRange.endOffset - firstPsi.textRange.startOffset

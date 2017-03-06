@@ -39,9 +39,12 @@ operator fun TokenSet.contains(element: PsiElement): Boolean = this.contains(ele
 fun PsiElement.asSequence(): Sequence<PsiElement> =
         this.depthFirstTraverse { it.children.asSequence() }.filter { it.firstChild == null }
 
-val javaTokenFilter = TokenSet.create(
+private val javaTokenFilter = TokenSet.create(
         ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.REFERENCE_PARAMETER_LIST, ElementType.MODIFIER_LIST
 )
+
+fun isNoiseElement(psiElement: PsiElement): Boolean =
+    psiElement in javaTokenFilter || psiElement.textLength == 0
 
 class BackgroundTask<T>(val name: String, cancelAble: Boolean, private val task: (ProgressIndicator) -> T) : Task.Backgroundable(null, name, cancelAble){
     private val deferred = deferred<T, Exception>()

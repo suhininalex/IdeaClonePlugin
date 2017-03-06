@@ -1,6 +1,7 @@
 package com.suhininalex.clones.ide.configuration
 
 object PluginSettings: IdeaSettings("clone_finder") {
-    var minCloneLength by IntProperty(50)
+    var minCloneLength = 20// by IntProperty(40)
+    var coverageSkipFilter = 70
 }
 

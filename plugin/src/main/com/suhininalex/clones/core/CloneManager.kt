@@ -9,6 +9,7 @@ import com.intellij.psi.tree.TokenSet
 import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
+import com.suhininalex.clones.ide.configuration.PluginSettings
 import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
 import nl.komponents.kovenant.then
@@ -22,7 +23,6 @@ class CloneManager {
     internal val methodIds: MutableMap<String, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
-    internal val minTokenLength = 20
 
     fun addMethod(method: PsiMethod) = rwLock.write {
         addMethodUnlocked(method)
@@ -34,7 +34,7 @@ class CloneManager {
 
     private fun addMethodUnlocked(method: PsiMethod) {
         if (method.stringId in methodIds) return
-        val sequence = method.body?.asSequence()?.filter { it !in javaTokenFilter }?.map(::Token)?.toList() ?: return
+        val sequence = method.body?.asSequence()?.filterNot(::isNoiseElement)?.map(::Token)?.toList() ?: return
         val id = tree.addSequence(sequence)
         methodIds.put(method.stringId, id)
     }
@@ -46,12 +46,12 @@ class CloneManager {
     }
 
     fun getAllCloneClasses(): Sequence<TreeCloneClass>  = rwLock.read {
-        tree.getAllCloneClasses(minTokenLength)
+        tree.getAllCloneClasses(PluginSettings.minCloneLength)
     }
 
     fun getAllMethodClasses(method: PsiMethod): Sequence<TreeCloneClass> = rwLock.read {
         val id = method.getId() ?: return emptySequence()
-        return tree.getAllSequenceClasses(id, minTokenLength).asSequence()
+        return tree.getAllSequenceClasses(id, PluginSettings.minCloneLength).asSequence()
     }
 
     fun PsiMethod.getId() = methodIds[stringId]
