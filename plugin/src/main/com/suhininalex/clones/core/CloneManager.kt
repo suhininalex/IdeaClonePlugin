@@ -86,13 +86,21 @@ fun Project.getCloneManager(): ProjectCloneManager {
 
 
 class ProjectCloneManager(val project: Project){
-    private var _initialized = false
-    val initialized: Boolean
-        get() = initialized
+    var initialized: Boolean = false
+        private set
 
-    val cloneManager = CloneManager()
+    var instance: CloneManager = CloneManager()
+        private set
 
-    init {
+    fun cancel(){
+        PluginSettings.enabledForProject = false
+        instance = CloneManager()
+        initialized = false
+    }
+
+    fun initialize(){
+        if (! PluginSettings.enabledForProject) return
+
         val files: List<PsiJavaFile> = Application.runReadAction ( Computable {
             project.getAllPsiJavaFiles().toList()
         })
@@ -100,13 +108,13 @@ class ProjectCloneManager(val project: Project){
         files.withProgressBar("Initializing").foreach {
             Application.runReadAction {
                 it.findTokens(TokenSet.create(ElementType.METHOD)).forEach {
-                    cloneManager.addMethod(it as PsiMethod)
+                    instance.addMethod(it as PsiMethod)
                 }
             }
         }.then {
-            _initialized = true
+            initialized = true
+        }.fail {
+            cancel()
         }
-
     }
-
 }

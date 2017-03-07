@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
@@ -146,3 +147,6 @@ val PsiElement?.method: PsiMethod?
 
 val PsiElement.childrenMethods: Collection<PsiMethod>
     get() = PsiTreeUtil.findChildrenOfType(this, PsiMethod::class.java)
+
+val CurrentProject: Project? =
+    ProjectManager.getInstance().openProjects.firstOrNull()

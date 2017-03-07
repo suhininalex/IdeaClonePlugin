@@ -8,7 +8,7 @@ import com.suhininalex.clones.core.getCloneManager
 class PluginInitializer : StartupActivity {
 
     override fun runActivity(project: Project) {
-        project.getCloneManager()
+        project.getCloneManager().initialize()
         val treeChangeListener = TreeChangeListener(project)
         PsiManager.getInstance(project).addPsiTreeChangeListener(treeChangeListener)
     }

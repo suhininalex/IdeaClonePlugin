@@ -1,9 +1,7 @@
 package com.suhininalex.clones.ide
 
 import com.intellij.codeInspection.*
-import com.intellij.openapi.actionSystem.DataKeys
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.*
 import com.suhininalex.clones.core.getCloneManager
 import com.suhininalex.clones.core.postprocessing.*
@@ -23,13 +21,16 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             CloneInspectionVisitor(holder)
 
-    override fun isInitialized(): Boolean = ProjectManager.getInstance().defaultProject.getCloneManager().initialized
+
+    override fun isInitialized(): Boolean =
+            CurrentProject?.getCloneManager()?.initialized ?: false
+
 }
 
 class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() {
 
     override fun visitMethod(method: PsiMethod) {
-        val cloneManager = method.project.getCloneManager().cloneManager
+        val cloneManager = method.project.getCloneManager().instance
         val result = cloneManager.getMethodFilteredClones(method)
         result.forEach { cloneClass ->
             cloneClass.clones.filter { it.firstPsi in method  }.forEach { clone ->

@@ -12,7 +12,7 @@ import com.suhininalex.clones.core.utils.method
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
     val cloneManager: CloneManager
-        get() = project.getCloneManager().cloneManager
+        get() = project.getCloneManager().instance
 
     override fun beforeChildAddition(event: PsiTreeChangeEvent) =
         removeInvolvedMethods(event)

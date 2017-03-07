@@ -18,7 +18,7 @@ object editorHandler : EditorActionHandler() {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         val project = editor.project!!
 
-        project.getCloneManager().cloneManager.getAllFilteredClones().then {
+        project.getCloneManager().instance.getAllFilteredClones().then {
             ClonesViewProvider.showClonesData(project, it)
         }
     }
