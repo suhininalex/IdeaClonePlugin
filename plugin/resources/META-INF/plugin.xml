@@ -12,9 +12,11 @@
   <idea-version since-build="131"/>
 
   <actions>
-      <action id="ShowClonesHandler" class="com.suhininalex.clones.ide.ShowClonesHandler" text="ShowClonesHandler" description="desc">
+      <action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">
           <add-to-group group-id="AnalyzeMenu" anchor="last"/>
-          <keyboard-shortcut keymap="$default"  first-keystroke="ctrl alt A"/>
+      </action>
+      <action id="ShowMethodClonesAction" class="com.suhininalex.clones.ide.ShowMethodClonesAction" text="Find clones in method" description="desc">
+          <add-to-group group-id="AnalyzeMenu" anchor="last"/>
       </action>
   </actions>
 
