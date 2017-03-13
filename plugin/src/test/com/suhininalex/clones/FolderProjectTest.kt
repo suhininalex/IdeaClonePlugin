@@ -1,9 +1,13 @@
 package com.suhininalex.clones
 
 import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.impl.source.tree.ElementType
+import com.intellij.psi.tree.TokenSet
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.utils.childrenMethods
+import com.suhininalex.clones.core.utils.findTokens
 import kotlin.properties.Delegates
 
 open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTestCase() {
@@ -18,8 +22,9 @@ open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTe
         super.setUp()
         val directory = myFixture.copyDirectoryToProject("/", "")
         baseDirectoryPsi = myFixture.psiManager.findDirectory(directory)!!
-        baseDirectoryPsi.childrenMethods.forEach {
-            cloneManager.addMethod(it)
+        baseDirectoryPsi.findTokens(TokenSet.create(ElementType.METHOD)).forEach { method ->
+            if (method is PsiMethod)
+                cloneManager.addMethod(method)
         }
     }
 
