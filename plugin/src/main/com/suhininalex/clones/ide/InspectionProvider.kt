@@ -9,16 +9,16 @@ import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
 import java.awt.EventQueue
 import com.suhininalex.clones.core.utils.*
+import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.toolwindow.CloneViewManager
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
-    override fun getGroupDisplayName() = "Analyze"
+    override fun getGroupDisplayName() = PluginLabels.getLabel("inspection-group-display-name")
 
-    override fun getShortName() = "CloneDetection"
+    override fun getShortName() = PluginLabels.getLabel("inspection-short-name")
 
-    override fun getDisplayName() = "TreeClone detection"
-
+    override fun getDisplayName() = PluginLabels.getLabel("inspection-display-name")
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             CloneInspectionVisitor(holder)
@@ -37,7 +37,7 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() 
             cloneClass.clones.filter { it.firstPsi in method  }.forEach { clone ->
                 holder.registerProblem(
                         method,
-                        "Method may have cloneClasses",
+                        PluginLabels.getLabel("inspection-problem-description"),
                         ProblemHighlightType.WEAK_WARNING,
                         clone.getTextRangeInMethod(),
                         CloneReport(cloneClass, clone)
@@ -52,7 +52,10 @@ operator fun PsiElement.contains(element: PsiElement): Boolean =
 
 class CloneReport(val cloneClass: CloneClass, val clone: Clone) : LocalQuickFix {
 
-    override fun getName() = "Show cloneClasses for this method ${clone.firstPsi.startLine}:${clone.lastPsi.endLine}"
+    override fun getName(): String =
+        PluginLabels.getLabel("inspection-fix-label")
+                .replace("\$startLine","${clone.firstPsi.startLine}")
+                .replace("\$endLine","${clone.lastPsi.endLine}")
 
     override fun getFamilyName() = "CloneReport"
 

@@ -76,6 +76,7 @@ object CloneViewManager {
         }
 
     fun showClonesData(project: Project, clonesList: List<CloneClass>) {
+        if (clonesList.isEmpty()) return
         EventQueue.invokeLater {
             showClones(project, CloneTreeView(clonesList))
         }
@@ -88,4 +89,3 @@ object CloneViewManager {
     }
 
 }
-

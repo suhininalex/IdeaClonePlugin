@@ -4,14 +4,14 @@ package com.suhininalex.clones.ide
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
-import com.suhininalex.clones.core.CloneManager
+import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.utils.childrenMethods
 import com.suhininalex.clones.core.utils.method
 
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
-    val cloneManager: CloneManager
+    val cloneIndexer: CloneIndexer
         get() = project.cloneManager.instance
 
     override fun beforeChildAddition(event: PsiTreeChangeEvent) =
@@ -34,13 +34,13 @@ class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
     private fun addInvolvedMethods(event: PsiTreeChangeEvent){
         detectInvolvedMethods(event.parent).forEach {
-            cloneManager.addMethod(it)
+            cloneIndexer.addMethod(it)
         }
     }
 
     private fun removeInvolvedMethods(event: PsiTreeChangeEvent) {
         detectInvolvedMethods(event.parent).forEach {
-            cloneManager.removeMethod(it)
+            cloneIndexer.removeMethod(it)
         }
     }
 }

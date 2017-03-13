@@ -3,31 +3,38 @@ package com.suhininalex.clones.ide
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.utils.method
+import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.toolwindow.CloneViewManager
 import nl.komponents.kovenant.then
 
-abstract class CloneMenuAction(text: String) : AnAction(text){
+class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip")) {
+
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabled = e.project?.cloneManager?.initialized ?: false
+        e.presentation.text = PluginLabels.getLabel("menu-find-all-tooltip")
     }
-}
-
-class ShowAllClonesAction: CloneMenuAction("Find all clones in project") {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project!!
         project.cloneManager.instance.getAllFilteredClones().then {
             CloneViewManager.showClonesData(project, it)
         }.fail {
-            throw it
+            if (it !is ProcessCanceledException)
+                throw it
         }
     }
 }
 
-class ShowMethodClonesAction: CloneMenuAction("Find all clones related to this method"){
+class ShowMethodClonesAction: AnAction(PluginLabels.getLabel("menu-find-in-clone-tooltip")){
+
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabled = e.project?.cloneManager?.initialized ?: false
+        e.presentation.text = PluginLabels.getLabel("menu-find-in-clone-text")
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
         val method = e.getData(LangDataKeys.PSI_ELEMENT)?.method ?: return

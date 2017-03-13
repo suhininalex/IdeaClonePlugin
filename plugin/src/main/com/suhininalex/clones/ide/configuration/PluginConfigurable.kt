@@ -22,9 +22,8 @@ class PluginConfigurable : Configurable {
         configurationPanel = null
     }
 
-    override fun getDisplayName(): String {
-        return "TreeClone finder configuration"
-    }
+    override fun getDisplayName(): String =
+        PluginLabels.getLabel("settings-title")
 
     override fun apply() {
         configurationPanel?.apply {

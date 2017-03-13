@@ -12,7 +12,7 @@ import kotlin.properties.Delegates
 
 open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTestCase() {
 
-    val cloneManager = CloneManager()
+    val cloneManager = CloneIndexer()
 
     var baseDirectoryPsi by Delegates.notNull<PsiDirectory>()
 
