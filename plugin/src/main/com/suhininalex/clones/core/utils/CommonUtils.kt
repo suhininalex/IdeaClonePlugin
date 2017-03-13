@@ -1,7 +1,12 @@
 package com.suhininalex.clones.core.utils
 
 import java.awt.EventQueue
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.util.*
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeNode
 
 
 fun String.abbreviate(length: Int) =
@@ -89,3 +94,28 @@ fun <T> callInEventQueue(body: ()->T): T {
     EventQueue.invokeAndWait { result = body() }
     return result!!
 }
+
+fun SwingTreeNode(userObject: Any, children: List<MutableTreeNode>): DefaultMutableTreeNode {
+    return DefaultMutableTreeNode(userObject).apply {
+        children.forEach {
+            this.add(it)
+        }
+    }
+}
+
+fun doubleClickListener(handler: (MouseEvent) -> Unit): MouseAdapter =
+     object : MouseAdapter() {
+        override fun mouseClicked(e: MouseEvent) {
+            if (e.clickCount == 2) handler(e)
+        }
+    }
+
+fun DefaultMutableTreeNode.allNodes(): Sequence<DefaultMutableTreeNode> =
+        depthFirstTraverse { it.children }
+
+/**
+ * Use if you can enshure there are no TreeNodes except DefaultMutableTreeNode
+ */
+@Suppress("UNCHECKED_CAST")
+val DefaultMutableTreeNode.children: Sequence<DefaultMutableTreeNode>
+    get() = children().asSequence() as Sequence<DefaultMutableTreeNode>

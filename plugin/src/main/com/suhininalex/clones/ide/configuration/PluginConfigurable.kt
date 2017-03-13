@@ -1,7 +1,7 @@
 package com.suhininalex.clones.ide.configuration
 
 import com.intellij.openapi.options.Configurable
-import com.suhininalex.clones.core.getCloneManager
+import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.utils.CurrentProject
 import javax.swing.*
 
@@ -28,13 +28,12 @@ class PluginConfigurable : Configurable {
 
     override fun apply() {
         configurationPanel?.apply {
-            println("$enableForThisProject | ${PluginSettings.enabledForProject}")
             if (enableForThisProject && ! PluginSettings.enabledForProject) {
                 PluginSettings.enabledForProject = enableForThisProject
-                CurrentProject?.getCloneManager()?.initialize()
+                CurrentProject?.cloneManager?.initialize()
             } else if (PluginSettings.enabledForProject && ! enableForThisProject){
                 PluginSettings.enabledForProject = enableForThisProject
-                CurrentProject?.getCloneManager()?.cancel()
+                CurrentProject?.cloneManager?.cancel()
             }
             PluginSettings.coverageSkipFilter = skipSelfCoverageFiltration
             PluginSettings.minCloneLength = minimalCloneLength
@@ -54,6 +53,6 @@ class PluginConfigurable : Configurable {
         }
     }
 
-    override fun getHelpTopic(): String = "help.find-clones"
+    override fun getHelpTopic(): String = "help.find-cloneClasses"
 
 }

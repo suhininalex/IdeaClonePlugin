@@ -11,7 +11,7 @@ class PluginTest : FolderProjectTest("testdata/siblingClones/") {
     fun testSameTokenLengthSequence(){
         val problems = clones//.splitSiblingClones()
 
-//        clones.forEach {
+//        cloneClasses.forEach {
 //            it.printInfo()
 //        }
 //        assertTrue(problems.isEmpty())

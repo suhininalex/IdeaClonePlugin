@@ -27,7 +27,7 @@ class TreeCloneClass(val treeNode: Node): CloneClass {
         clones.count()
     }
 
-    val length = treeNode.lengthToRoot()
+    override val length = treeNode.lengthToRoot()
 
     val isEmpty = clones.isEmpty()
 

@@ -77,13 +77,13 @@ fun SuffixTree<Token>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequ
 }
 
 var cachedCloneManager: ProjectCloneManager? = null
-fun Project.getCloneManager(): ProjectCloneManager {
-    if (cachedCloneManager?.project != this){
-        cachedCloneManager = ProjectCloneManager(this)
+val Project.cloneManager: ProjectCloneManager
+    get() {
+        if (cachedCloneManager?.project != this) {
+            cachedCloneManager = ProjectCloneManager(this)
+        }
+        return cachedCloneManager!!
     }
-    return cachedCloneManager!!
-}
-
 
 class ProjectCloneManager(val project: Project){
     var initialized: Boolean = false

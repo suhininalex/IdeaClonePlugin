@@ -7,6 +7,8 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
@@ -150,3 +152,12 @@ val PsiElement.childrenMethods: Collection<PsiMethod>
 
 val CurrentProject: Project? =
     ProjectManager.getInstance().openProjects.firstOrNull()
+
+fun ToolWindow.hide(){
+    hide(null)
+}
+
+fun ToolWindow.show(){}
+
+val Project.toolWindowManager: ToolWindowManager
+    get() = ToolWindowManager.getInstance(this)

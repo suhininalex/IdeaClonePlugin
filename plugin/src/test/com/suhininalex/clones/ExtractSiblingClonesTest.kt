@@ -39,12 +39,12 @@ class ExtractSiblingClonesTest : FolderProjectTest("testdata/siblingClones/") {
         }
 //        problems.splitSiblingClones().mergeCloneClasses().forEach {
 //                println("========================")
-//                it.clones.forEach {
+//                it.cloneClasses.forEach {
 //                    it.printText()
 //                    println("----------------------")
 //                }
 //
-////                it.clones.map{it.normalizePsiHierarchy()}.forEach {
+////                it.cloneClasses.map{it.normalizePsiHierarchy()}.forEach {
 ////                    println(it.tokenSequence().map{it.node.elementType}.toList())
 ////                }
 //

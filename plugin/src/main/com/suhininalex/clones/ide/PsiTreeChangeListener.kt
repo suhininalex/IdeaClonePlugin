@@ -5,14 +5,14 @@ package com.suhininalex.clones.ide
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.CloneManager
-import com.suhininalex.clones.core.getCloneManager
+import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.utils.childrenMethods
 import com.suhininalex.clones.core.utils.method
 
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
     val cloneManager: CloneManager
-        get() = project.getCloneManager().instance
+        get() = project.cloneManager.instance
 
     override fun beforeChildAddition(event: PsiTreeChangeEvent) =
         removeInvolvedMethods(event)

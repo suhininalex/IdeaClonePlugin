@@ -5,8 +5,9 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.suhininalex.clones.core.getCloneManager
+import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.postprocessing.*
+import com.suhininalex.clones.ide.toolwindow.CloneViewManager
 import nl.komponents.kovenant.then
 
 /**
@@ -18,8 +19,10 @@ object editorHandler : EditorActionHandler() {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         val project = editor.project!!
 
-        project.getCloneManager().instance.getAllFilteredClones().then {
-            ClonesViewProvider.showClonesData(project, it)
+        project.cloneManager.instance.getAllFilteredClones().then {
+            CloneViewManager.showClonesData(project, it)
+        }.fail {
+            it.printStackTrace()
         }
     }
 }
