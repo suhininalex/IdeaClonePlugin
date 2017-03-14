@@ -8,20 +8,23 @@ import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.utils.method
 import com.suhininalex.clones.ide.configuration.PluginLabels
-import com.suhininalex.clones.ide.toolwindow.CloneViewManager
+import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 import nl.komponents.kovenant.then
 
 class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip")) {
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.project?.cloneManager?.initialized ?: false
-        e.presentation.text = PluginLabels.getLabel("menu-find-all-tooltip")
+        with (e.presentation) {
+            isEnabled = e.project?.cloneManager?.initialized ?: false
+            text = PluginLabels.getLabel("menu-find-all-text")
+            description = PluginLabels.getLabel("menu-find-all-description")
+        }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project!!
-        project.cloneManager.instance.getAllFilteredClones().then {
-            CloneViewManager.showClonesData(project, it)
+        e.project!!.cloneManager.instance.getAllFilteredClones()
+        .then {
+            CloneToolwindowManager.showClonesData(it)
         }.fail {
             if (it !is ProcessCanceledException)
                 throw it
@@ -32,14 +35,16 @@ class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip
 class ShowMethodClonesAction: AnAction(PluginLabels.getLabel("menu-find-in-clone-tooltip")){
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = e.project?.cloneManager?.initialized ?: false
-        e.presentation.text = PluginLabels.getLabel("menu-find-in-clone-text")
+        with (e.presentation){
+            isEnabled = e.project?.cloneManager?.initialized ?: false
+            text = PluginLabels.getLabel("menu-find-in-clone-text")
+            description = PluginLabels.getLabel("menu-find-in-clone-description")
+        }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val method = e.getData(LangDataKeys.PSI_ELEMENT)?.method ?: return
-        val project = e.project!!
-        val clones = project.cloneManager.instance.getMethodFilteredClones(method)
-        CloneViewManager.showClonesData(project, clones)
+        val clones = e.project!!.cloneManager.instance.getMethodFilteredClones(method)
+        CloneToolwindowManager.showClonesData(clones)
     }
 }

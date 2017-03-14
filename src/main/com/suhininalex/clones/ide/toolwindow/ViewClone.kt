@@ -51,6 +51,6 @@ private val CloneClass.description: String
 
 val Clone.description: String
     get() = PluginLabels.getLabel("toolwindow-clone-node")
-            .replace("startLine", "${firstPsi.startLine}")
-            .replace("endLine", "${lastPsi.endLine}")
-            .replace("file", file.presentableName)
+            .replace("\$startLine", "${firstPsi.startLine}")
+            .replace("\$endLine", "${lastPsi.endLine}")
+            .replace("\$file", file.presentableName)

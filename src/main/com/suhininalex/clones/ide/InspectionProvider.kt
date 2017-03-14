@@ -10,7 +10,7 @@ import com.suhininalex.clones.core.structures.CloneClass
 import java.awt.EventQueue
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
-import com.suhininalex.clones.ide.toolwindow.CloneViewManager
+import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 
 class InspectionProvider : BaseJavaLocalInspectionTool() {
 
@@ -57,9 +57,9 @@ class CloneReport(val cloneClass: CloneClass, val clone: Clone) : LocalQuickFix 
                 .replace("\$startLine","${clone.firstPsi.startLine}")
                 .replace("\$endLine","${clone.lastPsi.endLine}")
 
-    override fun getFamilyName() = "CloneReport"
+    override fun getFamilyName() = PluginLabels.getLabel("inspection-fix-family-name")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        EventQueue.invokeLater { CloneViewManager.showClonesData(project, cloneClass) }
+        EventQueue.invokeLater { CloneToolwindowManager.showClonesData(cloneClass) }
     }
 }
