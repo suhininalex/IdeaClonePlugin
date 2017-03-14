@@ -5,8 +5,7 @@
   <vendor email="suhinin.alex@gmail.com">Suhinin Alex</vendor>
 
   <description><![CDATA[
-      Detects cloneClasses on-the-fly.<br>
-      <em>...</em>
+      Detects project clones on-the-fly.<br>
     ]]></description>
 
   <idea-version since-build="131"/>
