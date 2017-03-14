@@ -16,7 +16,7 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
 
     override fun getGroupDisplayName() = PluginLabels.getLabel("inspection-group-display-name")
 
-    override fun getShortName() = PluginLabels.getLabel("inspection-short-name")
+    override fun getShortName() = "CloneDetection"
 
     override fun getDisplayName() = PluginLabels.getLabel("inspection-display-name")
 
