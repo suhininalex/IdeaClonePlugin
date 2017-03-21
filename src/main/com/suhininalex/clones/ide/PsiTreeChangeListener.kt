@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.cloneManager
-import com.suhininalex.clones.core.utils.childrenMethods
-import com.suhininalex.clones.core.utils.method
+import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
@@ -15,39 +15,47 @@ class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
         get() = project.cloneManager.instance
 
     override fun beforeChildAddition(event: PsiTreeChangeEvent) =
-        removeInvolvedMethods(event)
+        removeInvolvedSequences(event)
 
     override fun beforeChildReplacement(event: PsiTreeChangeEvent) =
-        removeInvolvedMethods(event)
+        removeInvolvedSequences(event)
 
     override fun beforeChildRemoval(event: PsiTreeChangeEvent) =
-        removeInvolvedMethods(event)
+        removeInvolvedSequences(event)
 
     override fun childRemoved(event: PsiTreeChangeEvent) =
-        addInvolvedMethods(event)
+        addInvolvedSequences(event)
 
     override fun childAdded(event: PsiTreeChangeEvent) =
-        addInvolvedMethods(event)
+        addInvolvedSequences(event)
 
     override fun childReplaced(event: PsiTreeChangeEvent) =
-        addInvolvedMethods(event)
+        addInvolvedSequences(event)
 
-    private fun addInvolvedMethods(event: PsiTreeChangeEvent){
-        detectInvolvedMethods(event.parent).forEach {
-            cloneIndexer.addMethod(it)
+    private fun addInvolvedSequences(event: PsiTreeChangeEvent){
+        findInvolvedIndexedSequences(event.parent).forEach {
+            val sequence = JavaIndexedSequence(it as PsiMethod)
+            cloneIndexer.addSequence(sequence)
         }
     }
 
-    private fun removeInvolvedMethods(event: PsiTreeChangeEvent) {
-        detectInvolvedMethods(event.parent).forEach {
-            cloneIndexer.removeMethod(it)
+    private fun removeInvolvedSequences(event: PsiTreeChangeEvent) {
+        findInvolvedIndexedSequences(event.parent).forEach {
+            val sequence = JavaIndexedSequence(it as PsiMethod)
+            cloneIndexer.removeSequence(sequence)
         }
     }
 }
 
-private fun detectInvolvedMethods(element: PsiElement): Collection<PsiMethod> =
-    when (element) {
-        is PsiMethod -> listOf(element)
-        is PsiClass, is PsiJavaFile, is PsiDirectory -> element.childrenMethods
-        else -> element.method?.let { listOf(it) } ?: emptyList()
+fun findInvolvedIndexedSequences(element: PsiElement): List<PsiElement> {
+    val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(element) ?: return emptyList()
+    return with (indexedPsiDefiner) {
+        if (isIndexed(element)) {
+            listOf(element)
+        } else if (isIndexedParent(element) || element is PsiDirectory || element is PsiFile) {
+            getIndexedChildren(element)
+        } else {
+            getIndexedParent(element)?.let { listOf(it) } ?: emptyList()
+        }
     }
+}

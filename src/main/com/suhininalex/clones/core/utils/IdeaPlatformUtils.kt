@@ -7,6 +7,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.Computable
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.*
@@ -20,7 +21,7 @@ import java.lang.Exception
 
 val PsiMethod.stringId: String
     get() =
-    containingFile.containingDirectory.name + "." +
+            containingFile.containingDirectory.name + "." +
             containingClass!!.name + "." +
             name + "." +
             parameterList;
@@ -28,11 +29,16 @@ val PsiMethod.stringId: String
 val Application: Application
     get() = ApplicationManager.getApplication()
 
-fun Project.getAllPsiJavaFiles() =
-        PsiManager.getInstance(this).findDirectory(baseDir)!!.getPsiJavaFiles()
+fun <T> Application.readAction(action: () -> T): T =
+    Application.runReadAction(Computable(action))
 
-fun PsiDirectory.getPsiJavaFiles(): Sequence<PsiJavaFile> =
-        this.depthFirstTraverse { it.subdirectories.asSequence() }.flatMap { it.files.asSequence() }.filterIsInstance<PsiJavaFile>()
+val Project.allPsiFiles: List<PsiFile>
+    get() = Application.readAction {
+        PsiManager.getInstance(this).findDirectory(baseDir)!!
+            .depthFirstTraverse { it.subdirectories.asSequence() }
+            .flatMap { it.files.asSequence() }
+            .toList()
+    }
 
 fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
         this.leafTraverse({it in filter}) {it.children.asSequence()}

@@ -8,7 +8,7 @@
       Detects project clones on-the-fly.<br>
     ]]></description>
 
-  <idea-version since-build="131"/>
+  <idea-version since-build="141.1009"/>
 
   <actions>
       <action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">

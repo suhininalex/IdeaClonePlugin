@@ -6,9 +6,10 @@ import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
+import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.utils.Application
+import com.suhininalex.clones.core.utils.allPsiFiles
 import com.suhininalex.clones.core.utils.findTokens
-import com.suhininalex.clones.core.utils.getAllPsiJavaFiles
 import com.suhininalex.clones.core.utils.withProgressBar
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
@@ -42,14 +43,14 @@ class CloneIndexerManager(val project: Project){
         if (! PluginSettings.enabledForProject) return
 
         val files: List<PsiJavaFile> = Application.runReadAction ( Computable {
-            project.getAllPsiJavaFiles().toList()
+            project.allPsiFiles.filterIsInstance<PsiJavaFile>().toList()
         })
 
 
         files.withProgressBar(initializingLabel).foreach {
             Application.runReadAction {
                 it.findTokens(TokenSet.create(ElementType.METHOD)).forEach {
-                    instance.addMethod(it as PsiMethod)
+                    instance.addSequence(JavaIndexedSequence(it as PsiMethod))
                 }
             }
         }.then {

@@ -2,7 +2,9 @@ package com.suhininalex.clones.core.postprocessing
 
 import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.core.CloneIndexer
+import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.withProgressBar
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import nl.komponents.kovenant.Promise
@@ -30,5 +32,5 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         throw it
     }
 
-fun CloneIndexer.getMethodFilteredClones(method: PsiMethod): List<CloneClass> =
-    getAllMethodClasses(method).toList().filterSubClassClones().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
+    getAllMethodClasses(indexedSequence).toList().filterSubClassClones().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()

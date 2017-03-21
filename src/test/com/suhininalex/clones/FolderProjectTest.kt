@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import com.suhininalex.clones.core.*
+import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.utils.childrenMethods
 import com.suhininalex.clones.core.utils.findTokens
 import kotlin.properties.Delegates
@@ -24,7 +25,7 @@ open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTe
         baseDirectoryPsi = myFixture.psiManager.findDirectory(directory)!!
         baseDirectoryPsi.findTokens(TokenSet.create(ElementType.METHOD)).forEach { method ->
             if (method is PsiMethod)
-                cloneManager.addMethod(method)
+                cloneManager.addSequence(JavaIndexedSequence(method))
         }
     }
 

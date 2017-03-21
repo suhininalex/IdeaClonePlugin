@@ -4,6 +4,7 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.cloneManager
+import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
@@ -28,21 +29,30 @@ class InspectionProvider : BaseJavaLocalInspectionTool() {
 
 }
 
-class CloneInspectionVisitor(val holder: ProblemsHolder) : JavaElementVisitor() {
+class CloneInspectionVisitor(val holder: ProblemsHolder) : PsiElementVisitor() {
 
-    override fun visitMethod(method: PsiMethod) {
-        val cloneManager = method.project.cloneManager.instance
-        val result = cloneManager.getMethodFilteredClones(method)
-        result.forEach { cloneClass ->
-            cloneClass.clones.filter { it.firstPsi in method  }.forEach { clone ->
-                holder.registerProblem(
-                        method,
-                        PluginLabels.getLabel("inspection-problem-description"),
-                        ProblemHighlightType.WEAK_WARNING,
-                        clone.getTextRangeInMethod(),
-                        CloneReport(cloneClass, clone)
-                )
+    override fun visitElement(element: PsiElement) {
+
+        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(element) ?: return
+        if (! indexedPsiDefiner.isIndexed(element)) return
+
+        val sequence = indexedPsiDefiner.createIndexedSequence(element)
+        try {
+            val cloneManager = element.project.cloneManager.instance
+            val result = cloneManager.getSequenceFilteredClones(sequence)
+            result.forEach { cloneClass ->
+                cloneClass.clones.filter { it.firstPsi in element  }.forEach { clone ->
+                    holder.registerProblem(
+                            element,
+                            PluginLabels.getLabel("inspection-problem-description"),
+                            ProblemHighlightType.WEAK_WARNING,
+                            clone.getTextRangeInMethod(),
+                            CloneReport(cloneClass, clone)
+                    )
+                }
             }
+        } catch (e: PsiInvalidElementAccessException){
+            // just drop it if clone range already is invalid
         }
     }
 }

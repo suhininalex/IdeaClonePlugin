@@ -1,31 +1,35 @@
 package com.suhininalex.clones.ide.toolwindow
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.*
 import java.awt.EventQueue
 
 class ViewNodeInvalidator(val view: CloneTreeView) {
 
-    private val methodClones = view.root.allNodes().filterIsInstance<ViewClone>().groupBy { it.clone.firstPsi.method }
+    /**
+     * Map IndexedSequence.id to ViewClone
+     */
+    private val sequenceClones: Map<String?, List<ViewClone>> =
+            view.root.allNodes().filterIsInstance<ViewClone>().groupBy { it.clone.firstPsi.indexedSequence?.id }
 
     fun invalidateClone(psiElement: PsiElement){
-        methodClones[psiElement.method]
+        sequenceClones[psiElement.indexedSequence?.id]
             ?.filter { it.clone.textRange intersects psiElement.textRange }
             ?.forEach{ invalidateView(it) }
     }
 
-    fun invalidateMethod(psiMethod: PsiMethod){
-        methodClones[psiMethod]?.forEach { invalidateView(it) }
+    fun invalidateSequence(indexedSequence: IndexedSequence){
+        sequenceClones[indexedSequence.id]?.forEach { invalidateView(it) }
     }
 
     private fun invalidateView(cloneView: ViewClone) {
         cloneView.invalidate()
         EventQueue.invokeLater { view.model.nodeChanged(cloneView) }
     }
-
 }
 
 infix fun TextRange.intersects(textRange: TextRange): Boolean =
@@ -57,13 +61,24 @@ class PsiTreeListener(val invalidator: ViewNodeInvalidator): PsiTreeChangeAdapte
         invalidateInvolvedCloneViews(event.child)
     }
 
-    fun invalidateInvolvedCloneViews(psiElement: PsiElement){
-        when (psiElement) {
-            is PsiMethod -> invalidator.invalidateMethod(psiElement)
-            is PsiDirectory, is PsiClass -> {
-                psiElement.childrenMethods.forEach { invalidator.invalidateMethod(it) }
+    fun invalidateInvolvedCloneViews(element: PsiElement?){
+        element ?: return
+        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(element) ?: return
+        return with (indexedPsiDefiner) {
+            if (isIndexed(element)) {
+                invalidator.invalidateSequence(indexedPsiDefiner.createIndexedSequence(element))
+            } else if (isIndexedParent(element) || element is PsiDirectory || element is PsiFile) {
+                getIndexedChildren(element).forEach { invalidator.invalidateSequence(indexedPsiDefiner.createIndexedSequence(it)) }
+            } else {
+                invalidator.invalidateClone(element)
             }
-            else -> invalidator.invalidateClone(psiElement)
         }
     }
 }
+
+val PsiElement.indexedSequence: IndexedSequence?
+    get() {
+        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(this) ?: return null
+        val indexedElement = indexedPsiDefiner.getIndexedParent(this) ?: return null
+        return indexedPsiDefiner.createIndexedSequence(indexedElement)
+    }
