@@ -1,19 +1,17 @@
 package com.suhininalex.clones.core
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Computable
-import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.impl.source.tree.ElementType
-import com.intellij.psi.tree.TokenSet
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
-import com.suhininalex.clones.core.utils.Application
-import com.suhininalex.clones.core.utils.allPsiFiles
-import com.suhininalex.clones.core.utils.findTokens
-import com.suhininalex.clones.core.utils.withProgressBar
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementVisitor
+import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
+import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
 import nl.komponents.kovenant.then
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtElementImpl
+import org.jetbrains.kotlin.psi.psiUtil.allChildren
 
 private val initializingLabel = PluginLabels.getLabel("progressbar-filtering-initializing")
 
@@ -40,17 +38,32 @@ class CloneIndexerManager(val project: Project){
     }
 
     fun initialize(){
+
+
+
+
+//        val ktIndexedPsiDefiner = KtIndexedPsiDefiner()
+//        project.allPsiFiles
+//                .filter { it.fileType.name == ktIndexedPsiDefiner.fileType }
+//                .forEach {
+//                    println(it.name)
+//                    ktIndexedPsiDefiner.getIndexedChildren(it).forEach {
+//                        val sequence = ktIndexedPsiDefiner.createIndexedSequence(it)
+//                        println(sequence.id)
+//                        println(sequence.sequence.toList())
+//                        println("-------------------")
+//                    }
+//                    println("============================")
+//                }
+
+
         if (! PluginSettings.enabledForProject) return
 
-        val files: List<PsiJavaFile> = Application.runReadAction ( Computable {
-            project.allPsiFiles.filterIsInstance<PsiJavaFile>().toList()
-        })
-
-
-        files.withProgressBar(initializingLabel).foreach {
+        project.allPsiFiles.filter { ".kt" in it.name }.withProgressBar(initializingLabel).foreach {
             Application.runReadAction {
-                it.findTokens(TokenSet.create(ElementType.METHOD)).forEach {
-                    instance.addSequence(JavaIndexedSequence(it as PsiMethod))
+                val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
+                indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
+                    instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
                 }
             }
         }.then {
@@ -60,3 +73,4 @@ class CloneIndexerManager(val project: Project){
         }
     }
 }
+

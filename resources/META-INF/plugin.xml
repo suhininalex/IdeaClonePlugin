@@ -1,14 +1,19 @@
-<idea-plugin version="2">
+<idea-plugin>
   <id>com.suhininalex.cloneDetection.plugin.id</id>
   <name>Clone detection plugin</name>
   <version>1.0</version>
   <vendor email="suhinin.alex@gmail.com">Suhinin Alex</vendor>
 
-  <description><![CDATA[
-      Detects project clones on-the-fly.<br>
-    ]]></description>
+  <description>
+      <![CDATA[
+            Detects project clones on-the-fly.<br>
 
-  <idea-version since-build="141.1009"/>
+       ]]>
+  </description>
+
+  <idea-version since-build="141.0"/>
+
+  <depends>org.jetbrains.kotlin</depends>
 
   <actions>
       <action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">
@@ -20,7 +25,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-      <localInspection groupPath="Java" language="JAVA" shortName="CloneDetection"
+      <localInspection groupPath="Java" shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
                        level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"/>
       <postStartupActivity implementation="com.suhininalex.clones.ide.PluginInitializer" />

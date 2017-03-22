@@ -46,7 +46,7 @@ fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
 operator fun TokenSet.contains(element: PsiElement): Boolean = this.contains(element.node?.elementType)
 
 fun PsiElement.asSequence(): Sequence<PsiElement> =
-        this.depthFirstTraverse { it.children.asSequence() }.filter { it.firstChild == null }
+        this.depthFirstTraverse { it.children.asSequence() }.filter { it.children.isEmpty() }
 
 private val javaTokenFilter = TokenSet.create(
         ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.REFERENCE_PARAMETER_LIST, ElementType.MODIFIER_LIST

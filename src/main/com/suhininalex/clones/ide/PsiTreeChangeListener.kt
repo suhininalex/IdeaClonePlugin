@@ -8,6 +8,7 @@ import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
+import com.suhininalex.clones.core.structures.IndexedSequence
 
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
@@ -34,28 +35,26 @@ class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
     private fun addInvolvedSequences(event: PsiTreeChangeEvent){
         findInvolvedIndexedSequences(event.parent).forEach {
-            val sequence = JavaIndexedSequence(it as PsiMethod)
-            cloneIndexer.addSequence(sequence)
+            cloneIndexer.addSequence(it)
         }
     }
 
     private fun removeInvolvedSequences(event: PsiTreeChangeEvent) {
         findInvolvedIndexedSequences(event.parent).forEach {
-            val sequence = JavaIndexedSequence(it as PsiMethod)
-            cloneIndexer.removeSequence(sequence)
+            cloneIndexer.removeSequence(it)
         }
     }
 }
 
-fun findInvolvedIndexedSequences(element: PsiElement): List<PsiElement> {
+fun findInvolvedIndexedSequences(element: PsiElement): List<IndexedSequence> {
     val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(element) ?: return emptyList()
     return with (indexedPsiDefiner) {
         if (isIndexed(element)) {
-            listOf(element)
+            listOf(indexedPsiDefiner.createIndexedSequence(element))
         } else if (isIndexedParent(element) || element is PsiDirectory || element is PsiFile) {
-            getIndexedChildren(element)
+            getIndexedChildren(element).map{ indexedPsiDefiner.createIndexedSequence(it)}
         } else {
-            getIndexedParent(element)?.let { listOf(it) } ?: emptyList()
+            getIndexedParent(element)?.let { listOf(it).map{ indexedPsiDefiner.createIndexedSequence(it) } } ?: emptyList()
         }
     }
 }

@@ -2,6 +2,7 @@ package com.suhininalex.clones.core.languagescope
 
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
+import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
 
 object LanguageIndexedPsiManager {
 
@@ -9,6 +10,7 @@ object LanguageIndexedPsiManager {
 
     init {
         registerNewLanguage(JavaIndexedPsiDefiner())
+        registerNewLanguage(KtIndexedPsiDefiner())
     }
 
     fun getIndexedPsiDefiner(psiElement: PsiElement): IndexedPsiDefiner? =

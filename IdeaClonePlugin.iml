@@ -21,6 +21,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-compiler-embeddable:1.1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="kotlin-compiler" level="project" />
   </component>
 </module>

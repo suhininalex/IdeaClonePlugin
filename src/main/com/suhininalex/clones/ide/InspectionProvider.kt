@@ -46,7 +46,7 @@ class CloneInspectionVisitor(val holder: ProblemsHolder) : PsiElementVisitor() {
                             element,
                             PluginLabels.getLabel("inspection-problem-description"),
                             ProblemHighlightType.WEAK_WARNING,
-                            clone.getTextRangeInMethod(),
+                            clone.getTextRangeInIndexedFragment(),
                             CloneReport(cloneClass, clone)
                     )
                 }

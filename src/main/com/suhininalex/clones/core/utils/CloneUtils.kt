@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.structures.Clone
@@ -21,8 +22,10 @@ fun Edge.asSequence(): Sequence<Token> {
     }
 }
 
-fun Clone.getTextRangeInMethod(): TextRange {
-    val methodOffset = firstPsi.method!!.textRange.startOffset
+fun Clone.getTextRangeInIndexedFragment(): TextRange {
+    val indexedParent = LanguageIndexedPsiManager.getIndexedPsiDefiner(firstPsi)?.getIndexedParent(firstPsi)!!
+
+    val methodOffset = indexedParent.textRange.startOffset
     return TextRange(firstPsi.textRange.startOffset - methodOffset, lastPsi.textRange.endOffset-methodOffset)
 }
 
