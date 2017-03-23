@@ -20,23 +20,25 @@ fun ListWithProgressBar<CloneClass>.filterSelfCoveredClasses(): Promise<List<Clo
 data class CloneScore(val selfCoverage: Double, val sameMethodCount: Double, val length: Int)
 
 fun CloneClass.getScore(): CloneScore =
-        CloneScore(scoreSelfCoverage()/100.0, scoreSameMethod()/100.0, clones.first().textLength)
+        CloneScore(scoreSelfCoverage(), scoreSameMethod(), clones.first().textLength)
 
 fun filterPredicate(cloneClass: CloneClass): Boolean =
-        with(cloneClass.getScore()) {
-            selfCoverage <= 0.7 || selfCoverage <= 0.85 && sameMethodCount <= 0.7
+        Application.readAction {
+            with(cloneClass.getScore()) {
+                selfCoverage <= 0.7 || selfCoverage <= 0.85 && sameMethodCount <= 0.7
+            }
         }
 
-private fun CloneClass.scoreSelfCoverage(): Int =
+private fun CloneClass.scoreSelfCoverage(): Double =
         clones.first().scoreSelfCoverage()
 
-private fun Clone.scoreSelfCoverage(): Int {
+private fun Clone.scoreSelfCoverage(): Double {
 
      val sequence = tokenSequence().toList()
      val indexMap = sequence.mapIndexed { i, psiElement ->  psiElement to i}.toMap()
      val tree = suffixTree(sequence.map(::Token).toList())
 
-     if (tree.haveTooMuchClones(sequence.size)) return 100
+     if (tree.haveTooMuchClones(sequence.size)) return 1.0
 
      val length = tree
              .getAllCloneClasses(10).toList()
@@ -45,15 +47,15 @@ private fun Clone.scoreSelfCoverage(): Int {
              .map{ IntRange(indexMap[it.firstPsi]!!, indexMap[it.lastPsi]!!) }
              .uniteRanges()
              .sumBy { it.length }
-     return length*100/sequence.size
+     return length.toDouble()/sequence.size
 }
 
 private fun SuffixTree<Token>.haveTooMuchClones(sourceLength: Int) =
     getAllCloneClasses(10).drop(sourceLength*PluginSettings.coverageSkipFilter/100).firstOrNull() != null
 
 
-private fun CloneClass.scoreSameMethod(): Int {
+private fun CloneClass.scoreSameMethod(): Double {
     assert(size > 1)
     val mostPopularMethodNumber = clones.map{ it.firstPsi.method }.groupBy { it }.map { it.value.size }.max()
-    return (mostPopularMethodNumber!!-1)*100/(size-1)
+    return (mostPopularMethodNumber!!-1)/(size-1).toDouble()
 }
