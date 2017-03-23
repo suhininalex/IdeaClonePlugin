@@ -1,6 +1,7 @@
 package com.suhininalex.clones.core.postprocessing.helpers
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.suhininalex.clones.core.structures.PsiRange
 import com.suhininalex.clones.core.structures.RangeClone
 
@@ -21,7 +22,7 @@ fun PsiRange.extractSiblingSequences(): Sequence<PsiRange> {
 
 
 private fun PsiElement.findMaxNextElement(maxEndOffset: Int): PsiElement? {
-    return findParentWithSibling().nextSibling.findMaxChildBeforeOffset(maxEndOffset)
+    return findParentWithSibling()?.nextSibling?.findMaxChildBeforeOffset(maxEndOffset)
 }
 
 /**
@@ -39,9 +40,9 @@ private fun PsiElement.findMaxChildBeforeOffset(offset: Int): PsiElement? {
 /**
  * Finds first parent inclusive @this which have nextSibling
  */
-private fun PsiElement.findParentWithSibling(): PsiElement {
+private fun PsiElement.findParentWithSibling(): PsiElement? {
     var current = this
-    while (current.nextSibling == null) {
+    while (current.parent.nextSibling != null && current.parent !is PsiFile) {
         current = current.parent
     }
     return current
@@ -49,7 +50,8 @@ private fun PsiElement.findParentWithSibling(): PsiElement {
 
 
 private fun PsiElement.haveSibling(maxEndOffset: Int): Boolean =
-        nextSibling != null && nextSibling.before(maxEndOffset)
+        nextSibling?.before(maxEndOffset) ?: false
 
-private fun PsiElement.before(endOffset: Int): Boolean =
-        textRange.endOffset <= endOffset
+private fun PsiElement.before(endOffset: Int): Boolean {
+    return textRange.endOffset <= endOffset
+}

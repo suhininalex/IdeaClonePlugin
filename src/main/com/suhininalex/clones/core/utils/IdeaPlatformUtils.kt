@@ -113,10 +113,13 @@ class ListWithProgressBar<out T>(val name: String, val cancelAble: Boolean, val 
 fun <T> List<T>.withProgressBar(name: String, cancelAble: Boolean = true): ListWithProgressBar<T> =
         ListWithProgressBar(name, cancelAble, this)
 
-fun PsiElement.nextLeafElement(): PsiElement {
+fun PsiElement.nextLeafElement(): PsiElement? {
     var current = this
-    while (current.nextSibling == null)
+    while (current.nextSibling == null){
+        if (current.parent is PsiFile) return null
         current = current.parent
+    }
+
     current = current.nextSibling
     while (current.firstChild != null)
         current = current.firstChild

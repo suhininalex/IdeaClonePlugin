@@ -1,17 +1,13 @@
 package com.suhininalex.clones.core
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiDirectory
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
-import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
 import nl.komponents.kovenant.then
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtElementImpl
-import org.jetbrains.kotlin.psi.psiUtil.allChildren
+import org.jetbrains.kotlin.psi.KtFile
 
 private val initializingLabel = PluginLabels.getLabel("progressbar-filtering-initializing")
 
@@ -39,27 +35,9 @@ class CloneIndexerManager(val project: Project){
 
     fun initialize(){
 
-
-
-
-//        val ktIndexedPsiDefiner = KtIndexedPsiDefiner()
-//        project.allPsiFiles
-//                .filter { it.fileType.name == ktIndexedPsiDefiner.fileType }
-//                .forEach {
-//                    println(it.name)
-//                    ktIndexedPsiDefiner.getIndexedChildren(it).forEach {
-//                        val sequence = ktIndexedPsiDefiner.createIndexedSequence(it)
-//                        println(sequence.id)
-//                        println(sequence.sequence.toList())
-//                        println("-------------------")
-//                    }
-//                    println("============================")
-//                }
-
-
         if (! PluginSettings.enabledForProject) return
 
-        project.allPsiFiles.filter { ".kt" in it.name }.withProgressBar(initializingLabel).foreach {
+        project.allPsiFiles.filter { it is KtFile }.filter{ ! it.isDirectory}.withProgressBar(initializingLabel).foreach {
             Application.runReadAction {
                 val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
                 indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
