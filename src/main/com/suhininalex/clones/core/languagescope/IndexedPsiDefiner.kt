@@ -2,8 +2,11 @@ package com.suhininalex.clones.core.languagescope
 
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.leafTraverse
+import com.suhininalex.clones.ide.configuration.PluginSettings
 
 interface IndexedPsiDefiner {
 
@@ -15,8 +18,9 @@ interface IndexedPsiDefiner {
 
     /**
      * Defines elements to be indexed
+     * @see isIndexed
      */
-    fun isIndexed(psiElement: PsiElement): Boolean
+    fun isIndexedElement(psiElement: PsiElement): Boolean
 
     /**
      * Defines parents of indexed elements
@@ -27,12 +31,27 @@ interface IndexedPsiDefiner {
     fun createIndexedSequence(psiElement: PsiElement): IndexedSequence
 
     /**
+     * Alike isIndexedElement but it also checks plugin settings
+     * @see isIndexedElement
+     */
+    fun isIndexed(psiElement: PsiElement): Boolean =
+        if (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement.containingFile)) {
+            false
+        } else {
+            isIndexedElement(psiElement)
+        }
+
+    /**
      * @return first indexed parent element
      */
     fun getIndexedParent(psiElement: PsiElement): PsiElement? {
         var current = psiElement
         while (! isIndexed(current)) {
-            current = current.parent ?: return null
+            if (current.parent !is PsiFile) {
+                current = current.parent
+            } else {
+                return null
+            }
         }
         return current
     }

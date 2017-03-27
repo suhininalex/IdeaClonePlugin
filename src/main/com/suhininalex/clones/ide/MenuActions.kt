@@ -25,7 +25,6 @@ class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip
     override fun actionPerformed(e: AnActionEvent) {
         e.project!!.cloneManager.instance.getAllFilteredClones()
         .then {
-            println(it.size)
             CloneToolwindowManager.showClonesData(it)
         }.fail {
             if (it !is ProcessCanceledException)

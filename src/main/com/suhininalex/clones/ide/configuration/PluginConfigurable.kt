@@ -16,6 +16,7 @@ class PluginConfigurable : Configurable {
             PluginSettings.coverageSkipFilter != skipSelfCoverageFiltration
             || PluginSettings.enabledForProject != enableForThisProject
             || PluginSettings.minCloneLength != minimalCloneLength
+            || PluginSettings.disableTestFolder != testFilesDisabled
         }
 
     override fun disposeUIResources() {
@@ -27,12 +28,16 @@ class PluginConfigurable : Configurable {
 
     override fun apply() {
         configurationPanel?.apply {
-            if (enableForThisProject && ! PluginSettings.enabledForProject) {
+            if (enableForThisProject && ! PluginSettings.enabledForProject) { //true -> false
                 PluginSettings.enabledForProject = enableForThisProject
                 CurrentProject?.cloneManager?.initialize()
-            } else if (PluginSettings.enabledForProject && ! enableForThisProject){
+            } else if (PluginSettings.enabledForProject && ! enableForThisProject){ //false -> true
                 PluginSettings.enabledForProject = enableForThisProject
                 CurrentProject?.cloneManager?.cancel()
+            }
+            if (PluginSettings.disableTestFolder != testFilesDisabled) {
+                PluginSettings.disableTestFolder = testFilesDisabled
+                CurrentProject?.cloneManager?.initialize()
             }
             PluginSettings.coverageSkipFilter = skipSelfCoverageFiltration
             PluginSettings.minCloneLength = minimalCloneLength
@@ -49,6 +54,7 @@ class PluginConfigurable : Configurable {
             skipSelfCoverageFiltration = PluginSettings.coverageSkipFilter
             minimalCloneLength = PluginSettings.minCloneLength
             enableForThisProject = PluginSettings.enabledForProject
+            testFilesDisabled = PluginSettings.disableTestFolder
         }
     }
 

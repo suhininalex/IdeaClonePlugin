@@ -7,6 +7,7 @@ public class ConfigurationPanel {
     private JSpinner minimalCloneLengthSpinner;
     private JSpinner skipSelfCoverageFiltrationSpinner;
     private JCheckBox enableForThisProjectCheckbox;
+    private JCheckBox testFilesDisabled;
 
     public ConfigurationPanel() {
         minimalCloneLengthSpinner.setModel(new SpinnerNumberModel(15, 15, 1000, 5));
@@ -35,5 +36,13 @@ public class ConfigurationPanel {
 
     public void setEnableForThisProject(boolean value) {
         enableForThisProjectCheckbox.setSelected(value);
+    }
+
+    public boolean getTestFilesDisabled() {
+        return testFilesDisabled.isSelected();
+    }
+
+    public void setTestFilesDisabled(boolean value) {
+        testFilesDisabled.setSelected(value);
     }
 }

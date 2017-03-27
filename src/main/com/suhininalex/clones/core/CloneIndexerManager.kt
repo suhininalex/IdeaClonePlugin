@@ -1,13 +1,12 @@
 package com.suhininalex.clones.core
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDirectory
+import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
 import nl.komponents.kovenant.then
-import org.jetbrains.kotlin.psi.KtFile
 
 private val initializingLabel = PluginLabels.getLabel("progressbar-filtering-initializing")
 
@@ -35,9 +34,12 @@ class CloneIndexerManager(val project: Project){
 
     fun initialize(){
 
+        initialized = false
+        instance = CloneIndexer()
+
         if (! PluginSettings.enabledForProject) return
 
-        project.allPsiFiles.filter { it is KtFile }.filter{ ! it.isDirectory}.withProgressBar(initializingLabel).foreach {
+        project.allPsiFiles.withProgressBar(initializingLabel).foreach {
             Application.runReadAction {
                 val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
                 indexedPsiDefiner?.getIndexedChildren(it)?.forEach {

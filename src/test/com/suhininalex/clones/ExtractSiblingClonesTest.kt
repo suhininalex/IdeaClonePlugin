@@ -2,7 +2,6 @@ package com.suhininalex.clones
 
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.structures.CloneClass
-import com.suhininalex.clones.core.utils.childrenMethods
 import com.suhininalex.clones.core.utils.printText
 import com.suhininalex.clones.core.utils.tokenSequence
 

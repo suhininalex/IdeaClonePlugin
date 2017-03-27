@@ -11,7 +11,7 @@ class JavaIndexedPsiDefiner : IndexedPsiDefiner {
     override val fileType: String
         get() = "JAVA"
 
-    override fun isIndexed(psiElement: PsiElement): Boolean =
+    override fun isIndexedElement(psiElement: PsiElement): Boolean =
         psiElement is PsiMethod
 
     override fun isIndexedParent(psiElement: PsiElement): Boolean =

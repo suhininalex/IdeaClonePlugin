@@ -14,7 +14,7 @@ object LanguageIndexedPsiManager {
     }
 
     fun getIndexedPsiDefiner(psiElement: PsiElement): IndexedPsiDefiner? =
-        indexedPsiDefiners[psiElement.containingFile.fileType.name]
+        indexedPsiDefiners[psiElement.containingFile?.fileType?.name]
 
     fun registerNewLanguage(indexedPsiDefiner: IndexedPsiDefiner){
         indexedPsiDefiners.put(indexedPsiDefiner.fileType, indexedPsiDefiner)
