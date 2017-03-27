@@ -159,8 +159,12 @@ val PsiElement?.method: PsiMethod?
 val PsiElement.childrenMethods: Collection<PsiMethod>
     get() = PsiTreeUtil.findChildrenOfType(this, PsiMethod::class.java)
 
-val CurrentProject: Project? =
-    ProjectManager.getInstance().openProjects.firstOrNull()
+val CurrentProject: Project?
+    get() =
+        ProjectManager.getInstance().openProjects.firstOrNull()?.run {
+            if (isDisposed) null
+            else this
+        }
 
 fun ToolWindow.hide(){
     hide(null)
