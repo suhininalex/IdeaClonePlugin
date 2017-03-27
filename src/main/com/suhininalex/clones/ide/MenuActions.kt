@@ -10,6 +10,7 @@ import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.utils.method
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
+import com.suhininalex.clones.ide.toolwindow.indexedSequence
 import nl.komponents.kovenant.then
 
 class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip")) {
@@ -33,19 +34,21 @@ class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip
     }
 }
 
-class ShowMethodClonesAction: AnAction(PluginLabels.getLabel("menu-find-in-clone-tooltip")){
+class ShowMethodClonesAction: AnAction(PluginLabels.getLabel("menu-find-in-scope-tooltip")){
 
     override fun update(e: AnActionEvent) {
         with (e.presentation){
-            isEnabled = e.project?.cloneManager?.initialized ?: false
-            text = PluginLabels.getLabel("menu-find-in-clone-text")
-            description = PluginLabels.getLabel("menu-find-in-clone-description")
+            val initialized = e.project?.cloneManager?.initialized ?: false
+            val indexedSequence = e.getData(LangDataKeys.PSI_ELEMENT)?.indexedSequence
+            isEnabled = initialized && indexedSequence != null
+            text = PluginLabels.getLabel("menu-find-in-scope-text")
+            description = PluginLabels.getLabel("menu-find-in-scope-description")
         }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val method = e.getData(LangDataKeys.PSI_ELEMENT)?.method ?: return
-        val clones = e.project!!.cloneManager.instance.getSequenceFilteredClones(JavaIndexedSequence(method))
+        val indexedSequence = e.getData(LangDataKeys.PSI_ELEMENT)?.indexedSequence ?: return
+        val clones = e.project!!.cloneManager.instance.getSequenceFilteredClones(indexedSequence)
         CloneToolwindowManager.showClonesData(clones)
     }
 }
