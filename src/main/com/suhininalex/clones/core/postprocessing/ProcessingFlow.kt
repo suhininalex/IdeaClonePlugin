@@ -1,8 +1,10 @@
 package com.suhininalex.clones.core.postprocessing
 
+import com.intellij.openapi.progress.ProgressManager
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.IndexedSequence
+import com.suhininalex.clones.core.utils.backgroundTask
 import com.suhininalex.clones.core.utils.withProgressBar
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import nl.komponents.kovenant.Promise
@@ -18,7 +20,7 @@ val beforeFiltering = PluginLabels.getLabel("progressbar-filtering-before-filter
 
 fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     task {
-        listOf(1).withProgressBar(beforeFiltering).flatMap{ getAllCloneClasses().toList() }.get()
+        ProgressManager.getInstance().backgroundTask(beforeFiltering){ getAllCloneClasses().toList() }.get()
     }.thenApply {
         withProgressBar(subClassFiltering).filterSubClassClones().get()
     }.thenApply {
