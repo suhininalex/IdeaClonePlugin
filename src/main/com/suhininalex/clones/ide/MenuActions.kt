@@ -9,6 +9,7 @@ import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.utils.method
 import com.suhininalex.clones.ide.configuration.PluginLabels
+import com.suhininalex.clones.ide.configuration.PluginSettings
 import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 import com.suhininalex.clones.ide.toolwindow.indexedSequence
 import nl.komponents.kovenant.then
@@ -17,6 +18,7 @@ class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip
 
     override fun update(e: AnActionEvent) {
         with (e.presentation) {
+            isVisible = PluginSettings.enabledForProject
             isEnabled = e.project?.cloneManager?.initialized ?: false
             text = PluginLabels.getLabel("menu-find-all-text")
             description = PluginLabels.getLabel("menu-find-all-description")
@@ -38,6 +40,7 @@ class ShowMethodClonesAction: AnAction(PluginLabels.getLabel("menu-find-in-scope
 
     override fun update(e: AnActionEvent) {
         with (e.presentation){
+            isVisible = PluginSettings.enabledForProject
             val initialized = e.project?.cloneManager?.initialized ?: false
             val indexedSequence = e.getData(LangDataKeys.PSI_ELEMENT)?.indexedSequence
             isEnabled = initialized && indexedSequence != null
