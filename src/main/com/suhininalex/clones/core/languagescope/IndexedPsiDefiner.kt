@@ -35,11 +35,7 @@ interface IndexedPsiDefiner {
      * @see isIndexedElement
      */
     fun isIndexed(psiElement: PsiElement): Boolean =
-        if (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement.containingFile)) {
-            false
-        } else {
-            isIndexedElement(psiElement)
-        }
+        isIndexedElement(psiElement) && ! (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement.containingFile))
 
     /**
      * @return first indexed parent element
