@@ -90,7 +90,7 @@ class ListWithProgressBar<out T>(val name: String, val cancelAble: Boolean, val 
         }
     }
 
-    fun <R> flatMap(name: String, f: (T) -> List<R>): Promise<List<R>, Exception> {
+    fun <R> flatMap(f: (T) -> List<R>): Promise<List<R>, Exception> {
         return ProgressManager.getInstance().backgroundTask(name, cancelAble){ progressIndicator ->
             var i = 0
             list.flatMap {

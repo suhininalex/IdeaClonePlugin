@@ -1,8 +1,6 @@
 package com.suhininalex.clones.core.postprocessing
 
-import com.intellij.psi.PsiMethod
 import com.suhininalex.clones.core.CloneIndexer
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.withProgressBar
@@ -16,10 +14,11 @@ val subClassFiltering = PluginLabels.getLabel("progressbar-filtering-subclass")
 val siblingFiltering = PluginLabels.getLabel("progressbar-filtering-sibling")
 val mergeFiltering = PluginLabels.getLabel("progressbar-filtering-merge")
 val selfcoveredFiltering = PluginLabels.getLabel("progressbar-filtering-selfcovered")
+val beforeFiltering = PluginLabels.getLabel("progressbar-filtering-before-filters")
 
 fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     task {
-        getAllCloneClasses().toList()
+        listOf(1).withProgressBar(beforeFiltering).flatMap{ getAllCloneClasses().toList() }.get()
     }.thenApply {
         withProgressBar(subClassFiltering).filterSubClassClones().get()
     }.thenApply {
