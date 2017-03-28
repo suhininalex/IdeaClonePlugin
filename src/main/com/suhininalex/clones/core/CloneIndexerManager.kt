@@ -8,6 +8,7 @@ import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
+import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
 
 private val initializingLabel = PluginLabels.getLabel("progressbar-filtering-initializing")
@@ -42,17 +43,21 @@ class CloneIndexerManager(val project: Project){
 
         if (! PluginSettings.enabledForProject) return
 
-        project.allPsiFiles.withProgressBar(initializingLabel).foreach {
-            Application.runReadAction {
-                val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
-                indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
-                    instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
-                }
-            }
+        task {
+            project.allPsiFiles
         }.then {
-            initialized = true
-        }.fail {
-            cancel()
+            it.withProgressBar(initializingLabel).foreach {
+                Application.runReadAction {
+                    val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
+                    indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
+                        instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
+                    }
+                }
+            }.then {
+                initialized = true
+            }.fail {
+                cancel()
+            }
         }
     }
 }
