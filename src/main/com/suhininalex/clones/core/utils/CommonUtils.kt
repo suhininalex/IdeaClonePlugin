@@ -119,3 +119,6 @@ fun DefaultMutableTreeNode.allNodes(): Sequence<DefaultMutableTreeNode> =
 @Suppress("UNCHECKED_CAST")
 val DefaultMutableTreeNode.children: Sequence<DefaultMutableTreeNode>
     get() = children().asSequence() as Sequence<DefaultMutableTreeNode>
+
+operator fun Boolean.plus(other: Boolean): Boolean =
+        this || other

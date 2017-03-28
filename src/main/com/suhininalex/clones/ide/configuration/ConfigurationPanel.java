@@ -8,6 +8,8 @@ public class ConfigurationPanel {
     private JSpinner skipSelfCoverageFiltrationSpinner;
     private JCheckBox enableForThisProjectCheckbox;
     private JCheckBox testFilesDisabled;
+    private JCheckBox javaSearchEnabled;
+    private JCheckBox kotlinSearchEnabled;
 
     public ConfigurationPanel() {
         minimalCloneLengthSpinner.setModel(new SpinnerNumberModel(15, 15, 1000, 5));
@@ -44,5 +46,21 @@ public class ConfigurationPanel {
 
     public void setTestFilesDisabled(boolean value) {
         testFilesDisabled.setSelected(value);
+    }
+
+    public boolean getJavaSearchEnabled() {
+        return javaSearchEnabled.isSelected();
+    }
+
+    public void setJavaSearchEnabled(boolean value) {
+        javaSearchEnabled.setSelected(value);
+    }
+
+    public boolean getKotlinSearchEnabled() {
+        return kotlinSearchEnabled.isSelected();
+    }
+
+    public void setKotlinSearchEnabled(boolean value) {
+        kotlinSearchEnabled.setSelected(value);
     }
 }

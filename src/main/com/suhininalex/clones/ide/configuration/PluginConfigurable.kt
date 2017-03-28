@@ -3,8 +3,8 @@ package com.suhininalex.clones.ide.configuration
 import com.intellij.openapi.options.Configurable
 import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.utils.CurrentProject
+import com.suhininalex.clones.core.utils.plus
 import javax.swing.*
-
 
 class PluginConfigurable : Configurable {
     var configurationPanel: ConfigurationPanel? = null
@@ -17,6 +17,8 @@ class PluginConfigurable : Configurable {
             || PluginSettings.enabledForProject != enableForThisProject
             || PluginSettings.minCloneLength != minimalCloneLength
             || PluginSettings.disableTestFolder != testFilesDisabled
+            || PluginSettings.javaSearchEnabled != javaSearchEnabled
+            || PluginSettings.kotlinSearchEnabled != kotlinSearchEnabled
         }
 
     override fun disposeUIResources() {
@@ -28,19 +30,17 @@ class PluginConfigurable : Configurable {
 
     override fun apply() {
         configurationPanel?.apply {
-            if (enableForThisProject && ! PluginSettings.enabledForProject) { //true -> false
-                PluginSettings.enabledForProject = enableForThisProject
-                CurrentProject?.cloneManager?.initialize()
-            } else if (PluginSettings.enabledForProject && ! enableForThisProject){ //false -> true
-                PluginSettings.enabledForProject = enableForThisProject
-                CurrentProject?.cloneManager?.cancel()
+            val initIsNeeded =   ! PluginSettings.enabledForProject && enableForThisProject ||
+                                 PluginSettings.disableTestFolder != testFilesDisabled ||
+                                 PluginSettings.javaSearchEnabled != javaSearchEnabled ||
+                                 PluginSettings.kotlinSearchEnabled != kotlinSearchEnabled
+            val cancelIsNeeded = PluginSettings.enabledForProject && ! enableForThisProject
+
+            saveSettings()
+            CurrentProject?.cloneManager?.run {
+                if (cancelIsNeeded) cancel()
+                else if (initIsNeeded) initialize()
             }
-            if (PluginSettings.disableTestFolder != testFilesDisabled) {
-                PluginSettings.disableTestFolder = testFilesDisabled
-                CurrentProject?.cloneManager?.initialize()
-            }
-            PluginSettings.coverageSkipFilter = skipSelfCoverageFiltration
-            PluginSettings.minCloneLength = minimalCloneLength
         }
     }
 
@@ -50,14 +50,30 @@ class PluginConfigurable : Configurable {
     }
 
     override fun reset() {
+        loadSettings()
+    }
+
+    override fun getHelpTopic(): String = "help.find-cloneClasses"
+
+    private fun loadSettings(){
         configurationPanel?.apply {
             skipSelfCoverageFiltration = PluginSettings.coverageSkipFilter
             minimalCloneLength = PluginSettings.minCloneLength
             enableForThisProject = PluginSettings.enabledForProject
             testFilesDisabled = PluginSettings.disableTestFolder
+            javaSearchEnabled = PluginSettings.javaSearchEnabled
+            kotlinSearchEnabled = PluginSettings.kotlinSearchEnabled
         }
     }
 
-    override fun getHelpTopic(): String = "help.find-cloneClasses"
-
+    private fun saveSettings(){
+        configurationPanel?.apply {
+            PluginSettings.coverageSkipFilter = skipSelfCoverageFiltration
+            PluginSettings.minCloneLength = minimalCloneLength
+            PluginSettings.enabledForProject = enableForThisProject
+            PluginSettings.disableTestFolder = testFilesDisabled
+            PluginSettings.javaSearchEnabled = javaSearchEnabled
+            PluginSettings.kotlinSearchEnabled = kotlinSearchEnabled
+        }
+    }
 }

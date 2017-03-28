@@ -11,6 +11,8 @@ object PluginSettings: IdeaSettings(nameSpace = "clone_finder") {
         val coverageSkipFilter = 70
         val enabledForProject = true
         val disableTestFolder = false
+        val kotlinSearchEnabled = true
+        val javaSearchEnabled = true
     }
 
     var minCloneLength by IntProperty(defaults.minCloneLength)
@@ -20,6 +22,10 @@ object PluginSettings: IdeaSettings(nameSpace = "clone_finder") {
     var enabledForProject by BooleanProperty(defaults.enabledForProject, projectScope = true)
 
     var disableTestFolder by BooleanProperty(defaults.disableTestFolder)
+
+    var kotlinSearchEnabled by BooleanProperty(defaults.kotlinSearchEnabled)
+
+    var javaSearchEnabled by BooleanProperty(defaults.javaSearchEnabled)
 
     fun reset(){
         minCloneLength = defaults.minCloneLength

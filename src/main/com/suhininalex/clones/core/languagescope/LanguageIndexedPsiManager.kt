@@ -8,9 +8,8 @@ object LanguageIndexedPsiManager {
 
     private val indexedPsiDefiners = HashMap<String, IndexedPsiDefiner>()
 
-    init {
-        registerNewLanguage(JavaIndexedPsiDefiner())
-        registerNewLanguage(KtIndexedPsiDefiner())
+    fun clear() {
+        indexedPsiDefiners.clear()
     }
 
     fun getIndexedPsiDefiner(psiElement: PsiElement): IndexedPsiDefiner? =

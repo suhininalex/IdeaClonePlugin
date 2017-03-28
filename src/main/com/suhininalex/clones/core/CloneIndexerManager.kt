@@ -3,6 +3,8 @@ package com.suhininalex.clones.core
 import com.intellij.openapi.project.Project
 import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
+import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
@@ -26,16 +28,17 @@ class CloneIndexerManager(val project: Project){
     var instance: CloneIndexer = CloneIndexer()
         private set
 
-    fun cancel(){
+    fun cancel(): Unit = synchronized(this) {
         PluginSettings.enabledForProject = false
         instance = CloneIndexer()
         initialized = false
     }
 
-    fun initialize(){
+    fun initialize(): Unit = synchronized(this){
 
         initialized = false
         instance = CloneIndexer()
+        LanguageIndexedPsiManager.initialize()
 
         if (! PluginSettings.enabledForProject) return
 
@@ -54,3 +57,8 @@ class CloneIndexerManager(val project: Project){
     }
 }
 
+private fun LanguageIndexedPsiManager.initialize(){
+    clear()
+    if (PluginSettings.javaSearchEnabled) registerNewLanguage(JavaIndexedPsiDefiner())
+    if (PluginSettings.kotlinSearchEnabled) registerNewLanguage(KtIndexedPsiDefiner())
+}
