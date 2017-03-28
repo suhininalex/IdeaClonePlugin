@@ -1,21 +1,11 @@
 package com.suhininalex.clones.ide.toolwindow
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowAnchor
-import com.intellij.psi.PsiManager
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.content.Content
-import com.intellij.ui.content.ContentManagerListener
 import com.intellij.ui.treeStructure.Tree
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.utils.*
-import com.suhininalex.clones.ide.configuration.PluginLabels
-import java.awt.EventQueue
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
-import kotlin.properties.Delegates
 
 class CloneTreeView : Tree {
 
