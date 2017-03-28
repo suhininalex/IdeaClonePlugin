@@ -5,9 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.suhininalex.clones.core.cloneManager
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.postprocessing.*
-import com.suhininalex.clones.core.utils.method
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
 import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
