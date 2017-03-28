@@ -39,7 +39,7 @@ class CloneTreeView : Tree {
     }
 
     private val mouseListener = doubleClickListener {
-        val clickedElement = getSelectionModel().selectionPath.lastPathComponent
+        val clickedElement = getSelectionModel()?.selectionPath?.lastPathComponent
         if (clickedElement is ViewClone) {
             clickedElement.navigateToSource()
         }
