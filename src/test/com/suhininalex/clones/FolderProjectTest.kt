@@ -7,7 +7,6 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
-import com.suhininalex.clones.core.utils.childrenMethods
 import com.suhininalex.clones.core.utils.findTokens
 import kotlin.properties.Delegates
 
