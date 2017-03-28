@@ -19,13 +19,6 @@ import nl.komponents.kovenant.deferred
 import java.awt.EventQueue
 import java.lang.Exception
 
-val PsiMethod.stringId: String
-    get() =
-            containingFile.containingDirectory.name + "." +
-            containingClass!!.name + "." +
-            name + "." +
-            parameterList;
-
 val Application: Application
     get() = ApplicationManager.getApplication()
 
@@ -155,9 +148,6 @@ val PsiElement?.method: PsiMethod?
         } else {
             PsiTreeUtil.getParentOfType(this, PsiMethod::class.java)
         }
-
-val PsiElement.childrenMethods: Collection<PsiMethod>
-    get() = PsiTreeUtil.findChildrenOfType(this, PsiMethod::class.java)
 
 val CurrentProject: Project?
     get() =
