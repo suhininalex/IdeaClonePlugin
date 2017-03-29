@@ -9,17 +9,14 @@ import org.jetbrains.kotlin.cfg.pseudocode.containingDeclarationForPseudocode
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
-import org.jetbrains.kotlin.psi.psiUtil.containingClass
 
 class KtIndexedPropertySequence(val ktPropertyAccessor: KtPropertyAccessor): IndexedSequence {
 
     override val sequence: Sequence<Token>
         get() = ktPropertyAccessor.toSequence().map(::Token)
 
-    override val id: String
-        get() = with (ktPropertyAccessor) {
-            pathId + property.name + ":" + if (isGetter) "get" else "set"
-        }
+    override val id: Int
+        get() = System.identityHashCode(ktPropertyAccessor)
 }
 
 class KtIndexedFunSequence(val ktFunction: KtFunction): IndexedSequence {
@@ -27,10 +24,8 @@ class KtIndexedFunSequence(val ktFunction: KtFunction): IndexedSequence {
     override val sequence: Sequence<Token>
         get() = ktFunction.bodyExpression?.toSequence()?.map(::Token) ?: emptySequence()
 
-    override val id: String
-        get() = with (ktFunction) {
-            pathId + name + ":" + this.valueParameters.map { it.text }
-        }
+    override val id: Int
+        get() = System.identityHashCode(ktFunction)
 }
 
 private fun PsiElement.toSequence(): Sequence<PsiElement> =

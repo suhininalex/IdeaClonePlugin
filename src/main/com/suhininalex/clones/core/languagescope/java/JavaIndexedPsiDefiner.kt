@@ -18,7 +18,7 @@ class JavaIndexedPsiDefiner : IndexedPsiDefiner {
         psiElement is PsiClass
 
     override fun createIndexedSequence(psiElement: PsiElement): IndexedSequence {
-        require(isIndexed(psiElement))
+        require(isIndexedElement(psiElement))
         return JavaIndexedSequence(psiElement as PsiMethod)
     }
 

@@ -9,5 +9,5 @@ interface IndexedSequence {
     /**
      * Unique id for sequence based on path
      */
-    val id: String
+    val id: Int
 }

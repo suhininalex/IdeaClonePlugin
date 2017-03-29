@@ -13,7 +13,7 @@ class ViewNodeInvalidator(val view: CloneTreeView) {
     /**
      * Map IndexedSequence.id to ViewClone
      */
-    private val sequenceClones: Map<String?, List<ViewClone>> =
+    private val sequenceClones: Map<Int?, List<ViewClone>> =
             view.root.allNodes().filterIsInstance<ViewClone>().groupBy { it.clone.firstPsi.indexedSequence?.id }
 
     fun invalidateClone(psiElement: PsiElement){

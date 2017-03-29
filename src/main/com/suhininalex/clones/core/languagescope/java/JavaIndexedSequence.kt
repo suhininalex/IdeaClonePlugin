@@ -11,11 +11,6 @@ class JavaIndexedSequence(val psiMethod: PsiMethod): IndexedSequence {
     override val sequence: Sequence<Token>
         get() = psiMethod.body?.asSequence()?.filterNot(::isNoiseElement)?.map(::Token) ?: emptySequence()
 
-    override val id: String
-        get() = with (psiMethod) {
-                    containingFile.containingDirectory.name + "." +
-                    containingClass!!.name + "." +
-                    name + "." +
-                    parameterList
-                }
+    override val id: Int
+        get() = System.identityHashCode(psiMethod)
 }

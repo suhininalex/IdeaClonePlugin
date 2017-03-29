@@ -1,7 +1,5 @@
 package com.suhininalex.clones.core
 
-import com.intellij.psi.PsiMethod
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.structures.Token
 import com.suhininalex.clones.core.structures.TreeCloneClass
@@ -16,7 +14,7 @@ import kotlin.concurrent.write
 
 class CloneIndexer {
 
-    internal val methodIds: MutableMap<String, Long> = HashMap()
+    internal val methodIds: MutableMap<Int, Long> = HashMap()
     internal val tree = SuffixTree<Token>()
     internal val rwLock = ReentrantReadWriteLock()
 
