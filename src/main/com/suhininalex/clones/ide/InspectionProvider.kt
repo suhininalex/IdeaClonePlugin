@@ -13,7 +13,11 @@ import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 
-class InspectionProvider : BaseJavaLocalInspectionTool() {
+class InspectionProvider : LocalInspectionTool() {
+
+    override fun processFile(file: PsiFile, manager: InspectionManager): MutableList<ProblemDescriptor> {
+        return super.processFile(file, manager)
+    }
 
     override fun getGroupDisplayName() = PluginLabels.getLabel("inspection-group-display-name")
 
