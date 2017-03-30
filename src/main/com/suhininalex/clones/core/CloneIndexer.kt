@@ -50,7 +50,7 @@ class CloneIndexer {
 }
 
 fun SuffixTree<Token>.getAllCloneClasses(minTokenLength: Int): Sequence<TreeCloneClass>  =
-        root.depthFirstTraverse { it.edges.asSequence().map { it.terminal }.filter { it != null } }
+        root.depthFirstTraverse { it.edges.asSequence().mapNotNull { it.terminal }}
                 .map(::TreeCloneClass)
                 .filter { it.length > minTokenLength }
 
