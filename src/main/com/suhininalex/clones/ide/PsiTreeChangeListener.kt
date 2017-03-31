@@ -7,7 +7,6 @@ import com.intellij.psi.*
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.cloneManager
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedSequence
 import com.suhininalex.clones.core.structures.IndexedSequence
 
 class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
@@ -32,6 +31,14 @@ class TreeChangeListener(val project: Project): PsiTreeChangeAdapter() {
 
     override fun childReplaced(event: PsiTreeChangeEvent) =
         addInvolvedSequences(event)
+
+    override fun beforeChildrenChange(event: PsiTreeChangeEvent) {
+        removeInvolvedSequences(event)
+    }
+
+    override fun childrenChanged(event: PsiTreeChangeEvent) {
+        addInvolvedSequences(event)
+    }
 
     private fun addInvolvedSequences(event: PsiTreeChangeEvent){
         findInvolvedIndexedSequences(event.parent).forEach {
