@@ -42,7 +42,8 @@ private fun PsiElement.findMaxChildBeforeOffset(offset: Int): PsiElement? {
  */
 private fun PsiElement.findParentWithSibling(): PsiElement? {
     var current = this
-    while (current.parent.nextSibling != null && current.parent !is PsiFile) {
+    while (current.nextSibling == null){
+        if (current.parent == null || current.parent is PsiFile) return null
         current = current.parent
     }
     return current
