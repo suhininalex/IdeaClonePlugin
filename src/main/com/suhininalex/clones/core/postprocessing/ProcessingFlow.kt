@@ -34,4 +34,4 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     }
 
 fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
-    getAllMethodClasses(indexedSequence).toList().filterSubClassClones().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()

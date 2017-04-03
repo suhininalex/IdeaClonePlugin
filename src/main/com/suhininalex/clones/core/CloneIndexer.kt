@@ -43,7 +43,7 @@ class CloneIndexer {
         tree.getAllCloneClasses(PluginSettings.minCloneLength)
     }
 
-    fun getAllMethodClasses(indexedSequence: IndexedSequence): Sequence<TreeCloneClass> = rwLock.read {
+    fun getAllSequenceClasses(indexedSequence: IndexedSequence): Sequence<TreeCloneClass> = rwLock.read {
         val numberId = methodIds[indexedSequence.id] ?: return emptySequence()
         return tree.getAllSequenceClasses(numberId, PluginSettings.minCloneLength).asSequence()
     }
