@@ -8,6 +8,7 @@ import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.structures.IndexedSequence
 import java.awt.EventQueue
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginLabels
@@ -15,50 +16,49 @@ import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 
 class InspectionProvider : LocalInspectionTool() {
 
-    override fun processFile(file: PsiFile, manager: InspectionManager): MutableList<ProblemDescriptor> {
-        return super.processFile(file, manager)
-    }
-
     override fun getGroupDisplayName() = PluginLabels.getLabel("inspection-group-display-name")
 
     override fun getShortName() = "CloneDetection"
 
     override fun getDisplayName() = PluginLabels.getLabel("inspection-display-name")
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            CloneInspectionVisitor(holder)
-
     override fun isInitialized(): Boolean =
             CurrentProject?.cloneManager?.initialized ?: false
 
-}
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
+        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(file) ?: return emptyArray()
+        val inspections = indexedPsiDefiner.getIndexedChildren(file).flatMap { element ->
+            getInspectionsFromIndexedElement(manager, element, indexedPsiDefiner.createIndexedSequence(element))
+        }
+        return inspections.toTypedArray()
+    }
 
-class CloneInspectionVisitor(val holder: ProblemsHolder) : PsiElementVisitor() {
-
-    override fun visitElement(element: PsiElement) {
-
-        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(element) ?: return
-        if (! indexedPsiDefiner.isIndexed(element)) return
-
-        val sequence = indexedPsiDefiner.createIndexedSequence(element)
+    private fun getInspectionsFromIndexedElement(manager: InspectionManager, element: PsiElement, sequence: IndexedSequence): List<ProblemDescriptor> {
         try {
             val cloneManager = element.project.cloneManager.instance
-            val result = cloneManager.getSequenceFilteredClones(sequence)
-            result.forEach { cloneClass ->
-                cloneClass.clones.filter { it.firstPsi in element  }.forEach { clone ->
-                    holder.registerProblem(
-                            element,
-                            PluginLabels.getLabel("inspection-problem-description"),
-                            ProblemHighlightType.WEAK_WARNING,
-                            clone.getTextRangeInIndexedFragment(),
-                            CloneReport(cloneClass, clone)
-                    )
+            return cloneManager.getSequenceFilteredClones(sequence)
+                .flatMap { cloneClass ->
+                    cloneClass.clones
+                            .filter { it.firstPsi in element }
+                            .map { clone -> manager.createProblemDescriptor(element, cloneClass, clone) }
+                            .toList()
                 }
-            }
         } catch (e: PsiInvalidElementAccessException){
             // just drop it if clone range already is invalid
+            return emptyList()
         }
     }
+
+    private fun InspectionManager.createProblemDescriptor(element: PsiElement, cloneClass: CloneClass, clone: Clone): ProblemDescriptor =
+        createProblemDescriptor(
+            element,
+            clone.getTextRangeInIndexedFragment(),
+            PluginLabels.getLabel("inspection-problem-description"),
+            ProblemHighlightType.WEAK_WARNING,
+            true, //is on the fly
+            CloneReport(cloneClass, clone)
+        )
+
 }
 
 operator fun PsiElement.contains(element: PsiElement): Boolean =

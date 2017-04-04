@@ -27,7 +27,8 @@
   <extensions defaultExtensionNs="com.intellij">
       <localInspection groupPath="Java" shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
-                       level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"/>
+                       level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"
+                        runForWholeFile="true"/>
       <postStartupActivity implementation="com.suhininalex.clones.ide.PluginInitializer" />
       <applicationConfigurable instance="com.suhininalex.clones.ide.configuration.PluginConfigurable" groupId="tools" />
   </extensions>
