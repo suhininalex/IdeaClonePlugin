@@ -1,7 +1,6 @@
 package com.suhininalex.clones.core
 
 import com.intellij.openapi.project.Project
-import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
 import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
@@ -47,10 +46,12 @@ class CloneIndexerManager(val project: Project){
             project.allPsiFiles
         }.then {
             it.withProgressBar(initializingLabel).foreach {
-                Application.runReadAction {
-                    val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
-                    indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
-                        instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
+                Application.readAction {
+                    if (CurrentProject != null)  {
+                        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
+                        indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
+                            instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
+                        }
                     }
                 }
             }.then {
