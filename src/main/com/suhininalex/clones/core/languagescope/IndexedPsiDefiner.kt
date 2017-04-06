@@ -8,6 +8,10 @@ import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.leafTraverse
 import com.suhininalex.clones.ide.configuration.PluginSettings
 
+/**
+ * Defines files to be indexed
+ * Provides file type, PSI Element, possible parents of the Element witch must be indexed
+ */
 interface IndexedPsiDefiner {
 
     /**
@@ -23,7 +27,7 @@ interface IndexedPsiDefiner {
     fun isIndexedElement(psiElement: PsiElement): Boolean
 
     /**
-     * Defines parents of indexed elements
+     * Defines parents of indexed elements (excluding PsiFile and above)
      * @see com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
      */
     fun isIndexedParent(psiElement: PsiElement): Boolean
@@ -31,14 +35,18 @@ interface IndexedPsiDefiner {
     fun createIndexedSequence(psiElement: PsiElement): IndexedSequence
 
     /**
-     * Alike isIndexedElement but it also checks plugin settings
+     * The same as isIndexedElement but also checks plugin settings
      * @see isIndexedElement
      */
     fun isIndexed(psiElement: PsiElement): Boolean =
-        isIndexedElement(psiElement) && ! (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement.containingFile))
+        isIndexedElement(psiElement) && ! (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement))
+    /* TODO check why these functions don't work well (they are faster)
+       GeneratedSourcesFilter.isGeneratedSourceByAnyFilter
+       TestSourcesFilter.isTestSources(psiElement.containingFile.virtualFile, psiElement.project)
+    */
 
     /**
-     * @return first indexed parent element
+     * @return first indexed parent of the element
      */
     fun getIndexedParent(psiElement: PsiElement): PsiElement? {
         var current = psiElement
