@@ -12,13 +12,17 @@ import org.jetbrains.kotlin.lexer.KtTokens
 fun PsiRange.cropBadTokens(): Clone {
     var left = firstPsi
     var right = lastPsi
-    while (isUnclosedLeftBrace(left) || left in badTokens) {
+    while (isUnclosedLeftBrace(left) || left in badTokens || left in rBraces) {
         left = left.nextSibling ?: break
     }
     while (isUnclosedRightBrace(right) || right in badTokens) {
         right = right.prevSibling ?: break
     }
-    return RangeClone(left, right)
+    return if (left.textRange.startOffset < right.textRange.startOffset){
+        RangeClone(left, right)
+    } else {
+        RangeClone(firstPsi, lastPsi)
+    }
 }
 
 private fun PsiRange.isUnclosedLeftBrace(psiElement: PsiElement): Boolean =
