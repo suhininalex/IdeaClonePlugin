@@ -6,7 +6,8 @@ import com.suhininalex.clones.core.structures.PsiRange
 import com.suhininalex.clones.core.structures.RangeClone
 
 /**
- * Only sequence of siblings is interesting as a clone
+ * Only sequences of siblings is interesting as a clone
+ * Others aren't able to be refactored (at least in java)
  */
 fun PsiRange.extractSiblingSequences(): Sequence<PsiRange> {
     val maxEndOffset = lastPsi.textRange.endOffset
