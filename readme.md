@@ -4,7 +4,7 @@ This is plugin for IDE IntelliJ IDEA witch can be used to find duplicated code i
 
 **Main features**
 
-* Possibility to looking for exact clones and clones with renamed tokens 
+* Possibility to look for exact clones and clones with renamed tokens 
 * High speed analyzing
 * Ability to provide clone inspections on-the-fly
 
