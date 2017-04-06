@@ -6,10 +6,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
-import com.suhininalex.clones.core.structures.Token
-import com.suhininalex.clones.core.structures.TreeCloneClass
-import com.suhininalex.clones.core.structures.Clone
-import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.structures.*
 import com.suhininalex.suffixtree.Edge
 import java.lang.IllegalArgumentException
 
@@ -31,6 +28,9 @@ fun Clone.getTextRangeInIndexedFragment(): TextRange {
 
 val Clone.textRange: TextRange
     get() = TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
+
+val Clone.hasValidElements: Boolean
+    get() = firstPsi.isValid && lastPsi.isValid
 
 fun Clone.printText(){
     val range = TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)

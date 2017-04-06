@@ -18,7 +18,7 @@ class ViewNodeInvalidator(val view: CloneTreeView) {
 
     fun invalidateClone(psiElement: PsiElement){
         sequenceClones[psiElement.indexedSequence?.id]
-            ?.filter { it.clone.textRange intersects psiElement.textRange }
+            ?.filter { ! it.clone.hasValidElements || it.clone.textRange intersects psiElement.textRange }
             ?.forEach{ invalidateView(it) }
     }
 
