@@ -1,10 +1,8 @@
 package com.suhininalex.clones.core.utils
 
-import com.suhininalex.suffixtree.Edge
-import com.suhininalex.suffixtree.Node
-import com.suhininalex.suffixtree.SuffixTree
+import com.suhininalex.suffixtree.*
 
-fun <T> suffixTree(sequence: List<T>): SuffixTree<T> =
+fun <T: Comparable<T>> suffixTree(sequence: List<T>): SuffixTree<T> =
         SuffixTree<T>().apply {
             addSequence(sequence)
         }

@@ -1,10 +1,13 @@
 package com.suhininalex.clones.core.languagescope
 
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.roots.GeneratedSourcesFilter
+import com.intellij.openapi.roots.TestSourcesFilter
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.structures.IndexedSequence
+import com.suhininalex.clones.core.utils.isTestFile
 import com.suhininalex.clones.core.utils.leafTraverse
 import com.suhininalex.clones.ide.configuration.PluginSettings
 
@@ -38,12 +41,17 @@ interface IndexedPsiDefiner {
      * The same as isIndexedElement but also checks plugin settings
      * @see isIndexedElement
      */
-    fun isIndexed(psiElement: PsiElement): Boolean =
-        isIndexedElement(psiElement) && ! (PluginSettings.disableTestFolder && TestFinderHelper.isTest(psiElement))
-    /* TODO check why these functions don't work well (they are faster)
-       GeneratedSourcesFilter.isGeneratedSourceByAnyFilter
-       TestSourcesFilter.isTestSources(psiElement.containingFile.virtualFile, psiElement.project)
-    */
+    fun isIndexed(psiElement: PsiElement): Boolean {
+        return  isIndexedElement(psiElement) &&  ! isDisabledTest(psiElement) //! isGenerated(psiElement)  &&
+    }
+
+    fun isGenerated(psiElement: PsiElement): Boolean{
+        return GeneratedSourcesFilter.isGeneratedSourceByAnyFilter(psiElement.containingFile.virtualFile, psiElement.project)
+    }
+
+    fun isDisabledTest(psiElement: PsiElement): Boolean {
+        return PluginSettings.disableTestFolder && psiElement.containingFile.isTestFile()
+    }
 
     /**
      * @return first indexed parent of the element

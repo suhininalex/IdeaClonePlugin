@@ -1,5 +1,7 @@
 package com.suhininalex.clones.core
 
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
@@ -43,22 +45,26 @@ class CloneIndexerManager(val project: Project){
         if (! PluginSettings.enabledForProject) return
 
         task {
-            project.allPsiFiles
-        }.then {
-            it.withProgressBar(initializingLabel).foreach {
-                Application.readAction {
-                    if (CurrentProject != null)  {
-                        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
-                        indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
-                            instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
+             project.sourceFiles to project.sourceFiles.count()
+        }.then { (files, fileNumber) ->
+            ProgressManager.getInstance().backgroundTask(initializingLabel, cancelAble = false) { progress ->
+                files.forEachIndexed { i, it ->
+                    progress.fraction = i.toDouble() / fileNumber
+                    progress.text2 = it.name
+                    Application.readAction {
+                        if (CurrentProject != null)  {
+                            val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(it)
+                            indexedPsiDefiner?.getIndexedChildren(it)?.forEach {
+                                instance.addSequence(indexedPsiDefiner.createIndexedSequence(it))
+                            }
                         }
                     }
                 }
-            }.then {
-                initialized = true
-            }.fail {
-                cancel()
             }
+        }.then {
+            initialized = true
+        }.fail {
+            cancel()
         }
     }
 }

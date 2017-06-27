@@ -11,11 +11,11 @@ import com.suhininalex.suffixtree.Edge
 import java.lang.IllegalArgumentException
 
 @Suppress("UNCHECKED_CAST")
-fun Edge.asSequence(): Sequence<Token> {
+fun Edge.asSequence(): Sequence<SourceToken> {
     if (isTerminal) {
         throw IllegalArgumentException("You should never invoke this method for terminating edge.")
     } else {
-        return (sequence.subList(begin, end + 1) as MutableList<Token>).asSequence()
+        return (sequence.subList(begin, end + 1) as MutableList<SourceToken>).asSequence()
     }
 }
 

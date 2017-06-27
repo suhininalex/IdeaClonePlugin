@@ -3,7 +3,7 @@ package com.suhininalex.clones.core.postprocessing
 import com.suhininalex.clones.core.*
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
-import com.suhininalex.clones.core.structures.Token
+import com.suhininalex.clones.core.structures.SourceToken
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginSettings
 import com.suhininalex.suffixtree.SuffixTree
@@ -36,7 +36,7 @@ private fun Clone.scoreSelfCoverage(): Double {
 
      val sequence = tokenSequence().toList()
      val indexMap = sequence.mapIndexed { i, psiElement ->  psiElement to i}.toMap()
-     val tree = suffixTree(sequence.map(::Token).toList())
+     val tree = suffixTree(sequence.map(::SourceToken).toList())
 
      if (tree.haveTooMuchClones(sequence.size)) return 1.0
 
@@ -50,12 +50,11 @@ private fun Clone.scoreSelfCoverage(): Double {
      return length.toDouble()/sequence.size
 }
 
-private fun SuffixTree<Token>.haveTooMuchClones(sourceLength: Int) =
+private fun SuffixTree<SourceToken>.haveTooMuchClones(sourceLength: Int) =
     getAllCloneClasses(10).drop(sourceLength*PluginSettings.coverageSkipFilter/100).firstOrNull() != null
 
 
 private fun CloneClass.scoreSameMethod(): Double {
-    assert(size > 1)
     val mostPopularMethodNumber = clones.map{ it.firstPsi.method }.groupBy { it }.map { it.value.size }.max()
     return (mostPopularMethodNumber!!-1)/(size-1).toDouble()
 }

@@ -7,6 +7,8 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.roots.TestSourcesFilter
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.*
@@ -24,18 +26,30 @@ val Application: Application
 fun <T> Application.readAction(action: () -> T): T =
     Application.runReadAction(Computable(action))
 
-val Project.allPsiFiles: List<PsiFile>
+val Project.sourceFiles: Sequence<PsiFile>
     get() = Application.readAction {
         PsiManager.getInstance(this).findDirectory(baseDir)!!
-            .depthFirstTraverse { it.subdirectories.asSequence() }
-            .flatMap { it.files.asSequence() }
-            .toList()
+            .depthFirstTraverse { Application.readAction { it.subdirectories.asSequence() } }
+            .flatMap { Application.readAction { it.files.asSequence() } }
+            .filter { Application.readAction { it.isSourceFile() } }
     }
+
+val Project.fileIndex: ProjectFileIndex
+        get() {
+            return ProjectFileIndex.getInstance(this)
+        }
+
+fun PsiFile.isSourceFile(): Boolean =
+        project.fileIndex.isContentSourceFile(virtualFile)
+
+fun PsiFile.isTestFile(): Boolean =
+        TestSourcesFilter.isTestSources(virtualFile, project)
+
 
 fun PsiElement.findTokens(filter: TokenSet): Sequence<PsiElement> =
         this.leafTraverse({it in filter}) {it.children.asSequence()}
 
-operator fun TokenSet.contains(element: PsiElement): Boolean = this.contains(element.node?.elementType)
+operator fun TokenSet.contains(element: PsiElement?): Boolean = this.contains(element?.node?.elementType)
 
 fun PsiElement.asSequence(): Sequence<PsiElement> =
         this.depthFirstTraverse { it.children.asSequence() }.filter { it.children.isEmpty() }

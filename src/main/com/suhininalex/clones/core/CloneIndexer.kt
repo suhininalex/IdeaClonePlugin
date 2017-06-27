@@ -1,7 +1,7 @@
 package com.suhininalex.clones.core
 
 import com.suhininalex.clones.core.structures.IndexedSequence
-import com.suhininalex.clones.core.structures.Token
+import com.suhininalex.clones.core.structures.SourceToken
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
 import com.suhininalex.clones.ide.configuration.PluginSettings
@@ -15,7 +15,7 @@ import kotlin.concurrent.write
 class CloneIndexer {
 
     internal val methodIds: MutableMap<Int, Long> = HashMap()
-    internal val tree = SuffixTree<Token>()
+    internal val tree = SuffixTree<SourceToken>()
     internal val rwLock = ReentrantReadWriteLock()
 
     fun addSequence(indexedSequence: IndexedSequence) = rwLock.write {
@@ -49,12 +49,12 @@ class CloneIndexer {
     }
 }
 
-fun SuffixTree<Token>.getAllCloneClasses(minTokenLength: Int): Sequence<TreeCloneClass>  =
-        root.depthFirstTraverse { it.edges.asSequence().mapNotNull { it.terminal }}
-                .map(::TreeCloneClass)
-                .filter { it.length > minTokenLength }
+fun SuffixTree<SourceToken>.getAllCloneClasses(minTokenLength: Int): Sequence<TreeCloneClass> =
+     root.depthFirstTraverse { it.edges.asSequence().mapNotNull { it.terminal }}
+             .map(::TreeCloneClass)
+             .filter { it.length > minTokenLength }
 
-fun SuffixTree<Token>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequence<TreeCloneClass>  {
+fun SuffixTree<SourceToken>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequence<TreeCloneClass>  {
     val classes = LinkedList<TreeCloneClass>()
     val visitedNodes = HashSet<Node>()
     for (branchNode in this.getAllLastSequenceNodes(id)) {

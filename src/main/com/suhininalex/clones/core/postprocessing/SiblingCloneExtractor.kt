@@ -2,7 +2,6 @@ package com.suhininalex.clones.core.postprocessing
 
 import com.intellij.openapi.util.Computable
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.suhininalex.clones.core.postprocessing.helpers.cropBadTokens
 import com.suhininalex.clones.core.postprocessing.helpers.extractSiblingSequences
 import com.suhininalex.clones.core.structures.*

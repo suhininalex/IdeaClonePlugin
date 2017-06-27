@@ -26,13 +26,11 @@ class TreeCloneClass(val treeNode: Node): CloneClass {
 
     override val length = treeNode.lengthToRoot()
 
-    val isEmpty = clones.isEmpty()
-
     private fun Edge.getTerminalsWithOffset(): Sequence<Pair<Edge, Int>> =
         Pair(this, 0).leafTraverse ({it.first.terminal==null}) {
             val offset = it.first.length + it.second
-            it.first.terminal.edges.asSequence().map { Pair(it, offset) }
+            it.first.terminal!!.edges.asSequence().map { Pair(it, offset) }
         }
 
-    private fun Edge.getFromSequence(pos: Int) = sequence[pos] as Token
+    private fun Edge.getFromSequence(pos: Int) = sequence[pos] as SourceToken
 }
