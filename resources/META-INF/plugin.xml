@@ -19,12 +19,10 @@
       <action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">
           <add-to-group group-id="AnalyzeMenu" anchor="last"/>
       </action>
-      <action id="ShowMethodClonesAction" class="com.suhininalex.clones.ide.ShowMethodClonesAction" text="Find clones in method" description="desc">
-          <add-to-group group-id="AnalyzeMenu" anchor="last"/>
-      </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
+      <fileBasedIndex implementation="com.suhininalex.clones.ide.CloneFinderIndex" />
       <localInspection groupPath="Java" shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
                        level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"

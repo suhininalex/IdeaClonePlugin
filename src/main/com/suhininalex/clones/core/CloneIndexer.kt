@@ -12,11 +12,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class CloneIndexer {
+object CloneIndexer {
 
     internal val methodIds: MutableMap<Int, Long> = HashMap()
-    internal val tree = SuffixTree<SourceToken>()
+    internal var tree = SuffixTree<SourceToken>()
     internal val rwLock = ReentrantReadWriteLock()
+
+    fun clear() {
+        methodIds.clear()
+        tree = SuffixTree()
+    }
 
     fun addSequence(indexedSequence: IndexedSequence) = rwLock.write {
         addSequenceUnlocked(indexedSequence)
@@ -29,6 +34,7 @@ class CloneIndexer {
     private fun addSequenceUnlocked(indexedSequence: IndexedSequence) {
         if (indexedSequence.id in methodIds) return
         val sequence = indexedSequence.sequence.toList()
+        if (sequence.size < PluginSettings.minCloneLength) return //TODO remove from here
         val numberId = tree.addSequence(sequence)
         methodIds.put(indexedSequence.id, numberId)
     }

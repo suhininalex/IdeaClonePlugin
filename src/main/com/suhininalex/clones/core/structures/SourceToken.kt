@@ -15,8 +15,7 @@ class SourceToken(source: PsiElement) : Comparable<SourceToken> {
 
     val source: PsiElement
         get() {
-            val ast = PsiManager.getInstance(CurrentProject!!).findFile(file)!!.node
-            return ast.findLeafElementAt(offset)!!.psi
+            return PsiManager.getInstance(CurrentProject!!).findFile(file)!!.findElementAt(offset)!!
         }
 
     val nonAnonimized: Boolean

@@ -12,8 +12,6 @@ import kotlin.properties.Delegates
 
 open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTestCase() {
 
-    val cloneManager = CloneIndexer()
-
     var baseDirectoryPsi by Delegates.notNull<PsiDirectory>()
 
     override fun getTestDataPath() = testFolder
@@ -24,7 +22,7 @@ open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTe
         baseDirectoryPsi = myFixture.psiManager.findDirectory(directory)!!
         baseDirectoryPsi.findTokens(TokenSet.create(ElementType.METHOD)).forEach { method ->
             if (method is PsiMethod)
-                cloneManager.addSequence(JavaIndexedSequence(method))
+                CloneIndexer.addSequence(JavaIndexedSequence(method))
         }
     }
 

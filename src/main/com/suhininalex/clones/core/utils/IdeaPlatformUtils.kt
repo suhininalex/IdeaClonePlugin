@@ -61,7 +61,7 @@ private val javaTokenFilter = TokenSet.create(
 fun isNoiseElement(psiElement: PsiElement): Boolean =
     psiElement in javaTokenFilter || psiElement.textLength == 0
 
-class BackgroundTask<T>(val name: String, cancelAble: Boolean, private val task: (ProgressIndicator) -> T) : Task.Backgroundable(null, name, cancelAble){
+class BackgroundTask<T>(val name: String, cancelAble: Boolean, private val task: (ProgressIndicator) -> T) : Task.Modal(null, name, cancelAble){
     private val deferred = deferred<T, Exception>()
 
     val promise = deferred.promise

@@ -3,9 +3,11 @@ package com.suhininalex.clones.ide
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
-import com.suhininalex.clones.core.cloneManager
+import com.intellij.psi.search.EverythingGlobalScope
+import com.intellij.util.indexing.FileBasedIndex
+import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
-import com.suhininalex.clones.core.postprocessing.*
+import com.suhininalex.clones.core.postprocessing.getSequenceFilteredClones
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.IndexedSequence
@@ -22,21 +24,24 @@ class InspectionProvider : LocalInspectionTool() {
 
     override fun getDisplayName() = PluginLabels.getLabel("inspection-display-name")
 
-    override fun isInitialized(): Boolean =
-            CurrentProject?.cloneManager?.initialized ?: false
-
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
-        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(file) ?: return emptyArray()
-        val inspections = indexedPsiDefiner.getIndexedChildren(file).flatMap { element ->
-            getInspectionsFromIndexedElement(manager, element, indexedPsiDefiner.createIndexedSequence(element))
+        Logger.log("[Inspection] Processing file ${file.name}")
+        CloneFinderIndex.enshureUpToDate(file.project)
+        try {
+            val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(file) ?: return emptyArray()
+            val inspections = indexedPsiDefiner.getIndexedChildren(file).flatMap { element ->
+                getInspectionsFromIndexedElement(manager, element, indexedPsiDefiner.createIndexedSequence(element))
+            }
+            return inspections.toTypedArray()
+        } catch (e: Exception){
+            e.printStackTrace()
+            return emptyArray()
         }
-        return inspections.toTypedArray()
     }
 
     private fun getInspectionsFromIndexedElement(manager: InspectionManager, element: PsiElement, sequence: IndexedSequence): List<ProblemDescriptor> {
         try {
-            val cloneManager = element.project.cloneManager.instance
-            return cloneManager.getSequenceFilteredClones(sequence)
+            return CloneIndexer.getSequenceFilteredClones(sequence)
                 .flatMap { cloneClass ->
                     cloneClass.clones
                             .filter { it.firstPsi in element }

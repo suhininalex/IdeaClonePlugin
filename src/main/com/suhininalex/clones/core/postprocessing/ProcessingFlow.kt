@@ -20,7 +20,7 @@ val beforeFiltering = PluginLabels.getLabel("progressbar-filtering-before-filter
 
 fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     task {
-        ProgressManager.getInstance().backgroundTask(beforeFiltering){ getAllCloneClasses().toList() }.get()
+        ProgressManager.getInstance().backgroundTask(beforeFiltering){ getAllCloneClasses().toList().notLongestSequenceFilter() }.get()
     }.thenApply {
         withProgressBar(subClassFiltering).filterSubClassClones().get()
     }.thenApply {
@@ -34,4 +34,4 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     }
 
 fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
-    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().notLongestSequenceFilter().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()

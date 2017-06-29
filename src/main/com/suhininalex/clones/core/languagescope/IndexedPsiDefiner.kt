@@ -5,6 +5,7 @@ import com.intellij.openapi.roots.GeneratedSourcesFilter
 import com.intellij.openapi.roots.TestSourcesFilter
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.impl.source.PsiJavaFileImpl
 import com.intellij.testIntegration.TestFinderHelper
 import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.isTestFile
@@ -42,7 +43,7 @@ interface IndexedPsiDefiner {
      * @see isIndexedElement
      */
     fun isIndexed(psiElement: PsiElement): Boolean {
-        return  isIndexedElement(psiElement) &&  ! isDisabledTest(psiElement) //! isGenerated(psiElement)  &&
+        return isIndexedElement(psiElement) //&&  ! isDisabledTest(psiElement) //! isGenerated(psiElement)  &&
     }
 
     fun isGenerated(psiElement: PsiElement): Boolean{
