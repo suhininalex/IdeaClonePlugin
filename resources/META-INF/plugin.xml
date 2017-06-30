@@ -6,7 +6,7 @@
 
   <description>
       <![CDATA[
-            Detects project clones on-the-fly.<br>
+            Detects source clones on-the-fly.<br>
 
        ]]>
   </description>
@@ -23,7 +23,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <fileBasedIndex implementation="com.suhininalex.clones.ide.CloneFinderIndex" />
-      <localInspection groupPath="Java" shortName="CloneDetection"
+      <localInspection shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"
                        level="WARNING" implementationClass="com.suhininalex.clones.ide.InspectionProvider"
                         runForWholeFile="true"/>

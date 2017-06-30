@@ -20,10 +20,11 @@ fun Edge.asSequence(): Sequence<SourceToken> {
 }
 
 fun Clone.getTextRangeInIndexedFragment(): TextRange {
-    val indexedParent = LanguageIndexedPsiManager.getIndexedPsiDefiner(firstPsi)?.getIndexedParent(firstPsi)!!
-
-    val methodOffset = indexedParent.textRange.startOffset
-    return TextRange(firstPsi.textRange.startOffset - methodOffset, lastPsi.textRange.endOffset-methodOffset)
+    return TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
+//    val indexedParent = LanguageIndexedPsiManager.getIndexedPsiDefiner(firstPsi)?.getIndexedParent(firstPsi)!!
+//
+//    val methodOffset = indexedParent.textRange.startOffset
+//    return TextRange(firstPsi.textRange.startOffset - methodOffset, lastPsi.textRange.endOffset-methodOffset)
 }
 
 val Clone.textRange: TextRange

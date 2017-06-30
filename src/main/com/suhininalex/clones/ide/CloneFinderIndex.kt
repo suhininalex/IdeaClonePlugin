@@ -10,8 +10,6 @@ import com.intellij.util.io.EnumeratorIntegerDescriptor
 import com.intellij.util.io.KeyDescriptor
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
-import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
-import com.suhininalex.clones.core.utils.Logger
 import com.suhininalex.clones.core.utils.isSourceFile
 import com.suhininalex.clones.core.utils.isTestFile
 import com.suhininalex.clones.ide.configuration.PluginSettings
@@ -48,17 +46,11 @@ class CloneFinderIndex : ScalarIndexExtension<Int>(){
 
 }
 
-val indexedPsiDefiner = JavaIndexedPsiDefiner()
-
 private val cloneDataIndexer = DataIndexer<Int, Void, FileContent> { file ->
     val psiFile = PsiManager.getInstance(file.project).findFile(file.file)!!
     if (psiFile.isSourceFile() && !psiFile.isDisabledTest() && !psiFile.isGenerated()){
-        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(psiFile)
-        indexedPsiDefiner?.getIndexedChildren(psiFile)?.forEach {
-            val indexedSequence = indexedPsiDefiner.createIndexedSequence(it)
-            CloneIndexer.removeSequence(indexedSequence)
-            CloneIndexer.addSequence(indexedSequence)
-        }
+        CloneIndexer.removeFile(psiFile)
+        CloneIndexer.addFile(psiFile)
     }
     mutableMapOf()
 }

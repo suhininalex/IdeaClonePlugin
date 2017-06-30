@@ -20,10 +20,10 @@ open class FolderProjectTest(val testFolder: String) : LightCodeInsightFixtureTe
         super.setUp()
         val directory = myFixture.copyDirectoryToProject("/", "")
         baseDirectoryPsi = myFixture.psiManager.findDirectory(directory)!!
-        baseDirectoryPsi.findTokens(TokenSet.create(ElementType.METHOD)).forEach { method ->
-            if (method is PsiMethod)
-                CloneIndexer.addSequence(JavaIndexedSequence(method))
-        }
+//        baseDirectoryPsi.findTokens(TokenSet.create(ElementType.METHOD)).forEach { method ->
+//            if (method is PsiMethod)
+//                CloneIndexer.addSequence(JavaIndexedSequence(method))
+//        }
     }
 
 }

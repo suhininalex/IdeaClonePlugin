@@ -33,5 +33,5 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         throw it
     }
 
-fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
-    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().notLongestSequenceFilter().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+//fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
+//    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().notLongestSequenceFilter().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
