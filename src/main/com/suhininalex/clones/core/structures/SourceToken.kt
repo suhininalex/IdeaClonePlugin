@@ -23,6 +23,11 @@ class SourceToken(source: PsiElement) : Comparable<SourceToken> {
             return source.notNeedAnonimization()
         }
 
+    val isValid: Boolean
+        get() {
+            return file.isValid
+        }
+
     fun calculateValue(): Int {
         return if (nonAnonimized) {
             source.text.hashCode()

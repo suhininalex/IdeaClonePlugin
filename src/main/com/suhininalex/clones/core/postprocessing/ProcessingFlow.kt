@@ -1,6 +1,7 @@
 package com.suhininalex.clones.core.postprocessing
 
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.psi.PsiFile
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.structures.IndexedSequence
@@ -22,7 +23,7 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     task {
         ProgressManager.getInstance().backgroundTask(beforeFiltering){ getAllCloneClasses().toList().notLongestSequenceFilter() }.get()
     }.thenApply {
-        withProgressBar(subClassFiltering).filterSubClassClones().get()
+        withProgressBar(subClassFiltering).filterSubClassClones().get().validClonesFilter()
     }.thenApply {
         withProgressBar(siblingFiltering).splitSiblingClones().get()
     }.thenApply {
@@ -33,5 +34,10 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         throw it
     }
 
-//fun CloneIndexer.getSequenceFilteredClones(indexedSequence: IndexedSequence): List<CloneClass> =
-//    getAllSequenceClasses(indexedSequence).toList().filterSubClassClones().notLongestSequenceFilter().splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+fun CloneIndexer.getFileFilteredClones(file: PsiFile): List<CloneClass> =
+    getAllFileCloneClasses(file)
+            .notLongestSequenceFilter()
+            .validClonesFilter()
+            .splitSiblingClones()
+            .mergeCloneClasses()
+            .filterSelfCoveredClasses()
