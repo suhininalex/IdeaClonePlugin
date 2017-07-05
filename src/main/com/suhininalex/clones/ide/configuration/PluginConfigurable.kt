@@ -1,6 +1,7 @@
 package com.suhininalex.clones.ide.configuration
 
 import com.intellij.openapi.options.Configurable
+import com.suhininalex.clones.core.utils.CurrentProject
 import com.suhininalex.clones.ide.CloneFinderIndex
 import javax.swing.*
 
@@ -28,15 +29,8 @@ class PluginConfigurable : Configurable {
 
     override fun apply() {
         configurationPanel?.apply {
-            val rebuildIndex =   ! PluginSettings.enabledForProject && enableForThisProject ||
-                                 PluginSettings.disableTestFolder != testFilesDisabled ||
-                                 PluginSettings.javaSearchEnabled != javaSearchEnabled ||
-                                 PluginSettings.kotlinSearchEnabled != kotlinSearchEnabled
-
             saveSettings()
-            if (rebuildIndex) {
-                CloneFinderIndex.rebuild()
-            }
+            CloneFinderIndex.rebuild(CurrentProject!!)
         }
     }
 

@@ -10,11 +10,14 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.roots.TestSourcesFilter
 import com.intellij.openapi.util.Computable
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.ElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
+import com.suhininalex.clones.ide.FileListener
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred
 import java.awt.EventQueue
@@ -33,6 +36,10 @@ val Project.sourceFiles: Sequence<PsiFile>
             .flatMap { Application.readAction { it.files.asSequence() } }
             .filter { Application.readAction { it.isSourceFile() } }
     }
+
+fun Project.addBulkFileListener(bulkFileListener: BulkFileListener){
+    messageBus.connect().subscribe(VirtualFileManager.VFS_CHANGES, bulkFileListener)
+}
 
 val Project.fileIndex: ProjectFileIndex
         get() {

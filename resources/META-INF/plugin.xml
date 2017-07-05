@@ -20,6 +20,7 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
+      <projectService serviceImplementation="com.suhininalex.clones.core.languagescope.LanguageIndexedPsiService" />
       <fileBasedIndex implementation="com.suhininalex.clones.ide.CloneFinderIndex" />
       <localInspection shortName="CloneDetection"
                        groupBundle="messages.InspectionsBundle" enabledByDefault="true"

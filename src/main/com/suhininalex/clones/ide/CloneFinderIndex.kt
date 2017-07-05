@@ -9,7 +9,8 @@ import com.intellij.util.indexing.*
 import com.intellij.util.io.EnumeratorIntegerDescriptor
 import com.intellij.util.io.KeyDescriptor
 import com.suhininalex.clones.core.CloneIndexer
-import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.languagescope.languageSerializer
+import com.suhininalex.clones.core.utils.CurrentProject
 import com.suhininalex.clones.core.utils.Logger
 import com.suhininalex.clones.core.utils.isSourceFile
 import com.suhininalex.clones.core.utils.isTestFile
@@ -24,8 +25,8 @@ class CloneFinderIndex : ScalarIndexExtension<Int>(){
             FileBasedIndex.getInstance().ensureUpToDate(NAME, project, EverythingGlobalScope(project))
         }
 
-        fun rebuild(){
-            LanguageIndexedPsiManager.update()
+        fun rebuild(project: Project){
+            project.languageSerializer.update()
             CloneIndexer.clear()
             FileBasedIndex.getInstance().requestRebuild(NAME)
         }
@@ -42,7 +43,7 @@ class CloneFinderIndex : ScalarIndexExtension<Int>(){
     override fun getIndexer(): DataIndexer<Int, Void, FileContent> = CloneFinderIndexer()
 
     override fun getInputFilter(): FileBasedIndex.InputFilter = FileBasedIndex.InputFilter { virtualFile ->
-         PluginSettings.enabledForProject && LanguageIndexedPsiManager.isFileTypeSupported(virtualFile.fileType)
+         PluginSettings.enabledForProject && CurrentProject?.languageSerializer?.isFileTypeSupported(virtualFile.fileType) ?: false
     }
 
 }

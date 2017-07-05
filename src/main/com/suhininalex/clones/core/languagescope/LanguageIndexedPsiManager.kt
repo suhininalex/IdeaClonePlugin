@@ -1,12 +1,14 @@
 package com.suhininalex.clones.core.languagescope
 
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.languagescope.java.JavaIndexedPsiDefiner
 import com.suhininalex.clones.core.languagescope.kotlin.KtIndexedPsiDefiner
 import com.suhininalex.clones.ide.configuration.PluginSettings
 
-object LanguageIndexedPsiManager {
+class LanguageIndexedPsiService {
 
     private val indexedPsiDefiners = HashMap<String, IndexedPsiDefiner>()
 
@@ -35,3 +37,6 @@ object LanguageIndexedPsiManager {
         if (PluginSettings.kotlinSearchEnabled) registerNewLanguage(KtIndexedPsiDefiner())
     }
 }
+
+val Project.languageSerializer: LanguageIndexedPsiService
+    get() = ServiceManager.getService(this, LanguageIndexedPsiService::class.java)!!

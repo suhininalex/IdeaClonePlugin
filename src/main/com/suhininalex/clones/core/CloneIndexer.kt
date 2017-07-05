@@ -2,7 +2,7 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
+import com.suhininalex.clones.core.languagescope.languageSerializer
 import com.suhininalex.clones.core.postprocessing.*
 import com.suhininalex.clones.core.structures.SourceToken
 import com.suhininalex.clones.core.structures.TreeCloneClass
@@ -30,7 +30,7 @@ object CloneIndexer {
 
     fun addFile(psiFile: PsiFile): Unit = rwLock.write {
         if (psiFile.virtualFile in fileSequenceIds) return
-        val indexedPsiDefiner = LanguageIndexedPsiManager.getIndexedPsiDefiner(psiFile)
+        val indexedPsiDefiner = psiFile.project.languageSerializer.getIndexedPsiDefiner(psiFile)
         val ids = mutableListOf<Long>()
         indexedPsiDefiner?.getIndexedChildren(psiFile)?.map {
             val sequence = indexedPsiDefiner.createIndexedSequence(it).sequence.toList()
