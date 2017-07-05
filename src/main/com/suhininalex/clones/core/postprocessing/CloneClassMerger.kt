@@ -32,7 +32,7 @@ fun ListWithProgressBar<CloneClass>.mergeCloneClasses(): Promise<List<CloneClass
                 unionSet.join(first, it)
             }
         }
-        unionSet.equivalenceClasses.map { RangeCloneClass(it.map { it.clone }) }
+        unionSet.equivalenceClasses.filter { it.size > 1 }.map { RangeCloneClass(it.map { it.clone }) }
     }
 }
 

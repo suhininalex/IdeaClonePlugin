@@ -11,9 +11,7 @@
        ]]>
   </description>
 
-  <idea-version since-build="141.0"/>
-
-  <depends>org.jetbrains.kotlin</depends>
+  <idea-version since-build="171"/>
 
   <actions>
       <action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">

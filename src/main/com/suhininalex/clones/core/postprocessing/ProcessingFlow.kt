@@ -1,6 +1,7 @@
 package com.suhininalex.clones.core.postprocessing
 
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.structures.CloneClass
@@ -34,8 +35,8 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         throw it
     }
 
-fun CloneIndexer.getFileFilteredClones(file: PsiFile): List<CloneClass> =
-    getAllFileCloneClasses(file)
+fun CloneIndexer.getFileFilteredClones(virtualFile: VirtualFile): List<CloneClass> =
+    getAllFileCloneClasses(virtualFile)
             .notLongestSequenceFilter()
             .validClonesFilter()
             .splitSiblingClones()

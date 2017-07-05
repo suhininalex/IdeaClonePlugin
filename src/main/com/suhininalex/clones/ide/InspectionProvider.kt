@@ -4,6 +4,7 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.CloneIndexer
+import com.suhininalex.clones.core.postprocessing.getFileFilteredClones
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
 import java.awt.EventQueue
@@ -23,7 +24,7 @@ class InspectionProvider : LocalInspectionTool() {
         Logger.log("[Inspection] Processing file ${file.name}")
         CloneFinderIndex.enshureUpToDate(file.project)
         try {
-            return CloneIndexer.getAllFileCloneClasses(file).flatMap { cloneClass ->
+            return CloneIndexer.getFileFilteredClones(file.virtualFile).flatMap { cloneClass ->
                     cloneClass.clones
                             .filter { it.firstPsi in file }
                             .map { clone -> manager.createProblemDescriptor(file, cloneClass, clone) }
@@ -39,7 +40,7 @@ class InspectionProvider : LocalInspectionTool() {
     private fun InspectionManager.createProblemDescriptor(element: PsiElement, cloneClass: CloneClass, clone: Clone): ProblemDescriptor {
         return createProblemDescriptor(
                 element,
-                clone.getTextRangeInIndexedFragment(),
+                clone.textRange,
                 PluginLabels.getLabel("inspection-problem-description"),
                 ProblemHighlightType.WEAK_WARNING,
                 true, //is on the fly

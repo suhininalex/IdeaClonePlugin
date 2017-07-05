@@ -6,8 +6,4 @@ interface IndexedSequence {
      */
     val sequence: Sequence<SourceToken>
 
-    /**
-     * Unique id for sequence based on path
-     */
-    val id: Int
 }

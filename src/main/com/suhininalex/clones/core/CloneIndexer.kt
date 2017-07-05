@@ -2,11 +2,8 @@ package com.suhininalex.clones.core
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.util.indexing.FileBasedIndex
 import com.suhininalex.clones.core.languagescope.LanguageIndexedPsiManager
 import com.suhininalex.clones.core.postprocessing.*
-import com.suhininalex.clones.core.structures.CloneClass
-import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.structures.SourceToken
 import com.suhininalex.clones.core.structures.TreeCloneClass
 import com.suhininalex.clones.core.utils.*
@@ -45,23 +42,19 @@ object CloneIndexer {
         fileSequenceIds.put(psiFile.virtualFile, ids)
     }
 
-    fun removeFile(psiFile: PsiFile): Unit = rwLock.write {
-        val ids = fileSequenceIds[psiFile.virtualFile] ?: return
+    fun removeFile(virtualFile: VirtualFile): Unit = rwLock.write {
+        val ids = fileSequenceIds[virtualFile] ?: return
         ids.forEach {
             tree.removeSequence(it)
         }
-        fileSequenceIds.remove(psiFile.virtualFile)
+        fileSequenceIds.remove(virtualFile)
     }
 
-    fun getAllFileCloneClasses(psiFile: PsiFile): List<CloneClass> = rwLock.read {
-        val ids = fileSequenceIds[psiFile.virtualFile] ?: return emptyList()
+    fun getAllFileCloneClasses(virtualFile: VirtualFile): List<TreeCloneClass> = rwLock.read {
+        val ids = fileSequenceIds[virtualFile] ?: return emptyList()
         return ids
                 .flatMap { tree.getAllSequenceClasses(it, PluginSettings.minCloneLength).toList() }
                 .filterSubClassClones()
-                .notLongestSequenceFilter()
-                .splitSiblingClones()
-                .mergeCloneClasses()
-                .filterSelfCoveredClasses()
     }
 
     fun getAllCloneClasses(): Sequence<TreeCloneClass>  = rwLock.read {

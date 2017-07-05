@@ -7,7 +7,6 @@ import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.PsiRange
 import com.suhininalex.clones.core.structures.RangeClone
 import com.suhininalex.clones.core.utils.contains
-import org.jetbrains.kotlin.lexer.KtTokens
 
 fun PsiRange.cropBadTokens(): Clone {
     var left = firstPsi
@@ -37,7 +36,7 @@ private val badTokens: TokenSet = TokenSet.create(
 
 //TODO generalize this part
 private val lBraces: TokenSet =
-        TokenSet.create(ElementType.LPARENTH, ElementType.LBRACE, ElementType.LBRACKET, KtTokens.LBRACE, KtTokens.LPAR, KtTokens.RBRACKET)
+        TokenSet.create(ElementType.LPARENTH, ElementType.LBRACE, ElementType.LBRACKET)//, KtTokens.LBRACE, KtTokens.LPAR, KtTokens.RBRACKET)
 
 private val rBraces: TokenSet =
-        TokenSet.create(ElementType.RPARENTH, ElementType.RBRACE, ElementType.RBRACKET, KtTokens.RBRACE, KtTokens.RPAR, KtTokens.RBRACKET)
+        TokenSet.create(ElementType.RPARENTH, ElementType.RBRACE, ElementType.RBRACKET)//, KtTokens.RBRACE, KtTokens.RPAR, KtTokens.RBRACKET)

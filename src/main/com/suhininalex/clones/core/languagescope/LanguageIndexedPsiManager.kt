@@ -21,8 +21,8 @@ object LanguageIndexedPsiManager {
         indexedPsiDefiners.put(indexedPsiDefiner.fileType, indexedPsiDefiner)
     }
 
-    fun unregisterLanguage(indexedPsiDefiner: IndexedPsiDefiner){
-        indexedPsiDefiners.remove(indexedPsiDefiner.fileType)
+    fun unregisterLanguage(fileType: String){
+        indexedPsiDefiners.remove(fileType)
     }
 
     fun isFileTypeSupported(fileType: FileType): Boolean {

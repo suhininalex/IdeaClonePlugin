@@ -5,27 +5,12 @@ import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.structures.SourceToken
 import com.suhininalex.clones.core.utils.depthFirstTraverse
 import com.suhininalex.clones.core.utils.isNoiseElement
-import org.jetbrains.kotlin.cfg.pseudocode.containingDeclarationForPseudocode
-import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtPropertyAccessor
 
-class KtIndexedPropertySequence(val ktPropertyAccessor: KtPropertyAccessor): IndexedSequence {
+class KtIndexedSequence(val psiElement: PsiElement): IndexedSequence {
 
     override val sequence: Sequence<SourceToken>
-        get() = ktPropertyAccessor.toSequence().map(::SourceToken)
+        get() = psiElement.toSequence().map(::SourceToken)
 
-    override val id: Int
-        get() = System.identityHashCode(ktPropertyAccessor)
-}
-
-class KtIndexedFunSequence(val ktFunction: KtFunction): IndexedSequence {
-
-    override val sequence: Sequence<SourceToken>
-        get() = ktFunction.bodyExpression?.toSequence()?.map(::SourceToken) ?: emptySequence()
-
-    override val id: Int
-        get() = System.identityHashCode(ktFunction)
 }
 
 private fun PsiElement.toSequence(): Sequence<PsiElement> =
@@ -37,8 +22,3 @@ private fun PsiElement.toSequence(): Sequence<PsiElement> =
  */
 private val PsiElement.psiChildren: Sequence<PsiElement>
     get() = generateSequence(this.firstChild) {it.nextSibling}
-
-private val KtElement.pathId: String
-    get() = containingKtFile.packageFqName.asString() + "." +
-            containingKtFile.name + "." +
-            containingDeclarationForPseudocode?.name + ":"

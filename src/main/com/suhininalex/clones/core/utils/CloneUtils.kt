@@ -13,18 +13,10 @@ import java.lang.IllegalArgumentException
 @Suppress("UNCHECKED_CAST")
 fun Edge.asSequence(): Sequence<SourceToken> {
     if (isTerminal) {
-        throw IllegalArgumentException("You should never invoke this method for terminating edge.")
+        throw IllegalArgumentException("You should never invoke this method for terminal edge.")
     } else {
         return (sequence.subList(begin, end + 1) as MutableList<SourceToken>).asSequence()
     }
-}
-
-fun Clone.getTextRangeInIndexedFragment(): TextRange {
-    return TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
-//    val indexedParent = LanguageIndexedPsiManager.getIndexedPsiDefiner(firstPsi)?.getIndexedParent(firstPsi)!!
-//
-//    val methodOffset = indexedParent.textRange.startOffset
-//    return TextRange(firstPsi.textRange.startOffset - methodOffset, lastPsi.textRange.endOffset-methodOffset)
 }
 
 val Clone.textRange: TextRange
@@ -34,8 +26,7 @@ val Clone.hasValidElements: Boolean
     get() = firstPsi.isValid && lastPsi.isValid
 
 fun Clone.printText(){
-    val range = TextRange(firstPsi.textRange.startOffset, lastPsi.textRange.endOffset)
-    println(firstPsi.document.getText(range))
+    println(firstPsi.document.getText(textRange))
 }
 
 fun Clone.tokenSequence(): Sequence<PsiElement> =

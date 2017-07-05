@@ -25,7 +25,7 @@ fun CloneClass.getScore(): CloneScore =
 fun filterPredicate(cloneClass: CloneClass): Boolean =
         Application.readAction {
             with(cloneClass.getScore()) {
-                selfCoverage <= 0.7 || selfCoverage <= 0.85 && sameMethodCount <= 0.7
+                selfCoverage <= PluginSettings.coverageSkipFilter / 100f || selfCoverage <= 0.85 && sameMethodCount <= 0.7
             }
         }
 

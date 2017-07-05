@@ -35,7 +35,7 @@ class PluginConfigurable : Configurable {
 
             saveSettings()
             if (rebuildIndex) {
-                CloneFinderIndex.invalidate()
+                CloneFinderIndex.rebuild()
             }
         }
     }
