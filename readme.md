@@ -1,10 +1,10 @@
 ### Idea clone plugin ###
 
-This is plugin for IDE IntelliJ IDEA witch can be used to find duplicated code in the project.
+This is a plugin for IDE IntelliJ IDEA witch can be used to find duplicated code in the project.
 
 **Main features**
 
-* Possibility to look for exact clones and clones with renamed tokens 
+* Ability to look for exact clones and clones with renamed tokens 
 * Ability to analyze huge projects (millions lines of code)
 * Ability to provide clone inspections on-the-fly
 * Ability to analyze Java/Kotlin files
