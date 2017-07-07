@@ -34,9 +34,11 @@ private val badTokens: TokenSet = TokenSet.create(
         ElementType.WHITE_SPACE, ElementType.DOC_COMMENT, ElementType.C_STYLE_COMMENT, ElementType.END_OF_LINE_COMMENT, ElementType.SEMICOLON, ElementType.EXPRESSION_LIST, ElementType.COMMA
 )
 
-//TODO generalize this part
-private val lBraces: TokenSet =
-        TokenSet.create(ElementType.LPARENTH, ElementType.LBRACE, ElementType.LBRACKET)//, KtTokens.LBRACE, KtTokens.LPAR, KtTokens.RBRACKET)
+private val lBraces: Set<String> =
+        setOf("LPARENTH", "LBRACE", "LBRACKET", "LPAR", "RBRACKET")
 
-private val rBraces: TokenSet =
-        TokenSet.create(ElementType.RPARENTH, ElementType.RBRACE, ElementType.RBRACKET)//, KtTokens.RBRACE, KtTokens.RPAR, KtTokens.RBRACKET)
+private val rBraces: Set<String> =
+        setOf("RPARENTH", "RBRACE", "RBRACKET", "RPAR", "RBRACKET")
+
+private operator fun Set<String>.contains(psiElement: PsiElement) =
+        psiElement.node.elementType.toString() in this
