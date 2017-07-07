@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Logger {
-    val enabled = true
+    val enabled = false
     val time: String
         get() = SimpleDateFormat("hh:mm:ss").format(Date())
     fun log(message: String){
