@@ -7,7 +7,16 @@
   <description>
       <![CDATA[
             Detects source clones on-the-fly.<br>
-
+            <br>
+            Main features:
+            <ul>
+                <li>Possibility to look for exact clones and clones with renamed tokens</li>
+                <li>Ability to provide clone inspections on-the-fly</li>
+                <li>Ability to analyze huge projects (millions lines of code</li>
+                <li>Java/Kotlin available</li>
+            </ul>
+            <br>
+            Requires additional memory for analyzing: ~0.5 Gb per 1 million lines of code for inspections and the same for looking for all duplicates.
        ]]>
   </description>
 

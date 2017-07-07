@@ -5,8 +5,11 @@ This is plugin for IDE IntelliJ IDEA witch can be used to find duplicated code i
 **Main features**
 
 * Possibility to look for exact clones and clones with renamed tokens 
-* High speed analyzing
+* Ability to analyze huge projects (millions lines of code)
 * Ability to provide clone inspections on-the-fly
+* Ability to analyze Java/Kotlin files
+
+Requires additional memory for analyzing: ~0.5 Gb per 1 million lines of code for inspections and the same for looking for all duplicates.
 
 ### Dependencies ###
 
