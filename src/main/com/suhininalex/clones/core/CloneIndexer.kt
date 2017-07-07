@@ -12,6 +12,7 @@ import com.suhininalex.suffixtree.Node
 import com.suhininalex.suffixtree.SuffixTree
 import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.concurrent.read
 import kotlin.concurrent.write
@@ -57,16 +58,27 @@ object CloneIndexer {
                 .filterSubClassClones()
     }
 
-    fun getAllCloneClasses(): Sequence<TreeCloneClass>  = rwLock.read {
+    fun getAllCloneClasses(): List<TreeCloneClass>  = rwLock.read {
         tree.getAllCloneClasses(PluginSettings.minCloneLength)
     }
 
 }
 
-fun SuffixTree<SourceToken>.getAllCloneClasses(minTokenLength: Int): Sequence<TreeCloneClass> =
-     root.depthFirstTraverse { it.edges.asSequence().mapNotNull { it.terminal }}
-             .map(::TreeCloneClass)
-             .filter { it.length > minTokenLength }
+fun Node.visitChildren(visit: (Node) -> Unit) {
+    visit(this)
+    this.edges.mapNotNull { it.terminal }.forEach { it.visitChildren(visit) }
+}
+
+fun SuffixTree<SourceToken>.getAllCloneClasses(minTokenLength: Int): List<TreeCloneClass> {
+    val clones = ArrayList<TreeCloneClass>()
+    root.visitChildren {
+        val cloneClass = TreeCloneClass(it)
+        if (cloneClass.length > minTokenLength) {
+            clones.add(cloneClass)
+        }
+    }
+    return clones
+}
 
 fun SuffixTree<SourceToken>.getAllSequenceClasses(id: Long, minTokenLength: Int): Sequence<TreeCloneClass>  {
     val classes = LinkedList<TreeCloneClass>()

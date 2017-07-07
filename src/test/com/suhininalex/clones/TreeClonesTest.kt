@@ -9,7 +9,7 @@ import com.suhininalex.clones.core.utils.tokenSequence
 class TreeClonesTest : FolderProjectTest("testdata/sphinx4-java/") {
 
     val clones
-        get() = CloneIndexer.getAllCloneClasses().toList().filterSubClassClones().toList()
+        get() = CloneIndexer.getAllCloneClasses().filterSubClassClones().toList()
 
     fun testNotAloneDuplicate() {
         assertTrue(clones.all(::checkCountInvariant))

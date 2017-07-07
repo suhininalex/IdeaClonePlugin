@@ -9,7 +9,7 @@ import com.suhininalex.clones.core.utils.tokenSequence
 class ExtractSiblingClonesTest : FolderProjectTest("testdata/sphinx4-java/") {
 
     val clones
-        get() = CloneIndexer.getAllCloneClasses().toList().filterSubClassClones()
+        get() = CloneIndexer.getAllCloneClasses().filterSubClassClones()
 
     fun testNotAloneDuplicate() {
         val problems = clones.splitSiblingClones().mergeCloneClasses().filter { ! checkCountInvariant(it) }
