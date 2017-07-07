@@ -14,7 +14,7 @@ class KtIndexedSequence(val psiElement: PsiElement): IndexedSequence {
 }
 
 private fun PsiElement.toSequence(): Sequence<PsiElement> =
-    depthFirstTraverse { it.psiChildren }.filter { it.firstChild == null }.filterNot(::isNoiseElement)
+    lastChild.depthFirstTraverse { it.psiChildren }.filter { it.firstChild == null }.filterNot(::isNoiseElement)
 
 /**
  * PsiElement.children returns only KtElements
