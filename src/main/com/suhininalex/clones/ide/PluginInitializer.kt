@@ -9,6 +9,7 @@ import com.suhininalex.clones.core.utils.Application
 import com.suhininalex.clones.core.utils.Logger
 import com.suhininalex.clones.core.utils.addBulkFileListener
 import com.suhininalex.clones.core.utils.sourceFiles
+import com.suhininalex.clones.ide.configuration.PluginLabels
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
 
@@ -26,11 +27,17 @@ fun showMemoryWarning(project: Project){
     task {
         project.sourceFiles.count()
     }.then { files ->
-        if (files > 5000){
-            val maxMemory = files/10
+        val estimatedMemory = files/10 //in Mb
+        if (estimatedMemory > 500){
             Application.invokeLater {
-                Notifications.Bus.notify(Notification("Actions", "Clone finder: memory issue", "Plugin may consume up to $maxMemory Mb RAM\n", NotificationType.WARNING))
+                Notifications.Bus.notify(createMemoryNotification(estimatedMemory))
             }
         }
     }
+}
+
+fun createMemoryNotification(megabytes: Int): Notification {
+    val title = PluginLabels.getLabel("warning-memory-issue-title")
+    val message = PluginLabels.getLabel("warning-memory-issue-message").replace("\$maxMemory", megabytes.toString())
+    return Notification("Actions", title, message, NotificationType.WARNING)
 }
