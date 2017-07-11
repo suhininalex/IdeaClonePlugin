@@ -16,20 +16,22 @@ Plugin requires additional memory
 > Up to 500 Mb per 1 million LOC to build index and produce inspections 
 
 > Up to 500 Mb per 1 million LOC to show all clones in the project
-
 #### General usage instructions
+* * *
+
+#### Inspections
 
 Since the plugin is installed inspections are available. 
+Use **Alt + Enter** to show duplicated code.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/inspection.png?raw=true)
 
-> Use **Alt + Enter** to get duplicated code
+#### Find all clones in the projects
 
-To get all clones in the project use **Analyze \| Find all clones in project**
+To get all clones in the project use **Analyze \| Find all clones in project**.
+Double click on clone description to navigate clone in the editor
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/locateclones.png?raw=true)
-
-> Double click on clone description to navigate clone in the editor
 
 ##### Settings
 
@@ -40,19 +42,18 @@ You can set plugin parameters via **File \| Settings**
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/find-configuration.png?raw=true)
 
 #### Comparision with other tools
+* * *
 
 | Tool                                | Commercial | On-the-fly | Recall     | Scalability |
 |:------------------------------------|:-----------|:-----------|:-----------|:------------|
-<!---  
-| PMD                                 | no         | no         | ?          | ?           |
-| Checkstyle                          | no         | no         | ?          | ?           |
-| Duplicate finder maven plugin       | no         | no         | ?          | ?           |
---->
 | IntelliJ IDEA Ultimate (action)     | yes        | no         | excellent  | bad         |
 | IntelliJ IDEA Ultimate (inspection) | yes        | yes        | acceptable | excellent   |
 | IDEA clone plugin                   | no         | yes        | good       | good        |
 
 <!---  
+| PMD                                 | no         | no         | ?          | ?           |
+| Checkstyle                          | no         | no         | ?          | ?           |
+| Duplicate finder maven plugin       | no         | no         | ?          | ?           |
 
 # ###### PMD
 
@@ -64,9 +65,11 @@ You can set plugin parameters via **File \| Settings**
 
 ###### IDEA clone plugin
 
-#### Tested projects
-
 --->
+
+#### Tested projects
+* * *
+
 This plugin have been used to analyze a few popular Java projects. 
 
 | Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
