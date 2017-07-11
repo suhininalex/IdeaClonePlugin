@@ -36,6 +36,7 @@ One can set plugin parameters via **File \| Settings**
 |:------------------------------------|:-----------|:-----------|:-----------|:------------|
 | PMD                                 | no         | no         | ?          | ?           |
 | Checkstyle                          | no         | no         | ?          | ?           |
+| Duplicate finder maven plugin       | no         | no         | ?          | ?           |
 | IntelliJ IDEA Ultimate (action)     | yes        | no         | good       | bad         |
 | IntelliJ IDEA Ultimate (inspection) | yes        | yes        | acceptable | excellent   |
 | IDEA clone plugin                   | no         | 13 s       | good       | good        |
