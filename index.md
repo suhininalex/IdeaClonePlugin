@@ -19,9 +19,17 @@ Plugin requires additional memory
 
 #### General usage instructions
 
-#### Settings
+Since the plugin is installed inspections are available. 
 
-One can set plugin parameters via **File \| Settings**
+<img>
+
+To get all clones in the project use **Analyze \| Find all clones in project**
+
+<img>
+
+##### Settings
+
+You can set plugin parameters via **File \| Settings**
 
 > Note that almost any change will cause full reindexing of the current project
 
@@ -45,15 +53,16 @@ One can set plugin parameters via **File \| Settings**
 
 ###### Checkstyle
 
-###### IntelliJ IDEA Ultimate (action)
+###### Duplicate finder maven plugin
 
-###### IntelliJ IDEA Ultimate (inspection)
+###### IntelliJ IDEA Ultimate
+
 
 ###### IDEA clone plugin
 
 #### Tested projects
 
-The plugin have been used to analyze a few popular Java projects. 
+This plugin have been used to analyze a few popular Java projects. 
 
 | Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
 |:------------------------|:------------------|:--------------|:--------|:--------------|
@@ -72,12 +81,12 @@ The plugin have been used to analyze a few popular Java projects.
 
 > Memory - total memory used by IntelliJ IDEA after both indexing and extraction of clone classes 
 
+###### Used parameters
+
+![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/test-configuration.png?raw=true)
+
 ###### Configuration
 
 > CPU i5-760 lynfield (4 core, 2.8 Ghz) 
 
 > Max heap: 4000 Mb
-
-###### Used parameters
-
-![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/test-configuration.png?raw=true)
