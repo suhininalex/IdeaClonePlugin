@@ -17,6 +17,8 @@ Plugin requires additional memory
 >
 > Up to 500 Mb per 1 million LOC to show all clones in the project
 
+#### General usage instructions
+
 #### Settings
 
 One can set plugin parameters via **File \| Settings**
@@ -25,14 +27,32 @@ One can set plugin parameters via **File \| Settings**
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/find-configuration.png?raw=true)
 
-
-
 #### Samples
 
 
-#### Comparing
+#### Comparision with other tools
+
+| Tool                                | Commercial | On-the-fly | Recall     | Scalability |
+|:------------------------------------|:-----------|:-----------|:-----------|:------------|
+| PMD                                 | no         | no         | ?          | ?           |
+| Checkstyle                          | no         | no         | ?          | ?           |
+| IntelliJ IDEA Ultimate (action)     | yes        | no         | good       | bad         |
+| IntelliJ IDEA Ultimate (inspection) | yes        | yes        | acceptable | excellent   |
+| IDEA clone plugin                   | no         | 13 s       | good       | good        |
+
+###### PMD
+
+###### Checkstyle
+
+###### IntelliJ IDEA Ultimate (action)
+
+###### IntelliJ IDEA Ultimate (inspection)
+
+###### IDEA clone plugin
 
 #### Tested projects
+
+The plugin have been used to analyze a few popular Java projects. 
 
 | Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
 |:------------------------|:------------------|:--------------|:--------|:--------------|
@@ -44,3 +64,19 @@ One can set plugin parameters via **File \| Settings**
 | Consulo                 | 86 s              | 18 s          | 869 Mb  | 2275          |
 | Apache CloudStack       | 44 s              | 7 s           | 841 Mb  | 2875          |
 | Apache Camel            | 31 s              | 8 s           | 640 Mb  | 1992          |
+
+> Time (inspection) - time required to build project index (that's enough to allow clone inspections)
+
+> Time (action) - time required to extract and show all clones found in the project
+
+> Memory - total memory used by IntelliJ IDEA after both indexing and extraction of clone classes 
+
+###### Configuration
+
+> CPU i5-760 lynfield (4 core, 2.8 Ghz) 
+
+> Max heap: 4000 Mb
+
+###### Used parameters
+
+![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/test-configuration.png?raw=true)
