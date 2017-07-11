@@ -20,13 +20,13 @@ Plugin requires additional memory
 
 #### Tested projects
 
-| Project                 | Time (inspection) | Time (action) | Clones found  |
-|:------------------------|:------------------|:--------------|:--------------|
-| JetBrains MPS           | 220 s             | 160 s         | 8109          |
-| Android Framework Base  | 145 s             | 38 s          | 5055          |
-| JetBrains IntelliJ IDEA | 221 s             | 49 s          | 5178          |
-| Apache Hadoop           | 54 s              | 13 s          | 1753          |
-| Spring Framework        | 35 s              | 3 s           | 746           |
-| Consulo                 | 86 s              | 18 s          | 2275          |
-| Apache CloudStack       | 44 s              | 7 s           | 2875          |
-| Apache Camel            | 31 s              | 8 s           | 1992          |
+| Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
+|:------------------------|:------------------|:--------------|:--------|:--------------|
+| JetBrains MPS           | 220 s             | 160 s         | 2950 Mb | 8109          |
+| Android Framework Base  | 145 s             | 38 s          | 1495 Mb | 5055          |
+| JetBrains IntelliJ IDEA | 221 s             | 49 s          | 2210 Mb | 5178          |
+| Apache Hadoop           | 54 s              | 13 s          | 799 Mb  | 1753          |
+| Spring Framework        | 35 s              | 3 s           | 403 Mb  | 746           |
+| Consulo                 | 86 s              | 18 s          | 869 Mb  | 2275          |
+| Apache CloudStack       | 44 s              | 7 s           | 841 Mb  | 2875          |
+| Apache Camel            | 31 s              | 8 s           | 640 Mb  | 1992          |
