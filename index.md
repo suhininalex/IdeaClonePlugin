@@ -16,6 +16,7 @@ Plugin requires additional memory
 > Up to 500 Mb per 1 million LOC to build index and produce inspections 
 
 > Up to 500 Mb per 1 million LOC to show all clones in the project
+
 #### General usage instructions
 * * *
 
