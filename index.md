@@ -19,11 +19,13 @@ Plugin requires additional memory
 
 #### Settings
 
-One can set plugin parameters via **File | Settings**
+One can set plugin parameters via **File \| Settings**
+
+> Note that almost any change will cause full reindexing of the current project
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/find-configuration.png?raw=true)
 
-> Note that almost any change will cause full reindexing of the current project
+
 
 #### Samples
 
