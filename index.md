@@ -30,7 +30,7 @@ Use **Alt + Enter** to show duplicated code.
 #### Find all clones in the projects
 
 To get all clones in the project use **Analyze \| Find all clones in project**.
-Double click on clone description to navigate clone in the editor
+Then double click on clone description to navigate this clone in the editor.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/locateclones.png?raw=true)
 
