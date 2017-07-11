@@ -1,6 +1,7 @@
 This is a plugin for IDE IntelliJ IDEA 2017+. 
 It provides both on-the-fly inspection and action to find all duplicates in source code.
 
+
 #### Main features
 
 - Ability to look for exact clones and clones with renamed tokens
@@ -15,6 +16,17 @@ Plugin requires additional memory
 > Up to 500 Mb per 1 million LOC to build index and produce inspections 
 >
 > Up to 500 Mb per 1 million LOC to show all clones in the project
+
+#### Settings
+
+One can set plugin parameters via **File | Settings**
+
+![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/find-configuration.png?raw=true)
+
+> Note that almost any change will cause full reindexing of the current project
+
+#### Samples
+
 
 #### Comparing
 
