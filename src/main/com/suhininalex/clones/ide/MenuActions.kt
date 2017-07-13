@@ -11,6 +11,7 @@ import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.then
 
+@Deprecated("Use Analyse | Inspect code instead")
 class ShowAllClonesAction: AnAction(PluginLabels.getLabel("menu-find-all-tooltip")) {
 
     override fun update(e: AnActionEvent) {
