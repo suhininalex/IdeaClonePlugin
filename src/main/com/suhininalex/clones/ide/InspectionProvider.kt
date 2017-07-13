@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.postprocessing.getFileFilteredClones
+import com.suhininalex.clones.core.postprocessing.inspectFile
 import com.suhininalex.clones.core.structures.Clone
 import com.suhininalex.clones.core.structures.CloneClass
 import java.awt.EventQueue
@@ -24,6 +25,7 @@ class InspectionProvider : LocalInspectionTool() {
         Logger.log("[Inspection] Processing file ${file.name}")
         CloneFinderIndex.enshureUpToDate(file.project)
         try {
+            inspectFile(file.virtualFile)
             return CloneIndexer.getFileFilteredClones(file.virtualFile).flatMap { cloneClass ->
                     cloneClass.clones
                             .filter { it.firstPsi in file }
