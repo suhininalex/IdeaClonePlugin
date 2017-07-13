@@ -18,6 +18,7 @@ class PluginConfigurable : Configurable {
             || PluginSettings.disableTestFolder != testFilesDisabled
             || PluginSettings.javaSearchEnabled != javaSearchEnabled
             || PluginSettings.kotlinSearchEnabled != kotlinSearchEnabled
+            || PluginSettings.maxMemory != maxUsedMemory
         }
 
     override fun disposeUIResources() {
@@ -53,6 +54,7 @@ class PluginConfigurable : Configurable {
             testFilesDisabled = PluginSettings.disableTestFolder
             javaSearchEnabled = PluginSettings.javaSearchEnabled
             kotlinSearchEnabled = PluginSettings.kotlinSearchEnabled
+            maxUsedMemory = PluginSettings.maxMemory
         }
     }
 
@@ -64,6 +66,7 @@ class PluginConfigurable : Configurable {
             PluginSettings.disableTestFolder = testFilesDisabled
             PluginSettings.javaSearchEnabled = javaSearchEnabled
             PluginSettings.kotlinSearchEnabled = kotlinSearchEnabled
+            PluginSettings.maxMemory = maxUsedMemory
         }
     }
 }

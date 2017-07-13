@@ -1,5 +1,8 @@
 package com.suhininalex.clones.ide;
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.GeneratedSourcesFilter
 import com.intellij.openapi.vfs.VirtualFile
@@ -11,10 +14,8 @@ import com.intellij.util.io.EnumeratorIntegerDescriptor
 import com.intellij.util.io.KeyDescriptor
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.languagescope.languageSerializer
-import com.suhininalex.clones.core.utils.CurrentProject
-import com.suhininalex.clones.core.utils.Logger
-import com.suhininalex.clones.core.utils.isSourceFile
-import com.suhininalex.clones.core.utils.isTestFile
+import com.suhininalex.clones.core.utils.*
+import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.clones.ide.configuration.PluginSettings
 
 class CloneFinderIndex : ScalarIndexExtension<Int>(){
@@ -49,12 +50,32 @@ class CloneFinderIndex : ScalarIndexExtension<Int>(){
 
 }
 
-class CloneFinderIndexer() : DataIndexer<Int, Void, FileContent> {
+class CloneFinderIndexer : DataIndexer<Int, Void, FileContent> {
+
+    /**
+     * Approximately 100 bytes per token (see SmallSuffixTree docs)
+     */
+    val usedMemoryInMb: Int
+        get() = CloneIndexer.indexedTokens.toInt() * 100 / 1024 / 1024
+
+    fun checkMemory(project: Project){
+        if (usedMemoryInMb > PluginSettings.maxMemory){
+            PluginSettings.enabledForProject = false
+            CloneFinderIndex.rebuild(project)
+            Application.invokeLater{
+                val title = PluginLabels.getLabel("warning-memory-issue-title")
+                val message = PluginLabels.getLabel("warning-memory-issue-message")
+                Notifications.Bus.notify(Notification("Actions", title, message, NotificationType.WARNING))
+            }
+        }
+    }
 
     override fun map(fileContent: FileContent): Map<Int, Void> {
         val psiFile = PsiManager.getInstance(fileContent.project).findFile(fileContent.file)!!
         if (psiFile.isSourceFile() && !psiFile.isDisabledTest() && !psiFile.isGenerated()){
             Logger.log("[Indexer] Add file suffixes ${psiFile.virtualFile}")
+            Logger.log("[Indexer] Tokens in suffix tree ${CloneIndexer.indexedTokens}")
+            checkMemory(psiFile.project)
             CloneIndexer.removeFile(fileContent.file)
             CloneIndexer.addFile(psiFile)
         }

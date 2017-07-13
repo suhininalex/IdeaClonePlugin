@@ -22,6 +22,9 @@ object CloneIndexer {
     internal var tree = SuffixTree<SourceToken>()
     internal val rwLock = ReentrantReadWriteLock()
 
+    var indexedTokens: Long = 0
+        private set
+
     fun clear() {
         fileSequenceIds.clear()
         tree = SuffixTree()
@@ -36,6 +39,7 @@ object CloneIndexer {
         indexedPsiDefiner?.getIndexedChildren(psiFile)?.map {
             val sequence = indexedPsiDefiner.createIndexedSequence(it).sequence.toList()
             if (sequence.size > PluginSettings.minCloneLength){
+                indexedTokens += sequence.size
                 val id = tree.addSequence(sequence)
                 ids += id
             }
@@ -46,6 +50,7 @@ object CloneIndexer {
     fun removeFile(virtualFile: VirtualFile): Unit = rwLock.write {
         val ids = fileSequenceIds[virtualFile] ?: return
         ids.forEach {
+            indexedTokens -= tree.getSequence(it).size
             tree.removeSequence(it)
         }
         fileSequenceIds.remove(virtualFile)

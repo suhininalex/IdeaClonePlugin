@@ -17,27 +17,7 @@ class PluginInitializer : StartupActivity {
 
     override fun runActivity(project: Project) {
         Logger.log("[Initializer] Startup")
-        showMemoryWarning(project)
         project.addBulkFileListener(FileListener())
         CloneFinderIndex.rebuild(project)
     }
-}
-
-fun showMemoryWarning(project: Project){
-    task {
-        project.sourceFiles.count()
-    }.then { files ->
-        val estimatedMemory = files/10 //in Mb
-        if (estimatedMemory > 500){
-            Application.invokeLater {
-                Notifications.Bus.notify(createMemoryNotification(estimatedMemory))
-            }
-        }
-    }
-}
-
-fun createMemoryNotification(megabytes: Int): Notification {
-    val title = PluginLabels.getLabel("warning-memory-issue-title")
-    val message = PluginLabels.getLabel("warning-memory-issue-message").replace("\$maxMemory", megabytes.toString())
-    return Notification("Actions", title, message, NotificationType.WARNING)
 }

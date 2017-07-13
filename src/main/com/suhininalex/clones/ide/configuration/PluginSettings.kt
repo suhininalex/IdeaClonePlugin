@@ -13,7 +13,10 @@ object PluginSettings: IdeaSettings(nameSpace = "clone_finder") {
         val disableTestFolder = false
         val kotlinSearchEnabled = true
         val javaSearchEnabled = true
+        val maxMemory = 500
     }
+
+    var maxMemory by IntProperty(defaults.maxMemory)
 
     var minCloneLength by IntProperty(defaults.minCloneLength)
 

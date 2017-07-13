@@ -10,10 +10,12 @@ public class ConfigurationPanel {
     private JCheckBox testFilesDisabled;
     private JCheckBox javaSearchEnabled;
     private JCheckBox kotlinSearchEnabled;
+    private JSpinner maxUsedMemory;
 
     public ConfigurationPanel() {
         minimalCloneLengthSpinner.setModel(new SpinnerNumberModel(15, 15, 1000, 5));
         skipSelfCoverageFiltrationSpinner.setModel(new SpinnerNumberModel(10, 10, 200, 5));
+        maxUsedMemory.setModel(new SpinnerNumberModel(500, 100, 16000, 100));
     }
 
     public int getMinimalCloneLength() {
@@ -30,6 +32,14 @@ public class ConfigurationPanel {
 
     public void setSkipSelfCoverageFiltration(int value) {
          skipSelfCoverageFiltrationSpinner.setValue(value);
+    }
+
+    public int getMaxUsedMemory() {
+        return (int) maxUsedMemory.getValue();
+    }
+
+    public void setMaxUsedMemory(int value) {
+        maxUsedMemory.setValue(value);
     }
 
     public boolean getEnableForThisProject() {
