@@ -1,13 +1,12 @@
-This is a plugin for IDE IntelliJ IDEA 2017+. 
-It provides both on-the-fly inspection and action to find all duplicates in source code.
-
+This is a plugin for an IDE IntelliJ IDEA 2017+. 
+It provides on-the-fly inspection in a source code.
 
 #### Main features
 
-- Ability to look for exact clones and clones with renamed tokens
-- Ability to analyze huge projects (millions lines of code)
-- Ability to provide clone inspections on-the-fly
-- Ability to analyze Java/Kotlin files
+- Searching exact clones and clones with renamed tokens
+- Analyzing huge projects (millions lines of code)
+- Providing clone inspections on-the-fly
+- Analyzing Java/Kotlin files
 
 #### Warning
 
@@ -15,15 +14,13 @@ Plugin requires additional memory
 
 > Up to 500 Mb per 1 million LOC to build index and produce inspections 
 
-> Up to 500 Mb per 1 million LOC to show all clones in the project
-
 #### General usage instructions
 * * *
 
 #### Inspections
 
-Since the plugin is installed inspections are available. 
-Use **Alt + Enter** to show duplicated code.
+Since the plugin is installed inspection is available. 
+Use **Alt + Enter** to see all duplicated fragments.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/inspection.png?raw=true)
 
