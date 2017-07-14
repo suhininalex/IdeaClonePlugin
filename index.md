@@ -24,18 +24,11 @@ Use **Alt + Enter** to see all duplicated fragments.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/inspection.png?raw=true)
 
-#### Find all clones in the projects
-
-To get all clones in the project use **Analyze \| Find all clones in project**.
-Then double click on clone description to navigate this clone in the editor.
-
-![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/locateclones.png?raw=true)
-
 ##### Settings
 
-You can set plugin parameters via **File \| Settings**
+Use **File \| Settings** to setup plugin.
 
-> Note that almost any change will cause full reindexing of the current project
+> Any change can cause a full reindexing of the current project
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/find-configuration.png?raw=true)
 
@@ -44,7 +37,7 @@ You can set plugin parameters via **File \| Settings**
 
 | Tool                                | Commercial | On-the-fly | Recall     | Scalability |
 |:------------------------------------|:-----------|:-----------|:-----------|:------------|
-| IntelliJ IDEA Ultimate (action)     | yes        | no         | excellent  | bad         |
+| IntelliJ IDEA Ultimate (action)     | yes        | no         | excellent  | acceptable  |
 | IntelliJ IDEA Ultimate (inspection) | yes        | yes        | acceptable | excellent   |
 | IDEA clone plugin                   | no         | yes        | good       | good        |
 
