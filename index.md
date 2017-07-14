@@ -59,9 +59,9 @@ Use **File \| Settings** to setup plugin.
 #### Tested projects
 * * *
 
-This plugin has been used to analyze a few popular Java projects. 
+This plugin has been used to analyze several popular Java projects. 
 
-| Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
+| Project                 | Time (indexing)   | Time (action) | Memory  | Clones found  |
 |:------------------------|:------------------|:--------------|:--------|:--------------|
 | JetBrains MPS           | 220 s             | 160 s         | 2950 Mb | 8109          |
 | Android Framework Base  | 145 s             | 38 s          | 1495 Mb | 5055          |
@@ -72,7 +72,7 @@ This plugin has been used to analyze a few popular Java projects.
 | Apache CloudStack       | 44 s              | 7 s           | 841 Mb  | 2875          |
 | Apache Camel            | 31 s              | 8 s           | 640 Mb  | 1992          |
 
-> Time (inspection) - time required to build a project index (necessary for clone inspection)
+> Time (indexing) - time required to build a project index (necessary for clone inspection)
 
 > Memory - total memory used by IntelliJ IDEA after full project indexing
 
