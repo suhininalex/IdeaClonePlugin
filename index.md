@@ -10,9 +10,7 @@ It provides on-the-fly inspection in a source code.
 
 #### Warning
 
-Plugin requires additional memory
-
-> Up to 500 Mb per 1 million LOC to build index and produce inspections 
+> Plugin requires additional memory up to 500 Mb per 1 million LOC
 
 #### General usage instructions
 * * *
