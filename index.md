@@ -61,7 +61,7 @@ Use **File \| Settings** to setup plugin.
 #### Tested projects
 * * *
 
-This plugin have been used to analyze a few popular Java projects. 
+This plugin has been used to analyze a few popular Java projects. 
 
 | Project                 | Time (inspection) | Time (action) | Memory  | Clones found  |
 |:------------------------|:------------------|:--------------|:--------|:--------------|
@@ -74,11 +74,9 @@ This plugin have been used to analyze a few popular Java projects.
 | Apache CloudStack       | 44 s              | 7 s           | 841 Mb  | 2875          |
 | Apache Camel            | 31 s              | 8 s           | 640 Mb  | 1992          |
 
-> Time (inspection) - time required to build project index (that's enough to allow clone inspections)
+> Time (inspection) - time required to build a project index (necessary for clone inspection)
 
-> Time (action) - time required to extract and show all clones found in the project
-
-> Memory - total memory used by IntelliJ IDEA after both indexing and extraction of clone classes 
+> Memory - total memory used by IntelliJ IDEA after full project indexing
 
 ###### Used parameters
 
