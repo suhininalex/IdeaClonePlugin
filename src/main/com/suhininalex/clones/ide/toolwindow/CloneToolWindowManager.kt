@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.Content
 import com.suhininalex.clones.core.structures.CloneClass
+import com.suhininalex.clones.core.utils.project
 import com.suhininalex.clones.core.utils.toolWindowManager
 import com.suhininalex.clones.ide.configuration.PluginLabels
 import java.awt.EventQueue
@@ -21,6 +22,12 @@ object CloneToolwindowManager {
 
     fun showClonesData(cloneClass: CloneClass) {
         EventQueue.invokeLater {
+            with(cloneClass.project.cloneToolWindow) {
+                val content = contentManager.factory.createContent(createPanel(cloneClass.clones.toList()), "window", false)
+                contentManager.addContent(content)
+                show(null)
+            }
+
             showClones(CloneTreeView(cloneClass), cloneClass.description)
         }
     }

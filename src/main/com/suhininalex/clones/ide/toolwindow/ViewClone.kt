@@ -25,17 +25,19 @@ class ViewClone(val clone: Clone) : DefaultMutableTreeNode(clone.description){
 
     fun navigateToSource(){
         if (! valid) return
-        with(clone){
-            SelectInEditorManager.getInstance(project).selectInEditor(
-                    file,
-                    textRange.startOffset,
-                    textRange.endOffset,
-                    false,
-                    false
-            )
-        }
+        clone.navigateToSource()
     }
 
+}
+
+fun Clone.navigateToSource(){
+    SelectInEditorManager.getInstance(project).selectInEditor(
+            file,
+            textRange.startOffset,
+            textRange.endOffset,
+            false,
+            false
+    )
 }
 
 /**
