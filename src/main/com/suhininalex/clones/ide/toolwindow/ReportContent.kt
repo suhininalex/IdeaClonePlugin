@@ -6,82 +6,94 @@ import com.intellij.diff.DiffRequestFactory
 import com.intellij.diff.DiffRequestPanel
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.requests.SimpleDiffRequest
+import com.intellij.openapi.ui.VerticalFlowLayout
+import com.intellij.ui.JBSplitter
+import com.intellij.ui.OnePixelSplitter
+import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBSlidingPanel
 import com.suhininalex.clones.core.structures.Clone
-import com.suhininalex.clones.core.utils.document
-import com.suhininalex.clones.core.utils.printText
-import com.suhininalex.clones.core.utils.project
-import com.suhininalex.clones.core.utils.textRange
-import java.awt.Component
-import java.awt.FlowLayout
-import java.awt.Image
+import com.suhininalex.clones.core.utils.*
+import com.suhininalex.clones.ide.PluginIcons
+import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.net.URL
 import javax.swing.*
 
 fun createPanel(clones: List<Clone>): JPanel {
-    val duplicateToolwindow = DuplicateToolwindow()
+    val panel = OnePixelSplitter()
     val cloneReports = clones.map(::CloneReport)
-    duplicateToolwindow.reportPanel.apply {
-        layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        cloneReports.forEach {
-            add(it)
-        }
+    val left = createLeftPanel(cloneReports)
+    val diffController = DiffController(left = cloneReports[0], right = cloneReports[1])
+    assignDiffMouseHandlers(diffController, cloneReports)
+    panel.firstComponent = JScrollPane(left)
+    panel.secondComponent = diffController.component
+    panel.proportion = 0.20f
+    return panel
+}
+
+fun createLeftPanel(cloneReports: List<CloneReport>) = JPanel().apply {
+    layout = VerticalFlowLayout()
+    cloneReports.forEach {
+        add(it)
     }
-    val diffController = DiffController(cloneReports[0], cloneReports[1])
+}
+
+fun assignDiffMouseHandlers(diffController: DiffController, cloneReports: List<CloneReport>){
     cloneReports.forEach {
         it.leftButton.addMouseListener(
                 object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent) {
-                        diffController.left = it
+                        if (it.clone.hasValidElements){
+                            diffController.left = it
+                        } else {
+                            it.invalidateClone()
+                        }
                     }
                 }
         )
         it.rightButton.addMouseListener(
                 object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent) {
-                        diffController.right = it
+                        if (it.clone.hasValidElements) {
+                            diffController.right = it
+                        } else {
+                            it.invalidateClone()
+                        }
                     }
                 }
         )
     }
-    duplicateToolwindow.diffPanel.add(diffController.component)
-    return duplicateToolwindow.panel
 }
 
-fun loadResource(path: String): URL? = CloneToolwindowManager::class.java.classLoader.getResource(path)
-
-fun ImageIcon.rescale(width: Int, height: Int) =
-        ImageIcon(image.getScaledInstance(width, height, Image.SCALE_DEFAULT))
-
-//IconLoader
-val normalLeftImage = ImageIcon(loadResource("img/left.png")).rescale(16,16)
-val hoverLeftImage = ImageIcon(loadResource("img/left-hover.png")).rescale(16,16)
-val selectedLeftImage = ImageIcon(loadResource("img/left-select.png")).rescale(16,16)
-
-fun createLeftButton() = ImageButton(normalLeftImage, hoverLeftImage, selectedLeftImage)
-
-val normalRightImage = ImageIcon(loadResource("img/right.png")).rescale(16,16)
-val hoverRightImage = ImageIcon(loadResource("img/right-hover.png")).rescale(16,16)
-val selectedRightImage = ImageIcon(loadResource("img/right-select.png")).rescale(16,16)
-
-fun createRightButton() = ImageButton(normalRightImage, hoverRightImage, selectedRightImage)
-
 class CloneReport(val clone: Clone): JPanel() {
-    val leftButton: ImageButton = createLeftButton()
-    val rightButton: ImageButton = createRightButton()
+
+    val leftButton: ImageButton = with (PluginIcons) {
+        ImageButton(ARROW_LEFT_DEFAULT, ARROW_LEFT_HOVER, ARROW_LEFT_SELECTED)
+    }
+
+    val rightButton: ImageButton = with (PluginIcons) {
+        ImageButton(ARROW_RIGHT_DEFAULT, ARROW_RIGHT_HOVER, ARROW_RIGHT_SELECTED)
+    }
+
     val description: JLabel = JLabel(clone.description)
+
+    val dblClickListener = doubleClickListener {
+        if (clone.hasValidElements) clone.navigateToSource()
+        else invalidateClone()
+    }
+
+    fun invalidateClone(){
+        description.text = "INVALID"
+        description.foreground = Color.RED
+    }
 
     init{
         layout = FlowLayout(FlowLayout.LEFT)
         add(leftButton)
         add(rightButton)
         add(description)
-        description.addMouseListener(object: MouseAdapter(){
-            override fun mouseClicked(e: MouseEvent) {
-                if (e.clickCount >= 2) clone.navigateToSource()
-            }
-        })
+        description.addMouseListener(dblClickListener)
     }
 }
 
@@ -112,7 +124,7 @@ class DiffController(left: CloneReport, right: CloneReport){
         update()
     }
 
-    val component: Component
+    val component: JComponent
         get() = diffPanel.component
 
     private val leftContent: DiffContent
