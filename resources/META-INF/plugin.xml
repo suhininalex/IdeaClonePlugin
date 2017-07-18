@@ -22,12 +22,6 @@
 
   <idea-version since-build="171"/>
 
-  <!--<actions>-->
-      <!--<action id="ShowAllClonesAction" class="com.suhininalex.clones.ide.ShowAllClonesAction" text="Find clones in project" description="desc">-->
-          <!--<add-to-group group-id="AnalyzeMenu" anchor="last"/>-->
-      <!--</action>-->
-  <!--</actions>-->
-
   <extensions defaultExtensionNs="com.intellij">
       <projectService serviceImplementation="com.suhininalex.clones.core.languagescope.LanguageIndexedPsiService" />
       <fileBasedIndex implementation="com.suhininalex.clones.ide.CloneFinderIndex" />

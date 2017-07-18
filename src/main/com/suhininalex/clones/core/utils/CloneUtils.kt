@@ -1,11 +1,13 @@
 package com.suhininalex.clones.core.utils
 
+import com.intellij.ide.SelectInEditorManager
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.suhininalex.clones.core.structures.*
+import com.suhininalex.clones.ide.configuration.PluginLabels
 import com.suhininalex.suffixtree.Edge
 import java.lang.IllegalArgumentException
 
@@ -53,3 +55,27 @@ val PsiElement.endLine: Int
 
 val CloneClass.project: Project
     get() = clones.first().project
+
+fun Clone.navigateToSource(){
+    SelectInEditorManager.getInstance(project).selectInEditor(
+            file,
+            textRange.startOffset,
+            textRange.endOffset,
+            false,
+            false
+    )
+}
+
+val CloneClass.description: String
+    get() = PluginLabels.getLabel("toolwindow-class-node")
+            .replace("\$length", "$length")
+            .replace("\$size", "$size")
+
+val Clone.description: String
+    get() = PluginLabels.getLabel("toolwindow-clone-node")
+            .replace("\$startLine", "${firstPsi.startLine}")
+            .replace("\$endLine", "${lastPsi.endLine}")
+            .replace("\$file", file.presentableName)
+
+val List<CloneClass>.description: String
+    get() = PluginLabels.getLabel("toolwindow-tab-name").replace("\$size", "$size")
