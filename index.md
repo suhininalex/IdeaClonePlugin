@@ -1,11 +1,11 @@
-Plugin provides on-the-fly inspection about duplicated code.
+Plugin provides duplicated code inspections on-the-fly.
 
 #### Main features
 
 - Searching exact source clones and clones with renamed tokens
 - Analyzing huge projects (millions lines of code)
 - Providing clone inspections on-the-fly
-- Comparing duplicated code fragments
+- Providing duplicated code fragments comparison
 - Analyzing Java/Kotlin files
 
 > Plugin requires additional memory up to 500 Mb per 1 million LOC
@@ -59,7 +59,7 @@ Use **File \| Settings** to setup plugin.
 
 This plugin has been used to analyze several popular Java projects. 
 
-| Project                 | Time (indexing)   | Memory  | Clones found  |
+| Project                 | Time              | Memory  | Clones found  |
 |:------------------------|:------------------|:--------|:--------------|
 | JetBrains MPS           | 220 s             | 960 Mb  | 8109          |
 | Android Framework Base  | 145 s             | 666 Mb  | 5055          |
@@ -70,7 +70,7 @@ This plugin has been used to analyze several popular Java projects.
 | Apache CloudStack       | 44 s              | 530 Mb  | 2875          |
 | Apache Camel            | 31 s              | 371 Mb  | 1992          |
 
-> Time (indexing) - time required to build a project index
+> Time - time required to build a project index
 
 > Memory - total memory used by IntelliJ IDEA after full project indexing
 
