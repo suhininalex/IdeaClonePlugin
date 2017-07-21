@@ -6,7 +6,7 @@
 
   <description>
       <![CDATA[
-              Plugin provides on-the-fly inspection in a source code.<br>
+              Plugin provides duplicated code inspections on-the-fly..<br>
               <br>
               Main features:
               <ul>
@@ -23,8 +23,8 @@
   <change-notes>
       <![CDATA[
           <ul>
-              <li>Convenient panel to compare duplicates</li>
-              <li>Enhanced duplicate detection</li>
+              <li>Providing duplicated code comparison</li>
+              <li>Searching gapped clones</li>
           </ul>
       ]]>
   </change-notes>
