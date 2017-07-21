@@ -13,7 +13,7 @@ Plugin provides on-the-fly inspection about duplicated code.
 #### General usage instructions
 * * *
 
-#### Inspections
+##### Inspections
 
 Since the plugin is installed inspection is available. 
 Use **Alt + Enter** to see all duplicated fragments.
