@@ -1,4 +1,4 @@
 theme: jekyll-theme-slate
 show_downloads: true
-title: Idea clone plugin
-description: Duplicated code inspection for IntelliJ IDEA
+title: DUPLICATE DETECTOR
+description: Duplicated code inspection for IDE IntelliJ IDEA 2017+
