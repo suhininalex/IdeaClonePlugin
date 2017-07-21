@@ -26,7 +26,7 @@ class PluginConfigurable : Configurable {
     }
 
     override fun getDisplayName(): String =
-        PluginLabels.getLabel("settings-title")
+        PluginLabels.getMessage("settings-title")
 
     override fun apply() {
         configurationPanel?.apply {

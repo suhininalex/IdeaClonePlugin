@@ -1,11 +1,5 @@
 package com.suhininalex.clones.ide.configuration
 
-import java.util.*
+import com.intellij.AbstractBundle
 
-object PluginLabels {
-
-    private val resourceBundle = ResourceBundle.getBundle("language")!!
-
-    fun getLabel(key: String): String =
-        resourceBundle.getString(key)
-}
+object PluginLabels : AbstractBundle("language")

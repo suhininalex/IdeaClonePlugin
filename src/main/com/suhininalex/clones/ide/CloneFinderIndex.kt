@@ -63,8 +63,8 @@ class CloneFinderIndexer : DataIndexer<Int, Void, FileContent> {
             PluginSettings.enabledForProject = false
             CloneFinderIndex.rebuild(project)
             Application.invokeLater{
-                val title = PluginLabels.getLabel("warning-memory-issue-title")
-                val message = PluginLabels.getLabel("warning-memory-issue-message")
+                val title = PluginLabels.getMessage("warning-memory-issue-title")
+                val message = PluginLabels.getMessage("warning-memory-issue-message")
                 Notifications.Bus.notify(Notification("Actions", title, message, NotificationType.WARNING))
             }
         }

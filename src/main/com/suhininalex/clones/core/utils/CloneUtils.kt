@@ -67,15 +67,10 @@ fun Clone.navigateToSource(){
 }
 
 val CloneClass.description: String
-    get() = PluginLabels.getLabel("toolwindow-class-node")
-            .replace("\$length", "$length")
-            .replace("\$size", "$size")
+    get() = PluginLabels.getMessage("toolwindow-class-node", length, size)
 
 val Clone.description: String
-    get() = PluginLabels.getLabel("toolwindow-clone-node")
-            .replace("\$startLine", "${firstPsi.startLine}")
-            .replace("\$endLine", "${lastPsi.endLine}")
-            .replace("\$file", file.presentableName)
+    get() = PluginLabels.getMessage("toolwindow-clone-node", firstPsi.startLine, lastPsi.endLine, file.presentableName)
 
 val List<CloneClass>.description: String
-    get() = PluginLabels.getLabel("toolwindow-tab-name").replace("\$size", "$size")
+    get() = PluginLabels.getMessage("toolwindow-tab-name", size)

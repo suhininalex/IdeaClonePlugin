@@ -7,13 +7,13 @@ import com.suhininalex.clones.core.utils.IntProperty
 object PluginSettings: IdeaSettings(nameSpace = "clone_finder") {
 
     private object defaults {
-        val minCloneLength = 20
+        val minCloneLength = 40
         val coverageSkipFilter = 70
         val enabledForProject = true
-        val disableTestFolder = false
+        val disableTestFolder = true
         val kotlinSearchEnabled = true
         val javaSearchEnabled = true
-        val maxMemory = 500
+        val maxMemory = 400
     }
 
     var maxMemory by IntProperty(defaults.maxMemory)

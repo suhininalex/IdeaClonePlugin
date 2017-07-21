@@ -2,10 +2,8 @@ package com.suhininalex.clones.core.postprocessing
 
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import com.suhininalex.clones.core.CloneIndexer
 import com.suhininalex.clones.core.structures.CloneClass
-import com.suhininalex.clones.core.structures.IndexedSequence
 import com.suhininalex.clones.core.utils.backgroundTask
 import com.suhininalex.clones.core.utils.withProgressBar
 import com.suhininalex.clones.ide.configuration.PluginLabels
@@ -14,11 +12,11 @@ import nl.komponents.kovenant.task
 import nl.komponents.kovenant.thenApply
 import java.lang.Exception
 
-val subClassFiltering = PluginLabels.getLabel("progressbar-filtering-subclass")
-val siblingFiltering = PluginLabels.getLabel("progressbar-filtering-sibling")
-val mergeFiltering = PluginLabels.getLabel("progressbar-filtering-merge")
-val selfcoveredFiltering = PluginLabels.getLabel("progressbar-filtering-selfcovered")
-val beforeFiltering = PluginLabels.getLabel("progressbar-filtering-before-filters")
+val subClassFiltering = PluginLabels.getMessage("progressbar-filtering-subclass")
+val siblingFiltering = PluginLabels.getMessage("progressbar-filtering-sibling")
+val mergeFiltering = PluginLabels.getMessage("progressbar-filtering-merge")
+val selfcoveredFiltering = PluginLabels.getMessage("progressbar-filtering-selfcovered")
+val beforeFiltering = PluginLabels.getMessage("progressbar-filtering-before-filters")
 
 fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
     task {
