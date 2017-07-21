@@ -24,7 +24,7 @@ Use **Alt + Enter** to see all duplicated fragments.
 
 Use **File \| Settings** to setup plugin.
 
-> Any change can cause a full reindexing of the current project
+> Changes may cause a full reindexing of the current project
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/settings.png?raw=true)
 
