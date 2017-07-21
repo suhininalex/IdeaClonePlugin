@@ -39,6 +39,8 @@ fun CloneIndexer.getFileFilteredClones(virtualFile: VirtualFile): List<CloneClas
     getAllFileCloneClasses(virtualFile)
             .notLongestSequenceFilter()
             .validClonesFilter()
-            .splitSiblingClones()
-            .mergeCloneClasses()
+            .uniteNearbyClones(virtualFile)
+
+//            .splitSiblingClones()
+//            .mergeCloneClasses()
             .filterSelfCoveredClasses()

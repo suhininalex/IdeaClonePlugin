@@ -59,13 +59,13 @@ object CloneIndexer {
     fun getAllFileCloneClasses(virtualFile: VirtualFile): List<TreeCloneClass> = rwLock.read {
         val ids = fileSequenceIds[virtualFile] ?: return emptyList()
         return ids
-                .flatMap { tree.getAllSequenceClasses(it, PluginSettings.minCloneLength).toList() }
+                .flatMap { tree.getAllSequenceClasses(it, PluginSettings.minCloneLength/2).toList() }
                 .filterSubClassClones()
     }
 
     fun getFileCloneClassesGroupedBySequence(virtualFile: VirtualFile): List<List<TreeCloneClass>>{
         val ids = fileSequenceIds[virtualFile] ?: return emptyList()
-        return ids.map { tree.getAllSequenceClasses(it, 20).toList() }
+        return ids.map { tree.getAllSequenceClasses(it, PluginSettings.minCloneLength/2).toList() }
     }
 
     fun getAllCloneClasses(): List<TreeCloneClass>  = rwLock.read {
