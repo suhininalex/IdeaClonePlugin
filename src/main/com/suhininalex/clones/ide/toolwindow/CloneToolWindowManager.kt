@@ -12,7 +12,7 @@ import java.awt.EventQueue
 
 object CloneToolwindowManager {
 
-    private val toolwindowId = PluginLabels.getLabel("toolwindow-id")
+    private val toolwindowId = PluginLabels.getMessage("toolwindow-id")
 
     fun showClonesData(cloneClass: CloneClass) {
         EventQueue.invokeLater {

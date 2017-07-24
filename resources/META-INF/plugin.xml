@@ -1,24 +1,33 @@
 <idea-plugin>
   <id>com.suhininalex.cloneDetection.plugin.id</id>
-  <name>Clone detection plugin</name>
-  <version>1.0</version>
-  <vendor email="suhinin.alex@gmail.com">Suhinin Alex</vendor>
+  <name>Duplicate detector</name>
+  <version>1.1</version>
+  <vendor email="suhinin.alex@gmail.com">Alex Suhinin</vendor>
 
   <description>
       <![CDATA[
-            Detects source clones on-the-fly.<br>
-            <br>
-            Main features:
-            <ul>
-                <li>Possibility to look for exact clones and clones with renamed tokens</li>
-                <li>Ability to provide clone inspections on-the-fly</li>
-                <li>Ability to analyze huge projects (millions lines of code)</li>
-                <li>Java/Kotlin available</li>
-            </ul>
-            <br>
-            Requires additional memory for analyzing: ~0.5 Gb per 1 million lines of code for inspections and the same for looking for all duplicates.
+              Plugin provides duplicated code inspections on-the-fly..<br>
+              <br>
+              Main features:
+              <ul>
+                  <li>Searching exact clones and clones with renamed tokens</li>
+                  <li>Analyzing huge projects (millions lines of code)</li>
+                  <li>Providing clone inspections on-the-fly</li>
+                  <li>Analyzing Java/Kotlin files</li>
+              </ul>
+              <br>
+              Plugin requires additional memory up to 500 Mb per 1 million LOC.
        ]]>
   </description>
+
+  <change-notes>
+      <![CDATA[
+          <ul>
+              <li>Providing duplicated code comparison</li>
+              <li>Searching gapped clones</li>
+          </ul>
+      ]]>
+  </change-notes>
 
   <idea-version since-build="171"/>
 

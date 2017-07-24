@@ -15,11 +15,13 @@ import com.suhininalex.clones.ide.toolwindow.CloneToolwindowManager
 
 class InspectionProvider : LocalInspectionTool() {
 
-    override fun getGroupDisplayName() = PluginLabels.getLabel("inspection-group-display-name")
+    override fun getGroupDisplayName() = PluginLabels.getMessage("inspection-group-display-name")
 
     override fun getShortName() = "CloneDetection"
 
-    override fun getDisplayName() = PluginLabels.getLabel("inspection-display-name")
+    override fun getDisplayName() = PluginLabels.getMessage("inspection-display-name")
+
+    override fun getStaticDescription(): String = PluginLabels.getMessage("inspection-description")
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         Logger.log("[Inspection] Processing file ${file.name}")
@@ -43,9 +45,9 @@ class InspectionProvider : LocalInspectionTool() {
         return createProblemDescriptor(
                 element,
                 clone.textRange,
-                PluginLabels.getLabel("inspection-problem-description"),
+                PluginLabels.getMessage("inspection-problem-description",clone.firstPsi.startLine, clone.lastPsi.endLine),
                 ProblemHighlightType.WEAK_WARNING,
-                true, //is on the fly
+                true,
                 CloneReport(cloneClass, clone)
         )
     }
@@ -58,11 +60,9 @@ operator fun PsiElement.contains(element: PsiElement): Boolean =
 class CloneReport(val cloneClass: CloneClass, val clone: Clone) : LocalQuickFix {
 
     override fun getName(): String =
-        PluginLabels.getLabel("inspection-fix-label")
-                .replace("\$startLine","${clone.firstPsi.startLine}")
-                .replace("\$endLine","${clone.lastPsi.endLine}")
+        PluginLabels.getMessage("inspection-fix-label", clone.firstPsi.startLine, clone.lastPsi.endLine)
 
-    override fun getFamilyName() = PluginLabels.getLabel("inspection-fix-family-name")
+    override fun getFamilyName() = PluginLabels.getMessage("inspection-fix-family-name")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         EventQueue.invokeLater { CloneToolwindowManager.showClonesData(cloneClass) }
