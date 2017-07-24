@@ -2,7 +2,7 @@
   <id>com.suhininalex.cloneDetection.plugin.id</id>
   <name>Duplicate detector</name>
   <version>1.1</version>
-  <vendor email="suhinin.alex@gmail.com">Alex Suhinin</vendor>
+  <vendor url="http://suhininalex.github.io/IdeaClonePlugin/" email="suhinin.alex@gmail.com">Alex Suhinin</vendor>
 
   <description>
       <![CDATA[
