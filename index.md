@@ -1,22 +1,24 @@
-Plugin provides duplicated code inspections on-the-fly.
+This plugin provides advanced on-the-fly duplicated code inspections for IntelliJ IDEA (aka clone detection).
 
 #### Main features
 
-- Searching exact source clones, clones with renamed tokens and gapped clones
-- Analyzing huge projects (millions lines of code)
-- Providing clone inspections on-the-fly
-- Providing duplicated code fragments comparison
-- Analyzing Java/Kotlin files
+* Supports detection of
+  * exact clones
+  * clones with renamed variables/types/etc.
+  * clones with gaps
+* Can analyze industry-size projects (with millions lines of code)
+* Works on-the-fly, right as you type
+* Provides duplicated code comparison
+* Supports both Java and Kotlin (with more languages on the way)
 
-> Plugin requires additional memory up to 500 Mb per 1 million LOC
+> NB! The plugin requires an additional JVM memory of up to 500 Mb per 1
 
 #### General usage instructions
 * * *
 
 ##### Inspections
 
-Since the plugin is installed inspection is available. 
-Use **Alt + Enter** to see all duplicated fragments.
+The plugin provides duplicated code inspection after the initial project indexing is complete: use Alt + Enter to see all duplicated fragments.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/inspection.png?raw=true)
 
@@ -24,7 +26,7 @@ Use **Alt + Enter** to see all duplicated fragments.
 
 Use **File \| Settings** to setup plugin.
 
-> Changes may cause a full reindexing of the current project
+> NB! Changes to the settings may cause a full reindexing of the current project
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/settings.png?raw=true)
 
@@ -57,7 +59,7 @@ Use **File \| Settings** to setup plugin.
 #### Tested projects
 * * *
 
-This plugin has been used to analyze several popular Java projects. 
+The plugin has been used to analyze several popular Java projects.
 
 | Project                 | Time              | Memory  | Clones found  |
 |:------------------------|:------------------|:--------|:--------------|
@@ -70,11 +72,11 @@ This plugin has been used to analyze several popular Java projects.
 | Apache CloudStack       | 44 s              | 530 Mb  | 2875          |
 | Apache Camel            | 31 s              | 371 Mb  | 1992          |
 
-> Time - time required to build a project index
+> Time - time required to do the initial indexing
 
 > Memory - total memory used by IntelliJ IDEA after full project indexing
 
-###### Used parameters
+###### Parameters used
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/settings-experiment.png?raw=true)
 
@@ -82,4 +84,4 @@ This plugin has been used to analyze several popular Java projects.
 
 > CPU i5-760 lynfield (4 core, 2.8 Ghz) 
 
-> Max heap: 4000 Mb
+> JVM options: `-ea -Xms256m --Xmx4000m`
