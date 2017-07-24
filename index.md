@@ -18,7 +18,7 @@ This plugin provides advanced on-the-fly duplicated code inspections for Intelli
 
 ##### Inspections
 
-The plugin provides duplicated code inspection after the initial project indexing is complete: use Alt + Enter to see all duplicated fragments.
+The plugin provides duplicated code inspection after the initial project indexing is complete: use **Alt + Enter** to see all duplicated fragments.
 
 ![](https://github.com/suhininalex/IdeaClonePlugin/blob/gh-pages/images/inspection.png?raw=true)
 
