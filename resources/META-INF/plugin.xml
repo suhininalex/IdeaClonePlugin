@@ -23,8 +23,8 @@
   <change-notes>
       <![CDATA[
           <ul>
-              <li>Providing duplicated code comparison</li>
-              <li>Searching gapped clones</li>
+              <li>Duplicated code comparison</li>
+              <li>Detection of gapped clones</li>
           </ul>
       ]]>
   </change-notes>
