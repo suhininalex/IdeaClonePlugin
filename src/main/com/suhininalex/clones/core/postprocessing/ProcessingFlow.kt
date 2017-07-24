@@ -7,6 +7,7 @@ import com.suhininalex.clones.core.structures.CloneClass
 import com.suhininalex.clones.core.utils.backgroundTask
 import com.suhininalex.clones.core.utils.withProgressBar
 import com.suhininalex.clones.ide.configuration.PluginLabels
+import com.suhininalex.clones.ide.configuration.PluginSettings
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.thenApply
@@ -37,7 +38,11 @@ fun CloneIndexer.getFileFilteredClones(virtualFile: VirtualFile): List<CloneClas
     val clones = getAllFileCloneClasses(virtualFile)
             .notLongestSequenceFilter()
             .validClonesFilter()
-    val (gappedClones, monoliteClones) = clones.uniteNearbyClones(virtualFile)
-    val allClones = gappedClones + monoliteClones.splitSiblingClones().mergeCloneClasses()
-    return allClones.filterSelfCoveredClasses()
+    if (PluginSettings.enableGaps) {
+        val (gappedClones, monoliteClones) = clones.uniteNearbyClones(virtualFile)
+        val allClones = gappedClones + monoliteClones.splitSiblingClones().mergeCloneClasses()
+        return allClones.filterSelfCoveredClasses()
+    } else {
+        return clones.splitSiblingClones().mergeCloneClasses().filterSelfCoveredClasses()
+    }
 }

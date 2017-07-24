@@ -39,7 +39,7 @@ fun canUnite(first: FileDuplicate, second: FileDuplicate): Boolean {
     }
 }
 
-fun canUnite(first: Clone, second: Clone, distance: Int = 10): Boolean {
+fun canUnite(first: Clone, second: Clone, distance: Int = PluginSettings.minFragment): Boolean {
     if (first.file != second.file) return false
     else return second.firstPsi.hasLeftPsi(first.lastPsi, distance) || second.firstPsi.hasRightPsi(first.lastPsi, distance)
 }

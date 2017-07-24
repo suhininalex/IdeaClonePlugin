@@ -19,6 +19,7 @@ class PluginConfigurable : Configurable {
             || PluginSettings.javaSearchEnabled != javaSearchEnabled
             || PluginSettings.kotlinSearchEnabled != kotlinSearchEnabled
             || PluginSettings.maxMemory != maxUsedMemory
+            || PluginSettings.enableGaps != enableGaps
         }
 
     override fun disposeUIResources() {
@@ -55,6 +56,7 @@ class PluginConfigurable : Configurable {
             javaSearchEnabled = PluginSettings.javaSearchEnabled
             kotlinSearchEnabled = PluginSettings.kotlinSearchEnabled
             maxUsedMemory = PluginSettings.maxMemory
+            enableGaps = PluginSettings.enableGaps
         }
     }
 
@@ -67,6 +69,7 @@ class PluginConfigurable : Configurable {
             PluginSettings.javaSearchEnabled = javaSearchEnabled
             PluginSettings.kotlinSearchEnabled = kotlinSearchEnabled
             PluginSettings.maxMemory = maxUsedMemory
+            PluginSettings.enableGaps = enableGaps
         }
     }
 }

@@ -11,6 +11,7 @@ public class ConfigurationPanel {
     private JCheckBox javaSearchEnabled;
     private JCheckBox kotlinSearchEnabled;
     private JSpinner maxUsedMemory;
+    private JCheckBox enableGaps;
 
     public ConfigurationPanel() {
         minimalCloneLengthSpinner.setModel(new SpinnerNumberModel(15, 15, 1000, 5));
@@ -72,5 +73,13 @@ public class ConfigurationPanel {
 
     public void setKotlinSearchEnabled(boolean value) {
         kotlinSearchEnabled.setSelected(value);
+    }
+
+    public boolean getEnableGaps() {
+        return enableGaps.isSelected();
+    }
+
+    public void setEnableGaps(boolean value) {
+        enableGaps.setSelected(value);
     }
 }
