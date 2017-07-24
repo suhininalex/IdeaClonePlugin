@@ -20,6 +20,7 @@ apply plugin: 'java'
 intellij {
     version 'IC-171.1834.9' //IntelliJ IDEA 2016.3 dependency; for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName 'Duplicate detector'
+    updateSinceUntilBuild false
 }
 
 group 'org.jetbrains'
