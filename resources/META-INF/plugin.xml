@@ -6,14 +6,19 @@
 
   <description>
       <![CDATA[
-              Plugin provides duplicated code inspections on-the-fly..<br>
+              This plugin provides advanced on-the-fly duplicated code inspections for IntelliJ IDEA (aka clone detection).<br>
               <br>
               Main features:
               <ul>
-                  <li>Searching exact clones and clones with renamed tokens</li>
-                  <li>Analyzing huge projects (millions lines of code)</li>
-                  <li>Providing clone inspections on-the-fly</li>
-                  <li>Analyzing Java/Kotlin files</li>
+                  <li>Supports detection of</li>
+                    <ul>
+                        <li>exact clones</li>
+                        <li>clones with renamed variables/types/etc.</li>
+                        <li>clones with gaps</li>
+                    </ul>
+                  <li>Can analyze industry-size projects (with millions lines of code)</li>
+                  <li>Works on-the-fly, right as you type</li>
+                  <li>Supports both Java and Kotlin (with more languages on the way)</li>
               </ul>
               <br>
               Plugin requires additional memory up to 500 Mb per 1 million LOC.
