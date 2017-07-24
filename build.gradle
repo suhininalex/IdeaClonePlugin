@@ -50,3 +50,9 @@ sourceSets {
         }
     }
 }
+
+runIde.doFirst {
+    if (this.properties.get("maxHeapSize") != null) {
+        runIde.maxHeapSize = this.properties.get("maxHeapSize")
+    }
+}
