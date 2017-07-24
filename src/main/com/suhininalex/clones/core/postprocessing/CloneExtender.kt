@@ -10,10 +10,16 @@ import com.suhininalex.clones.ide.configuration.PluginSettings
 /**
  * Unites nearby clone classes in file
  */
-fun List<CloneClass>.uniteNearbyClones(baseFile: VirtualFile): List<CloneClass> {
+fun List<CloneClass>.uniteNearbyClones(baseFile: VirtualFile): Pair<List<CloneClass>, List<CloneClass>> {
     val clonesInFile = sortedFileDuplicates(baseFile, this.filterEqualClasses())
-    val united = clonesInFile.unite().mapNotNull { unite(clonesInFile[it.first].cloneClass, clonesInFile[it.second].cloneClass) }
-    return united.filter { it.length >= PluginSettings.minCloneLength }
+    val unitedRanges = clonesInFile.unite()
+    val unitedClasses = unitedRanges
+            .filter { (start, end) -> start != end }
+            .map{ unite(clonesInFile[it.first].cloneClass, clonesInFile[it.second].cloneClass) }
+    val unUnitedClasses = unitedRanges
+            .filter { (start, end) -> start == end }
+            .map { (start, end) -> clonesInFile[start].cloneClass }
+    return unitedClasses to unUnitedClasses
 }
 
 fun sortedFileDuplicates(baseFile: VirtualFile, clones: List<CloneClass>): List<FileDuplicate>{
@@ -25,12 +31,6 @@ fun sortedFileDuplicates(baseFile: VirtualFile, clones: List<CloneClass>): List<
 }
 
 data class FileDuplicate(val duplicate: Clone, val cloneClass: CloneClass)
-
-fun CloneClass.asString(): String =
-    clones.map { it.asString() }.toList().toString()
-
-fun Clone.asString(): String =
-    "(${file.name}, ${textRange.startOffset}, ${textRange.endOffset})"
 
 fun canUnite(first: FileDuplicate, second: FileDuplicate): Boolean {
     if (first.cloneClass == second.cloneClass) return false
@@ -66,12 +66,6 @@ fun List<FileDuplicate>.findLastUnitable(i: Int): Int? {
     return lastSucceed
 }
 
-fun inspectFile(virtualFile: VirtualFile){
-    CloneIndexer.getFileCloneClassesGroupedBySequence(virtualFile).forEach{ cloneClasses ->
-        cloneClasses.filterSubClassClones().uniteNearbyClones(virtualFile)
-    }
-}
-
 fun List<FileDuplicate>.unite(): List<Pair<Int, Int>>{
     if (isEmpty()) return emptyList()
     val list = ArrayList<Pair<Int, Int>>()
@@ -88,8 +82,8 @@ fun List<FileDuplicate>.unite(): List<Pair<Int, Int>>{
     return list
 }
 
-fun unite(first: CloneClass, second: CloneClass): CloneClass?{
-    if (first == second) return null//first
+fun unite(first: CloneClass, second: CloneClass): CloneClass{
+    if (first == second) return first
     val clones = first.clones.map { firstClone ->
         val secondClone = second.clones.find { canUnite(firstClone, it)}!!
         unite(firstClone, secondClone)

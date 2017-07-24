@@ -33,12 +33,11 @@ fun CloneIndexer.getAllFilteredClones(): Promise<List<CloneClass>, Exception> =
         throw it
     }
 
-fun CloneIndexer.getFileFilteredClones(virtualFile: VirtualFile): List<CloneClass> =
-    getAllFileCloneClasses(virtualFile)
+fun CloneIndexer.getFileFilteredClones(virtualFile: VirtualFile): List<CloneClass> {
+    val clones = getAllFileCloneClasses(virtualFile)
             .notLongestSequenceFilter()
             .validClonesFilter()
-            .uniteNearbyClones(virtualFile)
-
-//            .splitSiblingClones()
-//            .mergeCloneClasses()
-            .filterSelfCoveredClasses()
+    val (gappedClones, monoliteClones) = clones.uniteNearbyClones(virtualFile)
+    val allClones = gappedClones + monoliteClones.splitSiblingClones().mergeCloneClasses()
+    return allClones.filterSelfCoveredClasses()
+}
