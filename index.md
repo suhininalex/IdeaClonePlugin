@@ -1,5 +1,7 @@
 This plugin provides advanced on-the-fly duplicated code inspections for IntelliJ IDEA (aka clone detection).
 
+See plugin on JetBrains repository: [link](https://plugins.jetbrains.com/plugin/9829-duplicate-detector)
+
 #### Main features
 
 * Supports detection of
