@@ -34,7 +34,7 @@
       ]]>
   </change-notes>
 
-  <idea-version since-build="171"/>
+  <idea-version since-build="171" until-build="181.*"/>
 
   <extensions defaultExtensionNs="com.intellij">
       <projectService serviceImplementation="com.suhininalex.clones.core.languagescope.LanguageIndexedPsiService" />
